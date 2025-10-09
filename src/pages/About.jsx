@@ -131,7 +131,7 @@ export default function AboutPage() {
       department: "Design"
     },
     {
-      name: "Debojit Bhattacharya",
+      name: "Dev B.",
       role: "Product Designer",
       icon: Palette,
       description: "Designs comprehensive product experiences using AI research tools and collaborates across all departments.",

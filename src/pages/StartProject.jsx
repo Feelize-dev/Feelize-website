@@ -180,12 +180,12 @@ export default function StartProjectPage() {
                 className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold py-3 rounded-xl"
               >
                 <LogIn className="w-4 h-4 mr-2" />
-                Sign In to Continue
+                Coming soon!!
               </Button>
 
               <div className="mt-6 pt-6 border-t border-slate-600/30 text-center">
                 <p className="text-slate-400 text-xs">
-                  Secure authentication powered by base44
+                  
                 </p>
               </div>
             </CardContent>
