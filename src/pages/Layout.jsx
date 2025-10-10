@@ -2,7 +2,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Sparkles, Menu, X } from "lucide-react";
+import { Sparkles, Menu, X, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { User } from "@/api/entities";
@@ -354,74 +354,100 @@ export default function Layout({ children, currentPageName }) {
         {children}
       </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 bg-slate-900/50 backdrop-blur-xl border-t border-white/10 mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid md:grid-cols-3 gap-8">
-            <div>
-              <div className="flex items-center space-x-3 mb-6">
-                <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-                  <Sparkles className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-2xl font-bold text-white">Feelize</span>
-              </div>
-              <p className="text-slate-400 mb-4 text-sm leading-relaxed">
-                Human Experts, Supercharged by AI.
-                <br />The future of development is here.
-              </p>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-white">Navigation</h3>
-              <div className="space-y-3">
-                {navigationItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.url}
-                    className="block text-slate-400 hover:text-cyan-400 transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-                {!isLoadingUser && currentUser && (
-                  <>
-                    <Link
-                      to={createPageUrl("UserDashboard")}
-                      className="block text-slate-400 hover:text-cyan-400 transition-colors"
-                    >
-                      My Projects
-                    </Link>
-                    {currentUser.role === 'admin' && (
-                      <Link
-                        to={createPageUrl("AdminDashboard")}
-                        className="block text-slate-400 hover:text-cyan-400 transition-colors"
-                      >
-                        Admin Dashboard
-                      </Link>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-white">Get Started</h3>
-              <p className="text-slate-400 mb-6 text-sm">
-                Ready to experience the future of development?
-              </p>
-              <Link to={createPageUrl("StartProject")}>
-                <Button className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold hover:from-cyan-300 hover:to-blue-400 transition-all duration-300 hover:scale-105">
-                  Start Your Project
-                </Button>
-              </Link>
-            </div>
+{/* Footer */}
+<footer className="relative z-10 bg-slate-900/50 backdrop-blur-xl border-t border-white/10 mt-20">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div className="grid md:grid-cols-4 gap-8">
+      {/* Brand */}
+      <div>
+        <div className="flex items-center space-x-3 mb-6">
+          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+            <Sparkles className="w-6 h-6 text-white" />
           </div>
-
-          <div className="border-t border-white/10 pt-8 mt-8 text-center">
-            <p className="text-slate-400 text-sm">&copy; 2025 Feelize. Crafting the future, one project at a time.</p>
-          </div>
+          <span className="text-2xl font-bold text-white">Feelize</span>
         </div>
-      </footer>
+        <p className="text-slate-400 mb-4 text-sm leading-relaxed">
+          Human Experts, Supercharged by AI.
+          <br />The future of development is here.
+        </p>
+      </div>
+
+      {/* Navigation */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4 text-white">Navigation</h3>
+        <div className="space-y-3">
+          {navigationItems.map((item) => (
+            <Link
+              key={item.name}
+              to={item.url}
+              className="block text-slate-400 hover:text-cyan-400 transition-colors"
+            >
+              {item.name}
+            </Link>
+          ))}
+          {!isLoadingUser && currentUser && (
+            <>
+              <Link
+                to={createPageUrl("UserDashboard")}
+                className="block text-slate-400 hover:text-cyan-400 transition-colors"
+              >
+                My Projects
+              </Link>
+              {currentUser.role === "admin" && (
+                <Link
+                  to={createPageUrl("AdminDashboard")}
+                  className="block text-slate-400 hover:text-cyan-400 transition-colors"
+                >
+                  Admin Dashboard
+                </Link>
+              )}
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Get Started */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4 text-white">Get Started</h3>
+        <p className="text-slate-400 mb-6 text-sm">
+          Ready to experience the future of development?
+        </p>
+        <Link to={createPageUrl("StartProject")}>
+          <Button className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold hover:from-cyan-300 hover:to-blue-400 transition-all duration-300 hover:scale-105">
+            Start Your Project
+          </Button>
+        </Link>
+      </div>
+
+      {/* Contact */}
+<div>
+  <h3 className="text-lg font-semibold mb-4 text-white">Contact</h3>
+  <div className="space-y-3 text-slate-400 text-sm">
+    <div className="flex items-center space-x-2">
+      <Mail className="w-4 h-4 text-cyan-400" />
+      <p>info@feelize.com</p>
+    </div>
+    <div className="flex items-center space-x-2">
+      <Phone className="w-4 h-4 text-cyan-400" />
+      <p>800-227-9944</p>
+    </div>
+    <div className="flex items-center space-x-2">
+      <MapPin className="w-4 h-4 text-cyan-400" />
+      <p>New York City, USA</p>
+    </div>
+  </div>
+</div>
+
+    </div>
+
+    <div className="border-t border-white/10 pt-8 mt-8 text-center">
+      <p className="text-slate-400 text-sm">
+        &copy; 2025 Feelize. Crafting the future, one project at a time.
+      </p>
+    </div>
+  </div>
+</footer>
+
     </div>
   );
 }
