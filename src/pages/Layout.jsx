@@ -6,6 +6,7 @@ import { Sparkles, Menu, X, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { User } from "@/api/entities";
+import flogo from '../public/flogo.png';
 
 const navigationItems = [
   { name: "Home", url: createPageUrl("Home") },
@@ -186,16 +187,17 @@ export default function Layout({ children, currentPageName }) {
             <div className="flex justify-between items-center">
               {/* Logo */}
               <Link to={createPageUrl("Home")} className="flex items-center space-x-3 group">
-                <div className="relative">
-                  <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg group-hover:shadow-cyan-500/50 transition-all duration-300 group-hover:scale-110">
-                    <Sparkles className="w-6 h-6 text-white animate-pulse" />
-                  </div>
-                  <div className="absolute -inset-2 bg-gradient-to-r from-cyan-400 to-purple-600 rounded-xl opacity-20 group-hover:opacity-40 blur-xl transition-all duration-300" />
-                </div>
-                <span className="text-2xl font-bold text-white">
-                  Feelize
-                </span>
-              </Link>
+  <div className="relative w-10 h-10">
+   <img
+  src={flogo}
+  alt="Feelize Logo"
+  className="w-full h-full object-cover rounded-xl transition-all duration-300 group-hover:scale-110"
+/>
+
+  </div>
+  <span className="text-2xl font-bold text-white">Feelize</span>
+</Link>
+
 
               {/* Desktop Navigation */}
               <div className="hidden md:flex space-x-8">
@@ -361,9 +363,13 @@ export default function Layout({ children, currentPageName }) {
       {/* Brand */}
       <div>
         <div className="flex items-center space-x-3 mb-6">
-          <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-            <Sparkles className="w-6 h-6 text-white" />
-          </div>
+            <div className="w-10 h-10 relative">
+      <img
+        src={flogo} // same import as in header: import flogo from '../public/flogo.png'
+        alt="Feelize Logo"
+        className="w-full h-full object-cover rounded-xl transition-all duration-300"
+      />
+    </div>
           <span className="text-2xl font-bold text-white">Feelize</span>
         </div>
         <p className="text-slate-400 mb-4 text-sm leading-relaxed">
@@ -429,7 +435,7 @@ export default function Layout({ children, currentPageName }) {
     </div>
     <div className="flex items-center space-x-2">
       <Phone className="w-4 h-4 text-cyan-400" />
-      <p>800-227-9944</p>
+      <p>(800) 227-9944</p>
     </div>
     <div className="flex items-center space-x-2">
       <MapPin className="w-4 h-4 text-cyan-400" />
