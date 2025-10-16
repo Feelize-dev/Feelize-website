@@ -11,12 +11,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { 
-  Send, 
-  Paperclip, 
-  Bot, 
-  User as UserIcon, 
-  FileText, 
+import {
+  Send,
+  Paperclip,
+  Bot,
+  User as UserIcon,
+  FileText,
   Image as ImageIcon,
   Check,
   Loader2,
@@ -32,6 +32,9 @@ import {
   Target,
   Zap
 } from "lucide-react";
+import { signInWithGooglePopup } from "@/config/firebaseConfig";
+import axios from "axios";
+
 
 export default function StartProjectPage() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -76,15 +79,40 @@ export default function StartProjectPage() {
 
   const handleLogin = async () => {
     try {
-      await User.loginWithRedirect(window.location.href);
+
+      const result = await signInWithGooglePopup();
+
+      if (result) {
+
+        setCurrentUser(result.user);
+      }
+
+      const token = await result.user.getIdToken();
+      console.log(token);
+      
+
+      const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/user/login`, {
+
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
+      console.log("verification response", res);
     } catch (error) {
-      console.error("Login error:", error);
+
+      console.error("Google Sign-in or verification failed:", error);
     }
+    // try {
+
+
+    //   await User.loginWithRedirect(window.location.href);
+    // } catch (error) {
+    //   console.error("Login error:", error);
+    // }
   };
 
   const handleFileUpload = async (files) => {
     if (!files || files.length === 0) return;
-    
+
     const uploadPromises = Array.from(files).map(async (file) => {
       try {
         const { file_url } = await UploadFile({ file });
@@ -143,7 +171,7 @@ export default function StartProjectPage() {
       const project = await ProjectBrief.create(briefData);
       setCreatedProject(project);
       setCurrentStep('report');
-      
+
     } catch (error) {
       console.error("Processing error:", error);
       setCurrentStep('form'); // Go back to form on error
@@ -175,7 +203,7 @@ export default function StartProjectPage() {
                 <p className="text-slate-300 text-sm">Sign in to start building your project with our AI assistant</p>
               </div>
 
-              <Button 
+              <Button
                 onClick={handleLogin}
                 className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold py-3 rounded-xl"
               >
@@ -185,7 +213,7 @@ export default function StartProjectPage() {
 
               <div className="mt-6 pt-6 border-t border-slate-600/30 text-center">
                 <p className="text-slate-400 text-xs">
-                  
+
                 </p>
               </div>
             </CardContent>
@@ -214,7 +242,7 @@ export default function StartProjectPage() {
               </div>
               <CardTitle className="text-xl text-slate-900">Project Details</CardTitle>
             </CardHeader>
-            
+
             <CardContent className="p-8">
               <form onSubmit={handleFormSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
@@ -227,7 +255,7 @@ export default function StartProjectPage() {
                       required
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
                     <Input
@@ -249,7 +277,7 @@ export default function StartProjectPage() {
                       placeholder="Your company name"
                     />
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Project Type</label>
                     <Select value={projectData.project_type} onValueChange={(value) => setProjectData(prev => ({ ...prev, project_type: value }))}>
@@ -295,7 +323,7 @@ export default function StartProjectPage() {
                       </SelectContent>
                     </Select>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">Timeline</label>
                     <Input
@@ -333,7 +361,7 @@ export default function StartProjectPage() {
                     <p className="text-slate-600">Drop files here or click to upload</p>
                     <p className="text-slate-400 text-xs mt-1">Images, PDFs, documents welcome</p>
                   </div>
-                  
+
                   {uploadedFiles.length > 0 && (
                     <div className="mt-4 space-y-2">
                       {uploadedFiles.map((file, index) => (
@@ -347,8 +375,8 @@ export default function StartProjectPage() {
                   )}
                 </div>
 
-                <Button 
-                  type="submit" 
+                <Button
+                  type="submit"
                   disabled={isProcessing || !projectData.project_description}
                   className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 text-lg rounded-xl"
                 >
@@ -407,7 +435,7 @@ export default function StartProjectPage() {
 
           {/* Report Content */}
           <div className="grid lg:grid-cols-3 gap-8">
-            
+
             {/* Main Report */}
             <div className="lg:col-span-2 space-y-6">
               <Card className="border-0 shadow-lg rounded-2xl">
@@ -447,7 +475,7 @@ export default function StartProjectPage() {
                       {projectData.project_type?.replace('_', ' ').toUpperCase()}
                     </Badge>
                   </div>
-                  
+
                   <div>
                     <h4 className="font-semibold text-slate-900 mb-1">Budget Range</h4>
                     <div className="flex items-center gap-2">
@@ -455,7 +483,7 @@ export default function StartProjectPage() {
                       <span className="text-slate-700">{projectData.budget_range?.replace('_', ' ')}</span>
                     </div>
                   </div>
-                  
+
                   <div>
                     <h4 className="font-semibold text-slate-900 mb-1">Timeline</h4>
                     <div className="flex items-center gap-2">
@@ -463,7 +491,7 @@ export default function StartProjectPage() {
                       <span className="text-slate-700">{projectData.timeline || 'To be discussed'}</span>
                     </div>
                   </div>
-                  
+
                   <div>
                     <h4 className="font-semibold text-slate-900 mb-1">Target Audience</h4>
                     <div className="flex items-center gap-2">
@@ -486,14 +514,14 @@ export default function StartProjectPage() {
                       </div>
                       <span className="text-sm text-slate-700">Project analysis completed</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
                       <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
                         2
                       </div>
                       <span className="text-sm text-slate-700">Awaiting team review</span>
                     </div>
-                    
+
                     <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
                       <div className="w-6 h-6 bg-slate-300 rounded-full flex items-center justify-center text-white text-xs font-bold">
                         3
@@ -509,9 +537,9 @@ export default function StartProjectPage() {
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
                     </Link>
-                    
-                    <Button 
-                      variant="outline" 
+
+                    <Button
+                      variant="outline"
                       className="w-full"
                       onClick={() => {
                         setCurrentStep('welcome');
