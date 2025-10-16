@@ -88,8 +88,10 @@ export default function StartProjectPage() {
       }
 
       const token = await result.user.getIdToken();
+      console.log(token);
+      
 
-      const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/user/verify`, {
+      const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/user/login`, {
 
         headers: { Authorization: `Bearer ${token}` }
       })

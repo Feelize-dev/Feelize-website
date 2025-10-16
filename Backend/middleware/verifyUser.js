@@ -17,7 +17,7 @@ export const verifyUserWithToken = async (req, res, next) => {
     try {
 
         const decodedToken = await admin.auth().verifyIdToken(token);
-        req.body = decodedToken;
+        console.log("User", decodedToken.email, " is successfully verified");
         next();
 
     } catch (error) {
@@ -26,7 +26,7 @@ export const verifyUserWithToken = async (req, res, next) => {
 
         res.status(401).json({
 
-            message: "",
+            message: "Token expired",
             success: false,
             data: error
         })

@@ -2,8 +2,10 @@ import mongoose from "mongoose";
 
 const userSchema = new mongoose.Schema(
   {
-    user_email: { type: String, required: true, unique: true },
-    full_name: { type: String, required: true },
+    uid: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true },
+    name: { type: String, required: true },
+    picture: { type: String },
     access_level: {
       type: String,
       enum: ["junior", "mid-level", "senior", "lead"],
