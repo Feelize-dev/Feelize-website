@@ -32,8 +32,9 @@ import {
   Target,
   Zap
 } from "lucide-react";
-import { signInWithGooglePopup } from "@/config/firebaseConfig";
+import { auth, signInWithGooglePopup } from "@/config/firebaseConfig";
 import axios from "axios";
+import { onAuthStateChanged } from "firebase/auth";
 
 
 export default function StartProjectPage() {
@@ -59,7 +60,23 @@ export default function StartProjectPage() {
 
   useEffect(() => {
     checkAuth();
+
   }, []);
+
+
+  useEffect(() => {
+    // Subscribe to auth changes ONCE
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setCurrentUser(user); // or true, depending on what you need
+      } else {
+        setCurrentUser(null);
+      }
+    });
+
+    // Cleanup listener when component unmounts
+    return () => unsubscribe();
+  }, []); // 👈 empty dependency array = only runs once
 
   const checkAuth = async () => {
     try {
@@ -89,7 +106,7 @@ export default function StartProjectPage() {
 
       const token = await result.user.getIdToken();
       console.log(token);
-      
+
 
       const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/user/login`, {
 
@@ -101,14 +118,8 @@ export default function StartProjectPage() {
 
       console.error("Google Sign-in or verification failed:", error);
     }
-    // try {
-
-
-    //   await User.loginWithRedirect(window.location.href);
-    // } catch (error) {
-    //   console.error("Login error:", error);
-    // }
   };
+
 
   const handleFileUpload = async (files) => {
     if (!files || files.length === 0) return;
@@ -208,7 +219,7 @@ export default function StartProjectPage() {
                 className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold py-3 rounded-xl"
               >
                 <LogIn className="w-4 h-4 mr-2" />
-                Coming soon!!
+                Sign In to Continue
               </Button>
 
               <div className="mt-6 pt-6 border-t border-slate-600/30 text-center">
