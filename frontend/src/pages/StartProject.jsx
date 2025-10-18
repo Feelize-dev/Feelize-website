@@ -63,12 +63,11 @@ export default function StartProjectPage() {
 
   }, []);
 
-
   useEffect(() => {
-    // Subscribe to auth changes ONCE
+    
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        setCurrentUser(user); // or true, depending on what you need
+        setCurrentUser(user); 
       } else {
         setCurrentUser(null);
       }
@@ -76,7 +75,7 @@ export default function StartProjectPage() {
 
     // Cleanup listener when component unmounts
     return () => unsubscribe();
-  }, []); // 👈 empty dependency array = only runs once
+  }, []); 
 
   const checkAuth = async () => {
     try {
