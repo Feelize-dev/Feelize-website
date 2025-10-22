@@ -34,7 +34,7 @@ import {
 } from "lucide-react";
 import { auth, signInWithGooglePopup } from "@/config/firebaseConfig";
 import axios from "axios";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 
 export default function StartProjectPage() {
@@ -75,7 +75,7 @@ export default function StartProjectPage() {
 
     // Cleanup listener when component unmounts
     return () => unsubscribe();
-  }, []); 
+  }, [currentUser]);
 
   const checkAuth = async () => {
     try {
@@ -107,12 +107,12 @@ export default function StartProjectPage() {
       console.log(token);
 
 
-      const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/user/login`, {
+      const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/user/sessionLogin`,
 
-        headers: { Authorization: `Bearer ${token}` }
-      })
-
-      console.log("verification response", res);
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        })
     } catch (error) {
 
       console.error("Google Sign-in or verification failed:", error);
@@ -241,6 +241,7 @@ export default function StartProjectPage() {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-slate-900 mb-2">Let's Build Your Project</h1>
             <p className="text-slate-600">Tell us about your vision and we'll create the perfect plan</p>
+            <button onClick={userSignOut}>Log out</button>
           </div>
 
           <Card className="border-0 shadow-lg rounded-2xl">
