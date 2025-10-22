@@ -17,7 +17,7 @@ export const verifyUserWithToken = async (req, res, next) => {
     try {
 
         const decodedToken = await admin.auth().verifyIdToken(token);
-        console.log("User", decodedToken.email, " is successfully verified");
+        console.log("User with email id", decodedToken.email, " is successfully verified");
         next();
 
     } catch (error) {
