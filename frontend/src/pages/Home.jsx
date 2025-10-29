@@ -640,7 +640,7 @@ export default function HomePage() {
           </p>
           
           <Link to={createPageUrl("StartProject")}>
-            <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:from-purple-400 hover:via-pink-400 hover:to-cyan-300 text-white px-12 sm:px-16 py-6 sm:py-8 text-lg sm:text-xl font-bold rounded-2xl sm:rounded-3xl shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/50 transition-all duration-500 hover:scale-110 animate-in slide-in-from-bottom duration-1000 delay-500">
+            <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:from-purple-400 hover:via-pink-400 hover:to-cyan-300 text-white px-12 sm:px-16 py-6 sm:py-8 text-lg sm:text-xl font-bold rounded-2xl sm:rounded-3xl shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/50 transition-all duration-500 hover:scale-110 animate-in slide-in-from-bottom delay-500">
               <Sparkles className="w-5 sm:w-6 h-5 sm:h-6 mr-2 sm:mr-3 animate-pulse" />
               Chat With Our AI Now
             </Button>
