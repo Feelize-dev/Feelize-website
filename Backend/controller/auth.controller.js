@@ -20,7 +20,7 @@ export const createNewUser = async (req, res) => {
         if (userExist) {
 
             console.log("User with ", decodedToken.email, "has logged in again")
-            const sessionCookie = createSession(token)
+            const sessionCookie = await createSession(token)
             res.cookie("session", sessionCookie, cookieSafetyMeasures);
             return res.status(200).json({
                 message: "User already exists",
