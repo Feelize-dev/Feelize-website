@@ -15,5 +15,6 @@ export const createSession = async (token) => {
 
     const expiresIn = 14 * 24 * 60 * 60 * 1000;
 
-    await admin.auth().createSessionCookie(token, { expiresIn });
+    const sessionCookie = await admin.auth().createSessionCookie(token, { expiresIn });
+    return sessionCookie
 }

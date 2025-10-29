@@ -1,6 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { ProjectBrief } from "@/api/entities";
-import { User } from "@/api/entities";
 import { InvokeLLM, UploadFile } from "@/api/integrations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,11 +34,11 @@ import {
 import { auth, signInWithGooglePopup } from "@/config/firebaseConfig";
 import axios from "axios";
 import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useUser } from "@/hooks/useUser";
 
 
 export default function StartProjectPage() {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isLoadingAuth, setIsLoadingAuth] = useState(true);
+  // const [currentUser, setCurrentUser] = useState(null);
   const [currentStep, setCurrentStep] = useState('welcome'); // welcome, form, processing, report
   const [projectData, setProjectData] = useState({
     client_name: "",
@@ -58,50 +57,28 @@ export default function StartProjectPage() {
   const [createdProject, setCreatedProject] = useState(null);
   const fileInputRef = useRef(null);
 
-  useEffect(() => {
-    checkAuth();
-
-  }, []);
+  const { data: user, isLoading, isError } = useUser();
 
   useEffect(() => {
-    
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setCurrentUser(user); 
-      } else {
-        setCurrentUser(null);
-      }
-    });
-
-    // Cleanup listener when component unmounts
-    return () => unsubscribe();
-  }, [currentUser]);
-
-  const checkAuth = async () => {
-    try {
-      const user = await User.me();
-      setCurrentUser(user);
+    if (user) {
       setProjectData(prev => ({
         ...prev,
-        client_name: user.full_name || "",
+        client_name: user.displayName || "",
         client_email: user.email || ""
       }));
-    } catch (error) {
-      setCurrentUser(null);
-    } finally {
-      setIsLoadingAuth(false);
     }
-  };
+  }, [user]);
+
 
   const handleLogin = async () => {
     try {
 
       const result = await signInWithGooglePopup();
 
-      if (result) {
+      // if (result) {
 
-        setCurrentUser(result.user);
-      }
+      //   setCurrentUser(result.user);
+      // }
 
       const token = await result.user.getIdToken();
       console.log(token);
@@ -190,7 +167,7 @@ export default function StartProjectPage() {
     }
   };
 
-  if (isLoadingAuth) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
         <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
@@ -199,7 +176,7 @@ export default function StartProjectPage() {
   }
 
   // Login Required Screen
-  if (!currentUser) {
+  if (!user) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
         <div className="max-w-md w-full">
@@ -241,7 +218,6 @@ export default function StartProjectPage() {
           <div className="text-center mb-8">
             <h1 className="text-3xl font-bold text-slate-900 mb-2">Let's Build Your Project</h1>
             <p className="text-slate-600">Tell us about your vision and we'll create the perfect plan</p>
-            <button onClick={userSignOut}>Log out</button>
           </div>
 
           <Card className="border-0 shadow-lg rounded-2xl">
