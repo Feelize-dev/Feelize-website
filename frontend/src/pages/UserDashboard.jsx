@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
-import { ProjectBrief } from "@/api/entities";
-import { User } from "@/api/entities";
+import { projectsApi, messagesApi } from "@/api/apiClient";
+import { useAuth } from '@/contexts/useAuth';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -67,32 +67,57 @@ const AIAnalysisReport = ({ analysis, isFullView }) => {
 
 export default function UserDashboard() {
   const [projects, setProjects] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
+  const { user: authUser } = useAuth();
   const [isLoading, setIsLoading] = useState(true);
   const [selectedProject, setSelectedProject] = useState(null);
   const [newMessage, setNewMessage] = useState("");
-  // Removed: const [showFullAnalysis, setShowFullAnalysis] = useState(false); // No longer needed as we navigate to a new page for full analysis
+  const [messages, setMessages] = useState([]);
+  const [isSendingMessage, setIsSendingMessage] = useState(false);
+
+  // Load user data and projects
+  const { user: currentUser } = useAuth();
 
   useEffect(() => {
-    const loadUserData = async () => {
-      try {
-        const user = await User.me();
-        setCurrentUser(user);
+    const loadProjects = async () => {
+      if (!currentUser) {
+        window.location.href = createPageUrl("StartProject");
+        return;
+      }
 
-        // Get projects created by current user
-        const userProjects = await ProjectBrief.filter({ created_by: user.email }, '-created_date');
+      try {
+        // Get user's projects sorted by created date
+        const userProjects = await projectsApi.list({ 
+          sort: '-created_date',
+          limit: 50 // Adjust limit as needed
+        });
         setProjects(userProjects);
       } catch (error) {
-        console.error("Error loading user data:", error);
-        // Redirect to login if not authenticated
-        window.location.href = createPageUrl("StartProject");
+        console.error("Error loading projects:", error);
       } finally {
         setIsLoading(false);
       }
     };
 
-    loadUserData();
-  }, []);
+    loadProjects();
+  }, [currentUser]);
+
+  // Load messages when a project is selected
+  useEffect(() => {
+    const loadMessages = async () => {
+      if (!selectedProject) return;
+      
+      try {
+        const projectMessages = await messagesApi.list(selectedProject.id, {
+          limit: 50 // Adjust limit as needed
+        });
+        setMessages(projectMessages);
+      } catch (error) {
+        console.error("Error loading messages:", error);
+      }
+    };
+
+    loadMessages();
+  }, [selectedProject?.id]);
 
   const getStatusInfo = (status) => {
     switch (status) {
@@ -393,16 +418,61 @@ export default function UserDashboard() {
                       </h4>
 
                       <div className="space-y-4 mb-4 max-h-60 overflow-y-auto">
-                        <div className="bg-slate-50 p-4 rounded-lg">
-                          <div className="flex items-center gap-2 mb-2">
-                            <div className="w-6 h-6 bg-indigo-500 rounded-full flex items-center justify-center">
-                              <Users className="w-3 h-3 text-white" />
-                            </div>
-                            <span className="text-sm font-medium text-slate-900">Feelize Team</span>
-                            <span className="text-xs text-slate-500">2 days ago</span>
+                        {messages.length === 0 ? (
+                          <div className="text-center py-8 text-slate-500">
+                            <MessageSquare className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                            <p className="text-sm">No messages yet. Start the conversation!</p>
                           </div>
-                          <p className="text-sm text-slate-700">Thank you for your project submission! Our team is reviewing your requirements and will get back to you within 24-48 hours with a detailed proposal.</p>
-                        </div>
+                        ) : (
+                          messages.map((message) => (
+                            <div 
+                              key={message.id}
+                              className={`p-4 rounded-lg ${
+                                message.sender_type === 'user' 
+                                  ? 'bg-indigo-50 ml-8' 
+                                  : 'bg-slate-50 mr-8'
+                              }`}
+                            >
+                              <div className="flex items-center gap-2 mb-2">
+                                <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
+                                  message.sender_type === 'user' 
+                                    ? 'bg-indigo-500' 
+                                    : 'bg-slate-500'
+                                }`}>
+                                  {message.sender_type === 'user' ? (
+                                    <Users className="w-3 h-3 text-white" />
+                                  ) : (
+                                    <MessageSquare className="w-3 h-3 text-white" />
+                                  )}
+                                </div>
+                                <span className="text-sm font-medium text-slate-900">
+                                  {message.sender_type === 'user' ? 'You' : 'Feelize Team'}
+                                </span>
+                                <span className="text-xs text-slate-500">
+                                  {new Date(message.created_at).toLocaleDateString()} at{' '}
+                                  {new Date(message.created_at).toLocaleTimeString()}
+                                </span>
+                              </div>
+                              <p className="text-sm text-slate-700">{message.content}</p>
+                              {message.attachments?.length > 0 && (
+                                <div className="mt-2 flex flex-wrap gap-2">
+                                  {message.attachments.map((attachment, index) => (
+                                    <a
+                                      key={index}
+                                      href={attachment.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="inline-flex items-center gap-1 text-xs text-indigo-600 hover:text-indigo-800 bg-white px-2 py-1 rounded border border-indigo-200"
+                                    >
+                                      <FileText className="w-3 h-3" />
+                                      {attachment.name}
+                                    </a>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          ))
+                        )}
                       </div>
 
                       <div className="flex gap-2">
@@ -412,13 +482,33 @@ export default function UserDashboard() {
                           onChange={(e) => setNewMessage(e.target.value)}
                           className="flex-1"
                           rows={3}
+                          disabled={isSendingMessage}
                         />
                         <Button
                           size="sm"
-                          disabled={!newMessage.trim()}
+                          disabled={!newMessage.trim() || isSendingMessage}
                           className="self-end bg-indigo-600 hover:bg-indigo-700"
+                          onClick={async () => {
+                            if (!selectedProject || !newMessage.trim()) return;
+                            
+                            setIsSendingMessage(true);
+                            try {
+                              const sentMessage = await messagesApi.send(selectedProject.id, newMessage.trim());
+                              setMessages(prev => [...prev, sentMessage]);
+                              setNewMessage(""); // Clear input after sending
+                            } catch (error) {
+                              console.error("Error sending message:", error);
+                              // You might want to show an error toast here
+                            } finally {
+                              setIsSendingMessage(false);
+                            }
+                          }}
                         >
-                          <Send className="w-4 h-4" />
+                          {isSendingMessage ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Send className="w-4 h-4" />
+                          )}
                         </Button>
                       </div>
                     </div>

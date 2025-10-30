@@ -5,7 +5,7 @@ import { createPageUrl } from "@/utils";
 import { Sparkles, Menu, X, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { User } from "@/api/entities";
+import { useAuth } from '@/contexts/useAuth';
 import flogo from '../public/flogo.png';
 
 const navigationItems = [
@@ -21,29 +21,14 @@ export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const { user: currentUser, loading: isLoadingUser } = useAuth();
 
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
-    const loadUser = async () => {
-      try {
-        const user = await User.me();
-        setCurrentUser(user);
-      } catch (error) {
-        // User not logged in or session expired
-        setCurrentUser(null);
-      } finally {
-        setIsLoadingUser(false);
-      }
-    };
-
     window.addEventListener('mousemove', handleMouseMove);
-    loadUser();
-
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 

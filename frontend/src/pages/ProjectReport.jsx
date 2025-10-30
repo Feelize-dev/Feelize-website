@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { ProjectBrief } from "@/api/entities";
-import { InvokeLLM } from "@/api/integrations";
+import axios from "axios";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -16,6 +15,9 @@ import {
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import { renderToString } from 'react-dom/server';
 
 export default function ProjectReport() {
   const [project, setProject] = useState(null);
@@ -27,84 +29,19 @@ export default function ProjectReport() {
   const generateProfessionalReport = useCallback(async (projectData) => {
     setIsGenerating(true);
     try {
-      const htmlReport = await InvokeLLM({
-        prompt: `
-          You are a world-class UI/UX designer and report analyst from a top-tier consulting firm. Create a stunning, professional HTML report with perfect 2025 design standards.
+      // Call backend to generate the report (backend will call the LLM and save the HTML)
+      const res = await axios.post(
+        `${import.meta.env.VITE_SERVER_API_ENDPOINT}/user/project/${projectData.id}/generate-report`,
+        {},
+        { withCredentials: true }
+      );
 
-          **Project Data:**
-          - Client: ${projectData.client_name}
-          - Company: ${projectData.company_name || 'N/A'}
-          - Project Type: ${projectData.project_type}
-          - Budget: ${projectData.budget_range}
-          - Timeline: ${projectData.timeline}
-          - Description: ${projectData.project_description}
-
-          **AI Analysis Content:**
-          ${projectData.ai_analysis}
-
-          **CRITICAL DESIGN REQUIREMENTS:**
-
-          1. **Perfect Typography & Sizing:**
-             - Use system fonts: font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif
-             - Headers: h1 (32px), h2 (24px), h3 (20px), h4 (18px)
-             - Body text: 16px with 1.6 line height
-             - Numbers in charts: font-size: 36px, font-weight: bold
-
-          2. **Working Progress Circles:**
-             Create functional SVG progress circles that show actual percentages (80% feasibility, 65% complexity, 90% success probability).
-             Use this exact SVG code structure for each metric:
-
-             <div style="text-align: center; margin: 20px;">
-               <svg width="120" height="120" style="transform: rotate(-90deg);">
-                 <circle cx="60" cy="60" r="50" stroke="#e5e7eb" stroke-width="10" fill="none"/>
-                 <circle cx="60" cy="60" r="50" stroke="#00d4ff" stroke-width="10" fill="none" 
-                         stroke-dasharray="314" stroke-dashoffset="63" stroke-linecap="round"/>
-               </svg>
-               <div style="margin-top: -75px; font-size: 28px; font-weight: bold; color: #1e293b;">80%</div>
-               <div style="font-size: 14px; color: #64748b; margin-top: 5px;">Feasibility Score</div>
-             </div>
-
-          3. **Modern Color Palette:**
-             - Primary: #0A2A4E (dark blue)
-             - Accent: #00D4FF (cyan)
-             - Success: #10B981 (green)
-             - Warning: #F59E0B (amber)
-             - Danger: #EF4444 (red)
-             - Background: #F8FAFC (light gray)
-             - Text: #1E293B (dark gray)
-
-          4. **Professional Layout Structure:**
-             - Header with gradient background
-             - Executive summary with key metrics (use the SVG circles)
-             - Technical Blueprint section with icons
-             - Timeline with visual milestones
-             - Risk assessment with color-coded tags
-             - Budget breakdown table
-             - Recommendations in callout boxes
-
-          5. **Responsive Design:**
-             - Use CSS Grid and Flexbox
-             - Mobile-first approach with media queries
-             - Max-width: 1200px for main content
-
-          6. **Visual Enhancements:**
-             - Box shadows for depth
-             - Subtle gradients
-             - Proper spacing (16px, 24px, 32px increments)
-             - Icons using Unicode symbols
-             - Tables with alternating row colors
-
-          **IMPORTANT:** Return ONLY the complete HTML document with all CSS inline in the head section. No markdown, no explanations, just pure HTML that renders perfectly.
-
-          Make this look like a premium consulting report worth thousands of dollars.
-        `,
-        response_json_schema: null
-      });
-
-      // Save the generated report to the project entity
-      await ProjectBrief.update(projectData.id, { professional_report_html: htmlReport });
-
-      setGeneratedHTML(htmlReport);
+      if (res?.data?.success) {
+        const htmlReport = res.data.data.professional_report_html;
+        setGeneratedHTML(htmlReport);
+      } else {
+        throw new Error('Backend failed to generate report');
+      }
     } catch (error) {
       console.error("Error generating report:", error);
       setError("Failed to generate professional report");
@@ -119,22 +56,22 @@ export default function ProjectReport() {
       try {
         const urlParams = new URLSearchParams(window.location.search);
         const projectId = urlParams.get('id');
-        
+
         if (!projectId) {
           setError("No project ID provided");
           return;
         }
 
-        const projects = await ProjectBrief.list();
-        const foundProject = projects.find(p => p.id === projectId);
-        
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/user/project/${projectId}`, { withCredentials: true });
+        const foundProject = res?.data?.data;
+
         if (!foundProject) {
           setError("Project not found");
           return;
         }
 
         setProject(foundProject);
-        
+
         if (foundProject.professional_report_html) {
           // If report already exists, just display it
           setGeneratedHTML(foundProject.professional_report_html);
@@ -166,7 +103,167 @@ export default function ProjectReport() {
   };
 
   const handleDownload = () => {
-    const blob = new Blob([generatedHTML], { type: 'text/html' });
+    const reportHtml = renderToString(
+      <div className="max-w-4xl mx-auto py-8 px-6">
+        <style dangerouslySetInnerHTML={{__html: `
+          /* Enhanced styling for downloaded report */
+          :root {
+            --primary-color: #2563eb;
+            --background-color: #ffffff;
+            --text-color: #334155;
+            --heading-color: #0f172a;
+            --border-color: #e2e8f0;
+            --code-bg: #f8fafc;
+          }
+          
+          body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.8;
+            color: var(--text-color);
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+            background: var(--background-color);
+          }
+
+          h1, h2, h3, h4, h5, h6 {
+            color: var(--heading-color);
+            font-weight: 700;
+            line-height: 1.3;
+            margin: 2em 0 1em;
+          }
+
+          h1 {
+            font-size: 2.5em;
+            margin-top: 0;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 0.5em;
+          }
+
+          h2 { font-size: 1.75em; }
+          h3 { font-size: 1.5em; }
+          h4 { font-size: 1.25em; }
+
+          p {
+            margin: 1.5em 0;
+            font-size: 1.125rem;
+          }
+
+          ul, ol {
+            margin: 1.5em 0;
+            padding-left: 2em;
+          }
+
+          li {
+            margin: 0.75em 0;
+            line-height: 1.6;
+          }
+
+          code {
+            background: var(--code-bg);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.9em;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            color: var(--primary-color);
+          }
+
+          pre {
+            background: var(--code-bg);
+            padding: 1.5em;
+            border-radius: 8px;
+            overflow-x: auto;
+            border: 1px solid var(--border-color);
+            margin: 1.5em 0;
+          }
+
+          pre code {
+            background: none;
+            padding: 0;
+            font-size: 0.95em;
+            color: inherit;
+          }
+
+          blockquote {
+            border-left: 4px solid var(--primary-color);
+            margin: 2em 0;
+            padding: 1em 2em;
+            font-style: italic;
+            background: var(--code-bg);
+            border-radius: 0 8px 8px 0;
+          }
+
+          table {
+            border-collapse: collapse;
+            width: 100%;
+            margin: 2em 0;
+            font-size: 0.95em;
+          }
+
+          th, td {
+            border: 1px solid var(--border-color);
+            padding: 1em;
+            text-align: left;
+          }
+
+          th {
+            background: var(--code-bg);
+            font-weight: 600;
+          }
+
+          img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 2em auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          }
+
+          a {
+            color: var(--primary-color);
+            text-decoration: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s ease;
+          }
+
+          a:hover {
+            border-bottom-color: var(--primary-color);
+          }
+
+          @media print {
+            body {
+              max-width: none;
+              padding: 2rem;
+            }
+
+            pre, code {
+              white-space: pre-wrap;
+              word-wrap: break-word;
+            }
+          }
+        `}} />
+        <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          {generatedHTML}
+        </ReactMarkdown>
+      </div>
+    );
+
+    const fullHtml = `
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>${project?.company_name || project?.client_name || 'Project'} Analysis Report</title>
+      </head>
+      <body>
+        ${reportHtml}
+      </body>
+      </html>
+    `;
+
+    const blob = new Blob([fullHtml], { type: 'text/html' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -289,14 +386,22 @@ export default function ProjectReport() {
             </Card>
           ) : generatedHTML ? (
             <Card className="border-0 shadow-2xl overflow-hidden">
-              <div 
-                className="report-content bg-white"
-                dangerouslySetInnerHTML={{ __html: generatedHTML }}
-                style={{
-                  minHeight: '100vh',
-                  fontFamily: 'system-ui, -apple-system, sans-serif'
-                }}
-              />
+              <div className="report-content bg-white p-8">
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm]}
+                  className="prose prose-slate lg:prose-lg max-w-none prose-headings:font-semibold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-gray-600 prose-li:text-gray-600 prose-pre:bg-slate-100 prose-pre:rounded-lg prose-code:text-blue-600 prose-blockquote:border-l-4 prose-blockquote:border-blue-500 prose-blockquote:pl-4 prose-blockquote:italic prose-table:border-collapse prose-td:border prose-td:p-2 prose-th:border prose-th:p-2 prose-th:bg-slate-100"
+                  components={{
+                    code: ({inline, className, children, ...props}) => {
+                      return <code className={`${className} ${inline ? 'bg-slate-100 rounded px-1' : ''}`} {...props}>{children}</code>
+                    },
+                    a: ({children, ...props}) => {
+                      return <a className="text-blue-600 hover:text-blue-800 underline" {...props}>{children}</a>
+                    }
+                  }}
+                >
+                  {generatedHTML}
+                </ReactMarkdown>
+              </div>
             </Card>
           ) : (
             <Card className="border-0 shadow-lg">
@@ -315,8 +420,8 @@ export default function ProjectReport() {
         </div>
       </div>
 
-      {/* Print Styles */}
-      <style jsx global>{`
+      {/* Print & report styles */}
+      <style>{`
         @media print {
           body * {
             visibility: hidden;
@@ -331,49 +436,91 @@ export default function ProjectReport() {
             width: 100%;
             background: white !important;
           }
-          
-          /* Hide non-report elements when printing */
           nav, header, .sticky, button {
             display: none !important;
           }
         }
-        
-        /* Enhanced report styling fallback */
+
+        /* Basic prose styles so Markdown renders nicely without Tailwind typography plugin */
         .report-content {
-          line-height: 1.6;
+          line-height: 1.8;
+          color: #0f172a;
+          font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
         }
-        
-        .report-content h1,
-        .report-content h2,
-        .report-content h3,
-        .report-content h4 {
-          color: #1e293b;
+
+        .report-content .prose {
+          max-width: none;
+        }
+
+        .report-content h1 {
+          font-size: 28px;
+          margin-top: 0;
+          margin-bottom: 0.75rem;
+          color: #0b2545;
+          font-weight: 700;
+        }
+
+        .report-content h2 {
+          font-size: 22px;
+          margin-top: 1.5rem;
+          margin-bottom: 0.5rem;
+          color: #0b3a66;
+          font-weight: 700;
+        }
+
+        .report-content h3 {
+          font-size: 18px;
+          margin-top: 1.25rem;
+          margin-bottom: 0.5rem;
+          color: #0b3a66;
           font-weight: 600;
-          margin-top: 2rem;
-          margin-bottom: 1rem;
         }
-        
+
         .report-content p {
-          color: #475569;
-          margin-bottom: 1rem;
+          color: #334155;
+          margin-bottom: 0.9rem;
+          font-size: 15px;
         }
-        
+
+        .report-content ul,
+        .report-content ol {
+          margin-left: 1.25rem;
+          margin-bottom: 0.9rem;
+        }
+
+        .report-content li {
+          margin-bottom: 0.4rem;
+        }
+
+        .report-content blockquote {
+          border-left: 4px solid #e2e8f0;
+          padding-left: 1rem;
+          color: #475569;
+          margin: 0.75rem 0;
+        }
+
         .report-content table {
           border-collapse: collapse;
           width: 100%;
-          margin: 1.5rem 0;
+          margin: 1rem 0 1.5rem 0;
         }
-        
+
         .report-content th,
         .report-content td {
           border: 1px solid #e2e8f0;
           padding: 0.75rem;
           text-align: left;
         }
-        
+
         .report-content th {
           background-color: #f8fafc;
           font-weight: 600;
+        }
+
+        /* Buttons and header layout fix for small screens */
+        @media (max-width: 640px) {
+          .report-content h1 { font-size: 22px; }
+          .report-content h2 { font-size: 18px; }
         }
       `}</style>
     </div>
