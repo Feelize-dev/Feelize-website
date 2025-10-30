@@ -5,7 +5,6 @@ import user from "../model/user.js";
 export const createNewUser = async (req, res) => {
 
     const authHeader = req.headers.authorization;
-
     const token = authHeader?.split(" ")[1];
     
     try {
@@ -20,7 +19,6 @@ export const createNewUser = async (req, res) => {
 
             console.log("User with ", decodedToken.email, "has logged in again")
             const sessionCookie = await createSession(token)
-            console.log(sessionCookie);
             
             res.cookie("session", sessionCookie, cookieSafetyMeasures);
             return res.status(200).json({
@@ -38,7 +36,7 @@ export const createNewUser = async (req, res) => {
         })
 
         // create a new session using firebase createSessionCookie
-        const sessionCookie = createSession(token)
+        const sessionCookie = await createSession(token)
         res.cookie("session", sessionCookie, cookieSafetyMeasures);
         return res.status(200).json({
 
