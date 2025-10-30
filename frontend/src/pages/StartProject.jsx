@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { ProjectBrief } from "@/api/entities";
+// Using backend API for project creation instead of Base44
 import { InvokeLLM, UploadFile } from "@/api/integrations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -155,9 +155,29 @@ export default function StartProjectPage() {
         status: "completed"
       };
 
-      const project = await ProjectBrief.create(briefData);
-      setCreatedProject(project);
-      setCurrentStep('report');
+      // Send to backend API to persist in MongoDB (session cookie required)
+      try {
+        const apiRes = await axios.post(
+          `${import.meta.env.VITE_SERVER_API_ENDPOINT}/user/project`,
+          briefData,
+          { withCredentials: true }
+        );
+
+        if (apiRes?.data?.success) {
+          setCreatedProject(apiRes.data.data);
+        } else {
+          // fallback: use AI analysis locally in UI
+          setCreatedProject({ ...briefData });
+          console.warn('Backend did not return success for project creation', apiRes?.data);
+        }
+
+        setCurrentStep('report');
+      } catch (apiErr) {
+        console.error('Failed to save project to backend:', apiErr);
+        // still show report to user with local data
+        setCreatedProject({ ...briefData });
+        setCurrentStep('report');
+      }
 
     } catch (error) {
       console.error("Processing error:", error);

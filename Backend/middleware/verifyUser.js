@@ -86,3 +86,45 @@ export const verifySession = async (req, res) => {
         })
     }
 }
+
+// Middleware variant: verifies session cookie and attaches decodedCookie and userInDb to req
+export const verifySessionMiddleware = async (req, res, next) => {
+    try {
+        const sessionCookie = req.cookies.session;
+        if (!sessionCookie) {
+            console.log("failed to find session");
+            return res.status(401).json({
+                message: "No session cookie found — user not authenticated",
+                success: false,
+            });
+        }
+
+        const decodedCookie = await admin.auth().verifySessionCookie(sessionCookie, true);
+        if (!decodedCookie) {
+            return res.status(401).json({
+                message: "Invalid session cookie — user not authenticated",
+                success: false,
+            });
+        }
+
+        const userInDb = await user.findOne({ uid: decodedCookie.uid }).exec();
+        if (!userInDb) {
+            return res.status(401).json({
+                message: "User not found in database",
+                success: false,
+            });
+        }
+
+        // Attach useful data for downstream handlers
+        req.decodedCookie = decodedCookie;
+        req.user = userInDb;
+        return next();
+    } catch (error) {
+        console.error("Session verification middleware failed:", error?.message || error);
+        return res.status(401).json({
+            message: "Failed to verify session",
+            data: error,
+            success: false,
+        });
+    }
+}
