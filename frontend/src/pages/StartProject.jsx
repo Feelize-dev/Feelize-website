@@ -57,7 +57,7 @@ export default function StartProjectPage() {
   const [createdProject, setCreatedProject] = useState(null);
   const fileInputRef = useRef(null);
 
-  const { data: user, isLoading, isError } = useUser();
+  const { data: user, isLoading, refetch } = useUser();
 
   useEffect(() => {
     if (user) {
@@ -74,22 +74,15 @@ export default function StartProjectPage() {
     try {
 
       const result = await signInWithGooglePopup();
-
-      // if (result) {
-
-      //   setCurrentUser(result.user);
-      // }
-
       const token = await result.user.getIdToken();
-      console.log(token);
-
-
+      
       const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/user/sessionLogin`,
 
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         })
+       await refetch();
     } catch (error) {
 
       console.error("Google Sign-in or verification failed:", error);
