@@ -272,30 +272,30 @@ const HomePage = () => {
       {/* Main Content */}
       <div className="relative" style={{ zIndex: 1 }}>
         {/* Hero Section */}
-        <section className="container mx-auto px-10 py-16">
+        <section className="container mx-auto px-10 py-7 md:py-16">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 200 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center text-center gap-8 max-w-6xl mx-auto"
           >
-            <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
+            <Badge className="px-6 py-4 text-sm  md:text-lg rounded-full hover:bg-neutral-300/10 bg-neutral-600/20 border-none">
               <Sparkles className="w-5 h-5 mr-2" />
               ✨ AI-Powered Development
             </Badge>
 
-            <h1 className="text-7xl lg:text-8xl font-normal leading-tight font-['Bricolage_Grotesque']">
+            <h1 className="text-5xl md:text-7xl lg:text-8xl font-normal leading-tight font-['Bricolage_Grotesque']">
               Leverage on the Maximum Potential of AI
             </h1>
 
-            <p className="text-2xl text-gray-400 font-['Istok_Web']">
+            <p className="text-md md:text-2xl text-gray-400 font-['Istok_Web']">
               We deliver MVPs faster and cost effective
             </p>
 
             <Button 
               size="lg"
               onClick={() => setIsContactOpen(true)}
-              className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white px-8 py-6 text-lg rounded-full h-auto"
+              className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white px-6 py-8 md:px-8 md:py-10 text-md rounded-full"
             >
               Start Using AI assistant
             </Button>
