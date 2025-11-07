@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Sparkles, 
-  Star, 
-  ChevronDown, 
+import {
+  Sparkles,
+  Star,
+  ChevronDown,
   ChevronUp,
   Phone,
   Rocket,
@@ -43,10 +43,10 @@ const HomePage = () => {
 
   const handleAiAnalysis = async () => {
     if (!aiInput.trim()) return;
-    
+
     setIsAnalyzing(true);
     setAnalysisResult('');
-    
+
     try {
       if (GEMINI_API_KEY) {
         const response = await axios.post(
@@ -70,7 +70,7 @@ const HomePage = () => {
             }]
           }
         );
-        
+
         const result = response.data.candidates[0].content.parts[0].text;
         setAnalysisResult(result);
       } else {
@@ -279,8 +279,7 @@ const HomePage = () => {
             transition={{ duration: 0.7 }}
             className="flex flex-col items-center text-center gap-8 max-w-6xl mx-auto"
           >
-            <Badge className="px-6 py-4 text-sm  md:text-lg rounded-full hover:bg-neutral-300/10 bg-neutral-600/20 border-none">
-              <Sparkles className="w-5 h-5 mr-2" />
+            <Badge className="px-6 py-4 text-md md:text-lg font-light rounded-full bg-transparent border-2 border-blue-600">
               ✨ AI-Powered Development
             </Badge>
 
@@ -292,10 +291,10 @@ const HomePage = () => {
               We deliver MVPs faster and cost effective
             </p>
 
-            <Button 
+            <Button
               size="lg"
               onClick={() => setIsContactOpen(true)}
-              className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white px-6 py-8 md:px-8 md:py-10 text-md rounded-full"
+              className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white px-6 py-7 md:px-8 md:py-8 text-md rounded-full tracking-wide"
             >
               Start Using AI assistant
             </Button>
@@ -308,7 +307,7 @@ const HomePage = () => {
             <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
               ✨ AI-Optimized Workflow
             </Badge>
-            
+
             <div className="flex justify-between items-start w-full max-w-7xl gap-12">
               <div className="flex-1 space-y-6">
                 <h2 className="text-5xl font-semibold text-white font-['Geist']">
@@ -405,7 +404,7 @@ const HomePage = () => {
                 placeholder="Describe your project idea in detail... What are you trying to build? Who is your target audience? What problems will it solve?"
                 className="w-full min-h-[200px] bg-[#141324] border-gray-700 text-white text-lg resize-none focus:border-purple-500"
               />
-              
+
               <Button
                 onClick={handleAiAnalysis}
                 disabled={isAnalyzing || !aiInput.trim()}
@@ -430,7 +429,7 @@ const HomePage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="bg-[#141324] border border-gray-700 rounded-lg p-8"
                 >
-                  <div 
+                  <div
                     className="prose prose-invert max-w-none"
                     dangerouslySetInnerHTML={{ __html: analysisResult }}
                   />
@@ -551,7 +550,7 @@ const HomePage = () => {
                     ))}
                   </ul>
 
-                  <Button 
+                  <Button
                     onClick={() => setIsContactOpen(true)}
                     className="w-full bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white py-6 text-lg"
                   >
@@ -595,7 +594,7 @@ const HomePage = () => {
                         <ChevronDown className="w-6 h-6 text-gray-400 flex-shrink-0" />
                       )}
                     </button>
-                    
+
                     {openFaqIndex === index && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
@@ -730,14 +729,14 @@ const HomePage = () => {
       </div>
 
       {/* Modals */}
-      <ContactForm 
-        isOpen={isContactOpen} 
-        onClose={() => setIsContactOpen(false)} 
+      <ContactForm
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
       />
 
-      <AIChatbot 
-        isOpen={isChatOpen} 
-        onClose={() => setIsChatOpen(false)} 
+      <AIChatbot
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
       />
     </div>
   );
