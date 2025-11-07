@@ -276,7 +276,7 @@ const HomePage = () => {
           <motion.div
             initial={{ opacity: 0, y: 200 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.7 }}
             className="flex flex-col items-center text-center gap-8 max-w-6xl mx-auto"
           >
             <Badge className="px-6 py-4 text-sm  md:text-lg rounded-full hover:bg-neutral-300/10 bg-neutral-600/20 border-none">
