@@ -1,6 +1,6 @@
 import Layout from "./Layout.jsx";
 
-import Home from "./Home";
+import Home from "./HomeComplete";
 
 import StartProject from "./StartProject";
 

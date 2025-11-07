@@ -6,7 +6,8 @@ import { createPageUrl } from "@/utils";
 import { Menu, X, Gift } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { auth } from "@/config/firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
 
 const navigationItems = [
   { name: "Home", url: createPageUrl("Home") },
@@ -31,12 +32,14 @@ export default function Layout({ children, currentPageName }) {
 
     const loadUser = async () => {
       try {
-        const user = await base44.auth.me();
-        setCurrentUser(user);
+        const unsubscribe = onAuthStateChanged(auth, (user) => {
+          setCurrentUser(user);
+          setIsLoadingUser(false);
+        });
+        return unsubscribe;
       } catch (error) {
         // User not logged in or session expired
         setCurrentUser(null);
-      } finally {
         setIsLoadingUser(false);
       }
     };
@@ -54,7 +57,7 @@ export default function Layout({ children, currentPageName }) {
 
   const handleLogout = async () => {
     try {
-      await base44.auth.logout();
+      await auth.signOut();
       setCurrentUser(null);
       window.location.href = createPageUrl("Home");
     } catch (error) {
@@ -192,7 +195,7 @@ export default function Layout({ children, currentPageName }) {
             <div className="flex justify-between items-center">
               {/* Logo */}
               <Link to={createPageUrl("Home")} className="flex items-center space-x-3 group">
-                <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68cfd9b791e6aadfa7fac25f/29cfbf772_Untitleddesign32.png" alt="Feelize Logo" className="w-10 h-10 rounded-xl group-hover:scale-110 transition-transform duration-300" />
+                <img src="https://i.imgur.com/vHqB9d3.png" alt="Feelize Logo" className="w-10 h-10 rounded-xl group-hover:scale-110 transition-transform duration-300" />
                 <span className="text-2xl font-bold text-white">
                   Feelize
                 </span>
@@ -389,7 +392,7 @@ export default function Layout({ children, currentPageName }) {
           <div className="grid md:grid-cols-4 gap-8">
             <div>
               <div className="flex items-center space-x-3 mb-6">
-                <img src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/68cfd9b791e6aadfa7fac25f/29cfbf772_Untitleddesign32.png" alt="Feelize Logo" className="w-10 h-10 rounded-xl" />
+                <img src="https://i.imgur.com/vHqB9d3.png" alt="Feelize Logo" className="w-10 h-10 rounded-xl" />
                 <span className="text-2xl font-bold text-white">Feelize</span>
               </div>
               <p className="text-slate-400 mb-4 text-sm leading-relaxed">
