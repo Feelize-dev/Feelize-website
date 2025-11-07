@@ -25,15 +25,13 @@ import { motion } from "framer-motion";
 import axios from 'axios';
 import ContactForm from '@/components/ContactForm';
 import { AIChatbot, ChatButton } from '@/components/AIChatbot';
+import { ProjectAnalyzer } from '@/components/ProjectAnalyzer';
 
 const API_BASE_URL = import.meta.env.VITE_SERVER_API_ENDPOINT || 'http://localhost:3000';
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 const HomePage = () => {
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
-  const [aiInput, setAiInput] = useState('');
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
-  const [analysisResult, setAnalysisResult] = useState('');
   const [isContactOpen, setIsContactOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
 
@@ -41,70 +39,23 @@ const HomePage = () => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
 
-  const handleAiAnalysis = async () => {
-    if (!aiInput.trim()) return;
-    
-    setIsAnalyzing(true);
-    setAnalysisResult('');
-    
-    try {
-      if (GEMINI_API_KEY) {
-        const response = await axios.post(
-          `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${GEMINI_API_KEY}`,
-          {
-            contents: [{
-              parts: [{
-                text: `As a senior software architect and AI specialist, analyze this project idea and provide:
-                1. Project Overview
-                2. Key Features (5-7 items)
-                3. Tech Stack Recommendations
-                4. Timeline Estimate
-                5. Estimated Budget Range
-                6. Potential Challenges
-                7. Success Metrics
-                
-                Format the response in clean HTML with proper headings, lists, and styling classes for a dark theme.
-                
-                Project Description: ${aiInput}`
-              }]
-            }]
-          }
-        );
-        
-        const result = response.data.candidates[0].content.parts[0].text;
-        setAnalysisResult(result);
-      } else {
-        // Fallback to backend
-        const response = await axios.post(`${API_BASE_URL}/api/ai/analyze`, {
-          prompt: aiInput
-        });
-        setAnalysisResult(response.data.analysis);
-      }
-    } catch (error) {
-      console.error('AI analysis failed:', error);
-      setAnalysisResult('<div class="text-red-400">Analysis failed. Please try again or contact us for a personalized consultation.</div>');
-    } finally {
-      setIsAnalyzing(false);
-    }
-  };
-
   const testimonials = [
     {
-      quote: "Feelize delivered beyond our wildest expectations. Their AI-powered approach cut our development time in half while maintaining premium quality.",
+      quote: "Feelize's AI-supercharged engineers delivered beyond expectations. They combined AI speed with the quality and attention to detail of senior developers. Our product launched 60% faster than traditional agencies quoted.",
       author: "Sarah Mitchell",
       title: "CEO, TechFlow Innovations",
       metric: "500% increase in user engagement",
       rating: 5
     },
     {
-      quote: "Working with Feelize was a game-changer for our business. Their AI integration helped us achieve conversion rates we never thought possible.",
+      quote: "Finally, a team that leverages AI without sacrificing code quality. The structure and scalability of what Feelize built rivals what we'd expect from Big Tech, but delivered in a fraction of the time.",
       author: "Marcus Rodriguez",
       title: "Founder, EcoMarket Pro",
       metric: "300% increase in sales",
       rating: 5
     },
     {
-      quote: "The speed and quality of delivery was incredible. We could launch our campaign weeks ahead of schedule with results that exceeded all our KPIs.",
+      quote: "This is the future of software development. Their engineers use AI tools masterfully while maintaining best practices. We got enterprise-grade quality at startup speed.",
       author: "Emily Chen",
       title: "Marketing Director, HealthFirst",
       metric: "450% increase in qualified leads",
@@ -193,11 +144,11 @@ const HomePage = () => {
   const faqs = [
     {
       question: "What services does Feelize offer?",
-      answer: "Feelize is a development-first agency. We specialize in \"vibe coding as a service,\" building clean, scalable, and creative digital experiences. Our in-house designers support projects with design when needed."
+      answer: "Feelize is a new approach to software development. We're AI-supercharged engineers—combining the speed of AI with the quality and structure of professional developers and designers. We build clean, scalable, and creative digital experiences backed by the most powerful AI tools in the market."
     },
     {
-      question: "What is \"vibe coding\"?",
-      answer: "Vibe coding is our signature approach to development — it's not just about writing code, it's about creating smooth, intuitive, and visually striking digital experiences that align with your brand's personality."
+      question: "What makes Feelize different?",
+      answer: "We're the new way to build software. Our team leverages cutting-edge AI tools to accelerate development while maintaining the high standards, best practices, and attention to detail that only experienced engineers and designers can provide. You get the best of both worlds: AI speed with human expertise."
     },
     {
       question: "What industries do you work with?",
@@ -285,11 +236,11 @@ const HomePage = () => {
             </Badge>
 
             <h1 className="text-7xl lg:text-8xl font-normal leading-tight font-['Bricolage_Grotesque']">
-              Leverage on the Maximum Potential of AI
+              AI-Supercharged Engineers
             </h1>
 
             <p className="text-2xl text-gray-400 font-['Istok_Web']">
-              We deliver MVPs faster and cost effective
+              Speed of AI. Quality of professional engineers. Powered by the most advanced AI tools.
             </p>
 
             <Button 
@@ -315,7 +266,7 @@ const HomePage = () => {
                   Our Process
                 </h2>
                 <p className="text-xl text-gray-400 font-['Istok_Web'] leading-relaxed">
-                  At Feelize, we partner with startups and enterprises to craft digital experiences through vibe coding. From concept to scale, we turn emotions into UI/UX, branding, and product development—delivering solutions that connect with users and drive growth.
+                  At Feelize, we're redefining software development. Our AI-supercharged engineers combine the speed and innovation of cutting-edge AI tools with the quality, structure, and expertise of professional developers and designers—delivering exceptional digital experiences that scale.
                 </p>
               </div>
 
@@ -391,52 +342,14 @@ const HomePage = () => {
                 AI-Powered Analysis
               </Badge>
               <h2 className="text-5xl font-bold text-white font-['Geist']">
-                Try Our Free AI Project Analyzer
+                Free AI Project Analyzer
               </h2>
               <p className="text-xl text-gray-400 font-['Geist']">
-                Describe your project idea and get instant AI-powered insights
+                Upload files, describe your project, and get a professional report with timeline and budget
               </p>
             </div>
 
-            <div className="space-y-6">
-              <Textarea
-                value={aiInput}
-                onChange={(e) => setAiInput(e.target.value)}
-                placeholder="Describe your project idea in detail... What are you trying to build? Who is your target audience? What problems will it solve?"
-                className="w-full min-h-[200px] bg-[#141324] border-gray-700 text-white text-lg resize-none focus:border-purple-500"
-              />
-              
-              <Button
-                onClick={handleAiAnalysis}
-                disabled={isAnalyzing || !aiInput.trim()}
-                className="w-full bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white py-6 text-lg"
-              >
-                {isAnalyzing ? (
-                  <span className="flex items-center gap-2">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    Analyzing your project...
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <Sparkles className="w-5 h-5" />
-                    Analyze My Project
-                  </span>
-                )}
-              </Button>
-
-              {analysisResult && (
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="bg-[#141324] border border-gray-700 rounded-lg p-8"
-                >
-                  <div 
-                    className="prose prose-invert max-w-none"
-                    dangerouslySetInnerHTML={{ __html: analysisResult }}
-                  />
-                </motion.div>
-              )}
-            </div>
+            <ProjectAnalyzer />
           </div>
         </section>
 
@@ -632,7 +545,7 @@ const HomePage = () => {
               <div className="space-y-6">
                 <h3 className="text-3xl font-bold text-white font-['Geist']">Feelize</h3>
                 <p className="text-gray-400 font-['Geist']">
-                  AI-powered development agency delivering exceptional digital experiences
+                  AI-supercharged engineers delivering the speed of AI with the quality of professional developers
                 </p>
               </div>
 
