@@ -1,22 +1,24 @@
-
-import { configDotenv } from "dotenv";
-import mongoose from "mongoose";
-
-configDotenv()
+const mongoose = require('mongoose');
 
 const connectDB = async () => {
   try {
+    const mongoURI = process.env.MONGO_DB_CONNECTION_STRING;
+    
+    if (!mongoURI) {
+      console.error('❌ MongoDB connection string not found in environment variables');
+      process.exit(1);
+    }
 
-  // Read connection string from env var. Note: environment variable name uses "STRING" suffix.
-  await mongoose.connect(`${process.env.MONGO_DB_CONNECTION_STRING}`);
-    console.log("Database Connected successfully");
+    await mongoose.connect(mongoURI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
 
+    console.log('✅ MongoDB connected successfully');
   } catch (error) {
-
-    console.log("Database connected Error", error);
-    process.exit(1); // Exit the process if the connection fails
-
+    console.error('❌ MongoDB connection error:', error.message);
+    process.exit(1);
   }
 };
 
-export default connectDB;
+module.exports = connectDB;
