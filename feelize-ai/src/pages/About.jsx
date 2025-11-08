@@ -331,25 +331,18 @@ const TeamBuilderPage = () => {
     setShowProjectTemplates(false);
   };
 
-  // Calculate team stats
+  // Calculate team stats - using TOP score in each category
   const calculateTeamStats = () => {
     if (columns.selectedTeam.length === 0) {
       return { engineering: 0, product: 0, delivery: 0, strategy: 0, avgPower: 0 };
     }
     
-    const totals = columns.selectedTeam.reduce((acc, member) => ({
-      engineering: acc.engineering + member.stats.engineering,
-      product: acc.product + member.stats.product,
-      delivery: acc.delivery + member.stats.delivery,
-      strategy: acc.strategy + member.stats.strategy,
-    }), { engineering: 0, product: 0, delivery: 0, strategy: 0 });
-
-    const count = columns.selectedTeam.length;
+    // Find the maximum score in each category
     const stats = {
-      engineering: Math.round(totals.engineering / count),
-      product: Math.round(totals.product / count),
-      delivery: Math.round(totals.delivery / count),
-      strategy: Math.round(totals.strategy / count),
+      engineering: Math.max(...columns.selectedTeam.map(m => m.stats.engineering)),
+      product: Math.max(...columns.selectedTeam.map(m => m.stats.product)),
+      delivery: Math.max(...columns.selectedTeam.map(m => m.stats.delivery)),
+      strategy: Math.max(...columns.selectedTeam.map(m => m.stats.strategy)),
     };
     stats.avgPower = Math.round((stats.engineering + stats.product + stats.delivery + stats.strategy) / 4);
     
@@ -584,30 +577,41 @@ const TeamBuilderPage = () => {
                       <div className={`text-2xl font-bold ${requirements?.engineering ? 'text-cyan-400' : 'text-cyan-600'}`}>
                         {stats.engineering}
                       </div>
-                      <div className="text-xs text-gray-400">Engineering</div>
+                      <div className="text-xs text-gray-400">⭐ Engineering</div>
                     </div>
                     <div className="text-center">
                       <div className={`text-2xl font-bold ${requirements?.product ? 'text-purple-400' : 'text-purple-600'}`}>
                         {stats.product}
                       </div>
-                      <div className="text-xs text-gray-400">Product</div>
+                      <div className="text-xs text-gray-400">⭐ Product</div>
                     </div>
                     <div className="text-center">
                       <div className={`text-2xl font-bold ${requirements?.delivery ? 'text-green-400' : 'text-green-600'}`}>
                         {stats.delivery}
                       </div>
-                      <div className="text-xs text-gray-400">Delivery</div>
+                      <div className="text-xs text-gray-400">⭐ Delivery</div>
                     </div>
                     <div className="text-center">
                       <div className={`text-2xl font-bold ${requirements?.strategy ? 'text-orange-400' : 'text-orange-600'}`}>
                         {stats.strategy}
                       </div>
-                      <div className="text-xs text-gray-400">Strategy</div>
+                      <div className="text-xs text-gray-400">⭐ Strategy</div>
                     </div>
                   </>
                 );
               })()}
             </motion.div>
+          )}
+
+          {/* Top Score Explanation */}
+          {columns.selectedTeam.length > 0 && (
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="text-xs text-slate-500 mt-2"
+            >
+              ⭐ Showing highest skill level in each category from your team
+            </motion.p>
           )}
           
           {/* Project Requirements Indicator */}
