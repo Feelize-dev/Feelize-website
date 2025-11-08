@@ -19,15 +19,16 @@ import {
   Github,
   Linkedin,
   Twitter,
-  MessageCircle
+  MessageCircle,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import axios from 'axios';
-import ContactForm from '@/components/ContactForm';
-import { AIChatbot, ChatButton } from '@/components/AIChatbot';
-import { ProjectAnalyzer } from '@/components/ProjectAnalyzerNew';
+import axios from "axios";
+import ContactForm from "@/components/ContactForm";
+import { AIChatbot, ChatButton } from "@/components/AIChatbot";
+import { ProjectAnalyzer } from "@/components/ProjectAnalyzerNew";
 
-const API_BASE_URL = import.meta.env.VITE_SERVER_API_ENDPOINT || 'http://localhost:3000';
+const API_BASE_URL =
+  import.meta.env.VITE_SERVER_API_ENDPOINT || "http://localhost:3000";
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 const HomePage = () => {
@@ -41,26 +42,29 @@ const HomePage = () => {
 
   const testimonials = [
     {
-      quote: "Feelize's AI-supercharged engineers delivered beyond expectations. They combined AI speed with the quality and attention to detail of senior developers. Our product launched 60% faster than traditional agencies quoted.",
+      quote:
+        "Feelize's AI-supercharged engineers delivered beyond expectations. They combined AI speed with the quality and attention to detail of senior developers. Our product launched 60% faster than traditional agencies quoted.",
       author: "Sarah Mitchell",
       title: "CEO, TechFlow Innovations",
       metric: "500% increase in user engagement",
-      rating: 5
+      rating: 5,
     },
     {
-      quote: "Finally, a team that leverages AI without sacrificing code quality. The structure and scalability of what Feelize built rivals what we'd expect from Big Tech, but delivered in a fraction of the time.",
+      quote:
+        "Finally, a team that leverages AI without sacrificing code quality. The structure and scalability of what Feelize built rivals what we'd expect from Big Tech, but delivered in a fraction of the time.",
       author: "Marcus Rodriguez",
       title: "Founder, EcoMarket Pro",
       metric: "300% increase in sales",
-      rating: 5
+      rating: 5,
     },
     {
-      quote: "This is the future of software development. Their engineers use AI tools masterfully while maintaining best practices. We got enterprise-grade quality at startup speed.",
+      quote:
+        "This is the future of software development. Their engineers use AI tools masterfully while maintaining best practices. We got enterprise-grade quality at startup speed.",
       author: "Emily Chen",
       title: "Marketing Director, HealthFirst",
       metric: "450% increase in qualified leads",
-      rating: 5
-    }
+      rating: 5,
+    },
   ];
 
   const processSteps = [
@@ -68,32 +72,37 @@ const HomePage = () => {
       icon: Phone,
       title: "Discovery Call",
       subtitle: "Phase 1",
-      description: "We start with understanding your vision, goals, and requirements through detailed consultation."
+      description:
+        "We start with understanding your vision, goals, and requirements through detailed consultation.",
     },
     {
       icon: Rocket,
       title: "AI-Powered Planning",
       subtitle: "Phase 2",
-      description: "Our AI analyzes your needs and creates an optimized development roadmap for maximum efficiency."
+      description:
+        "Our AI analyzes your needs and creates an optimized development roadmap for maximum efficiency.",
     },
     {
       icon: QrCode,
       title: "Rapid Development",
       subtitle: "Phase 3",
-      description: "Lightning-fast coding powered by AI, with human oversight ensuring quality and creativity."
+      description:
+        "Lightning-fast coding powered by AI, with human oversight ensuring quality and creativity.",
     },
     {
       icon: QrCode,
       title: "Quality Assurance",
       subtitle: "Phase 4",
-      description: "Rigorous testing and refinement to ensure your product exceeds industry standards."
+      description:
+        "Rigorous testing and refinement to ensure your product exceeds industry standards.",
     },
     {
       icon: Rocket,
       title: "Launch & Scale",
       subtitle: "Phase 5",
-      description: "Seamless deployment with ongoing support to help your product grow and succeed."
-    }
+      description:
+        "Seamless deployment with ongoing support to help your product grow and succeed.",
+    },
   ];
 
   const pricingPlans = [
@@ -108,8 +117,8 @@ const HomePage = () => {
         "Custom visual design",
         "Lead Capture Forms",
         "Basic Analytics Integrations",
-        "Blazing Fast performance"
-      ]
+        "Blazing Fast performance",
+      ],
     },
     {
       name: "E-commerce pro",
@@ -122,8 +131,8 @@ const HomePage = () => {
         "Up to 100 Products",
         "Secure Payment Gateways",
         "Inventory Management",
-        "Advanced SEO for Products"
-      ]
+        "Advanced SEO for Products",
+      ],
     },
     {
       name: "SaaS Platform",
@@ -136,78 +145,91 @@ const HomePage = () => {
         "User Authentication & Roles",
         "Complex Database Architecture",
         "Subscription/Billing logic",
-        "Scalable Cloud Infrastructure"
-      ]
-    }
+        "Scalable Cloud Infrastructure",
+      ],
+    },
   ];
 
   const faqs = [
     {
       question: "What services does Feelize offer?",
-      answer: "Feelize is a new approach to software development. We're AI-supercharged engineers—combining the speed of AI with the quality and structure of professional developers and designers. We build clean, scalable, and creative digital experiences backed by the most powerful AI tools in the market."
+      answer:
+        "Feelize is a new approach to software development. We're AI-supercharged engineers—combining the speed of AI with the quality and structure of professional developers and designers. We build clean, scalable, and creative digital experiences backed by the most powerful AI tools in the market.",
     },
     {
       question: "What makes Feelize different?",
-      answer: "We're the new way to build software. Our team leverages cutting-edge AI tools to accelerate development while maintaining the high standards, best practices, and attention to detail that only experienced engineers and designers can provide. You get the best of both worlds: AI speed with human expertise."
+      answer:
+        "We're the new way to build software. Our team leverages cutting-edge AI tools to accelerate development while maintaining the high standards, best practices, and attention to detail that only experienced engineers and designers can provide. You get the best of both worlds: AI speed with human expertise.",
     },
     {
       question: "What industries do you work with?",
-      answer: "We work with startups, growing businesses, and creators who want development that truly stand out. Whether you're launching a product, rebranding, or scaling your platform, we can help."
+      answer:
+        "We work with startups, growing businesses, and creators who want development that truly stand out. Whether you're launching a product, rebranding, or scaling your platform, we can help.",
     },
     {
       question: "Do you only build websites?",
-      answer: "No. While websites are a big part of what we do, our team also builds web apps, mobile apps, dashboards, custom tools, and integrations that help businesses scale."
+      answer:
+        "No. While websites are a big part of what we do, our team also builds web apps, mobile apps, dashboards, custom tools, and integrations that help businesses scale.",
     },
     {
       question: "How does the project process work?",
-      answer: "Every project starts with a discovery session to understand your goals. Then we create design concepts, build with clean code, and refine with feedback. You'll be part of the process at every stage."
+      answer:
+        "Every project starts with a discovery session to understand your goals. Then we create design concepts, build with clean code, and refine with feedback. You'll be part of the process at every stage.",
     },
     {
       question: "How long does a project take?",
-      answer: "Timelines vary depending on scope. A simple landing page may take 1–2 weeks, while full-scale platforms or custom development projects may take 4–10 weeks. We'll give you a clear timeline after reviewing your project."
+      answer:
+        "Timelines vary depending on scope. A simple landing page may take 1–2 weeks, while full-scale platforms or custom development projects may take 4–10 weeks. We'll give you a clear timeline after reviewing your project.",
     },
     {
       question: "Do you provide design services too?",
-      answer: "Yes, we have in-house designers who collaborate with our developers to create user-friendly and visually strong products when clients need both design and build."
+      answer:
+        "Yes, we have in-house designers who collaborate with our developers to create user-friendly and visually strong products when clients need both design and build.",
     },
     {
       question: "What do your services cost?",
-      answer: "Our pricing depends on project complexity and deliverables. We offer flexible packages for startups and businesses. Share your project details with us, and we'll provide a tailored quote."
+      answer:
+        "Our pricing depends on project complexity and deliverables. We offer flexible packages for startups and businesses. Share your project details with us, and we'll provide a tailored quote.",
     },
     {
       question: "Do you offer ongoing support after launch?",
-      answer: "Yes. We provide maintenance, updates, and improvements to ensure your product continues to perform at its best."
+      answer:
+        "Yes. We provide maintenance, updates, and improvements to ensure your product continues to perform at its best.",
     },
     {
       question: "Can you work with my existing design team?",
-      answer: "Definitely. If you already have designs, our developers can bring them to life. If not, our in-house designers can create the visuals alongside our dev team."
-    }
+      answer:
+        "Definitely. If you already have designs, our developers can bring them to life. If not, our in-house designers can create the visuals alongside our dev team.",
+    },
   ];
 
   return (
     <div className="min-h-screen bg-[#0A0E14] text-white relative">
       {/* Fixed Background with Gradient Ellipses */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
+      <div
+        className="fixed inset-0 pointer-events-none overflow-hidden"
+        style={{ zIndex: 0 }}
+      >
         {/* Multiple purple gradient blurs throughout the page */}
         {[
-          { left: '10%', top: '-350px' },
-          { left: '70%', top: '-250px' },
-          { left: '-142px', top: '200px' },
-          { left: '864px', top: '500px' },
-          { left: '191px', top: '100px' },
-          { left: '1226px', top: '300px' },
-          { left: '-142px', top: '2664px' },
-          { left: '864px', top: '3040px' },
-          { left: '191px', top: '1992px' },
-          { left: '1226px', top: '2183px' },
-          { left: '-142px', top: '4774px' },
-          { left: '864px', top: '5150px' },
-          { left: '191px', top: '4102px' },
-          { left: '1226px', top: '4293px' },
-          { left: '-142px', top: '6644px' },
-          { left: '864px', top: '7020px' },
-          { left: '191px', top: '5972px' },
-          { left: '1226px', top: '6163px' }
+          { left: "10%", top: "-350px" },
+          { left: "70%", top: "-250px" },
+          { left: "-142px", top: "200px" },
+          { left: "864px", top: "500px" },
+          { left: "191px", top: "100px" },
+          { left: "1226px", top: "300px" },
+          { left: "-142px", top: "2664px" },
+          { left: "864px", top: "3040px" },
+          { left: "191px", top: "1992px" },
+          { left: "1226px", top: "2183px" },
+          { left: "-142px", top: "4774px" },
+          { left: "864px", top: "5150px" },
+          { left: "191px", top: "4102px" },
+          { left: "1226px", top: "4293px" },
+          { left: "-142px", top: "6644px" },
+          { left: "864px", top: "7020px" },
+          { left: "191px", top: "5972px" },
+          { left: "1226px", top: "6163px" },
         ].map((pos, i) => (
           <div
             key={i}
@@ -215,8 +237,8 @@ const HomePage = () => {
             style={{
               left: pos.left,
               top: pos.top,
-              background: 'rgba(80, 0, 181, 0.67)',
-              opacity: 0.25
+              background: "rgba(80, 0, 181, 0.67)",
+              opacity: 0.25,
             }}
           />
         ))}
@@ -237,19 +259,23 @@ const HomePage = () => {
             </Badge>
 
             <h1 className="text-7xl lg:text-8xl font-bold leading-tight font-['Bricolage_Grotesque']">
-              AI-Supercharged Engineers
+              Developers Supercharged by AI
             </h1>
 
             <p className="text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl">
-              Speed of AI. Quality of professional engineers. Powered by the most advanced AI tools.
+              Speed of AI. The quality and creativity of our professional
+              ,designers, engineers, and business strategists.
             </p>
 
             <Button
               size="lg"
               onClick={() => {
-                const aiSection = document.getElementById('ai-analyzer');
+                const aiSection = document.getElementById("ai-analyzer");
                 if (aiSection) {
-                  aiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                  aiSection.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                  });
                 }
               }}
               className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white px-8 py-6 text-lg rounded-full h-auto"
@@ -272,7 +298,11 @@ const HomePage = () => {
                   Our Process
                 </h2>
                 <p className="text-xl text-gray-400 font-['Istok_Web'] leading-relaxed">
-                  At Feelize, we're redefining software development. Our AI-supercharged engineers combine the speed and innovation of cutting-edge AI tools with the quality, structure, and expertise of professional developers and designers—delivering exceptional digital experiences that scale.
+                  At Feelize, we're redefining software development. Our
+                  AI-supercharged engineers combine the speed and innovation of
+                  cutting-edge AI tools with the quality, structure, and
+                  expertise of professional developers and designers—delivering
+                  exceptional digital experiences that scale.
                 </p>
               </div>
 
@@ -291,11 +321,15 @@ const HomePage = () => {
                       </div>
 
                       <div className="flex-1 pb-4">
-                        <p className="text-sm font-semibold text-white mb-1 font-['Geist']">{step.subtitle}</p>
+                        <p className="text-sm font-semibold text-white mb-1 font-['Geist']">
+                          {step.subtitle}
+                        </p>
                         <h3 className="text-3xl font-semibold text-white mb-2 font-['Geist']">
                           {step.title}
                         </h3>
-                        <p className="text-gray-400 font-['Geist']">{step.description}</p>
+                        <p className="text-gray-400 font-['Geist']">
+                          {step.description}
+                        </p>
                       </div>
                     </div>
                   );
@@ -317,30 +351,49 @@ const HomePage = () => {
                   Discover Our Unmatched Success Rates
                 </h2>
                 <p className="text-2xl text-gray-400 leading-relaxed text-left font-['Geist']">
-                  At Feelize, we pride ourselves on delivering exceptional results for our clients. With a proven track record and a commitment to customer satisfaction, we ensure that your projects are in capable hands. Join the ranks of our successful clients today!
+                  At Feelize, we pride ourselves on delivering exceptional
+                  results for our clients. With a proven track record and a
+                  commitment to customer satisfaction, we ensure that your
+                  projects are in capable hands. Join the ranks of our
+                  successful clients today!
                 </p>
               </div>
             </div>
 
             <div className="flex justify-center items-center gap-32">
               <div className="text-center px-6">
-                <h3 className="text-7xl font-bold text-white mb-1 font-['Geist']">95%</h3>
-                <p className="text-2xl text-gray-400 font-['Geist']">Faster Delivery</p>
+                <h3 className="text-7xl font-bold text-white mb-1 font-['Geist']">
+                  95%
+                </h3>
+                <p className="text-2xl text-gray-400 font-['Geist']">
+                  Faster Delivery
+                </p>
               </div>
               <div className="text-center px-6">
-                <h3 className="text-7xl font-bold text-white mb-1 font-['Geist']">80%</h3>
-                <p className="text-2xl text-gray-400 font-['Geist']">Cost Savings</p>
+                <h3 className="text-7xl font-bold text-white mb-1 font-['Geist']">
+                  80%
+                </h3>
+                <p className="text-2xl text-gray-400 font-['Geist']">
+                  Cost Savings
+                </p>
               </div>
               <div className="text-center px-6">
-                <h3 className="text-7xl font-bold text-white mb-1 font-['Geist']">100%</h3>
-                <p className="text-2xl text-gray-400 font-['Geist']">Client Satisfaction Rate</p>
+                <h3 className="text-7xl font-bold text-white mb-1 font-['Geist']">
+                  100%
+                </h3>
+                <p className="text-2xl text-gray-400 font-['Geist']">
+                  Client Satisfaction Rate
+                </p>
               </div>
             </div>
           </div>
         </section>
 
         {/* AI Analyzer Section */}
-        <section id="ai-analyzer" className="container mx-auto px-16 py-24 scroll-mt-24">
+        <section
+          id="ai-analyzer"
+          className="container mx-auto px-16 py-24 scroll-mt-24"
+        >
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-6 mb-12">
               <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
@@ -351,7 +404,8 @@ const HomePage = () => {
                 Free AI Project Analyzer
               </h2>
               <p className="text-xl text-gray-400 font-['Geist']">
-                Upload files, describe your project, and get a professional report with timeline and budget
+                Upload files, describe your project, and get a professional
+                report with timeline and budget
               </p>
             </div>
 
@@ -378,15 +432,22 @@ const HomePage = () => {
                   <CardContent className="p-8 space-y-6">
                     <div className="flex gap-1">
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="w-5 h-5 fill-yellow-500 text-yellow-500" />
+                        <Star
+                          key={i}
+                          className="w-5 h-5 fill-yellow-500 text-yellow-500"
+                        />
                       ))}
                     </div>
                     <p className="text-gray-300 text-lg leading-relaxed font-['Geist']">
                       "{testimonial.quote}"
                     </p>
                     <div className="pt-4 border-t border-gray-700">
-                      <p className="text-white font-semibold font-['Geist']">{testimonial.author}</p>
-                      <p className="text-gray-400 text-sm font-['Geist']">{testimonial.title}</p>
+                      <p className="text-white font-semibold font-['Geist']">
+                        {testimonial.author}
+                      </p>
+                      <p className="text-gray-400 text-sm font-['Geist']">
+                        {testimonial.title}
+                      </p>
                       <div className="mt-4 flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-green-500" />
                         <p className="text-green-500 text-sm font-semibold font-['Geist']">
@@ -406,15 +467,22 @@ const HomePage = () => {
                   <CardContent className="p-8 space-y-6">
                     <div className="flex gap-1">
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="w-5 h-5 fill-yellow-500 text-yellow-500" />
+                        <Star
+                          key={i}
+                          className="w-5 h-5 fill-yellow-500 text-yellow-500"
+                        />
                       ))}
                     </div>
                     <p className="text-gray-300 text-lg leading-relaxed font-['Geist']">
                       "{testimonial.quote}"
                     </p>
                     <div className="pt-4 border-t border-gray-700">
-                      <p className="text-white font-semibold font-['Geist']">{testimonial.author}</p>
-                      <p className="text-gray-400 text-sm font-['Geist']">{testimonial.title}</p>
+                      <p className="text-white font-semibold font-['Geist']">
+                        {testimonial.author}
+                      </p>
+                      <p className="text-gray-400 text-sm font-['Geist']">
+                        {testimonial.title}
+                      </p>
                       <div className="mt-4 flex items-center gap-2">
                         <TrendingUp className="w-4 h-4 text-green-500" />
                         <p className="text-green-500 text-sm font-semibold font-['Geist']">
@@ -445,27 +513,36 @@ const HomePage = () => {
 
           <div className="grid grid-cols-3 gap-8 max-w-7xl mx-auto">
             {pricingPlans.map((plan, index) => (
-              <Card key={index} className="bg-[#141324] border-gray-700 hover:border-purple-500 transition-all">
+              <Card
+                key={index}
+                className="bg-[#141324] border-gray-700 hover:border-purple-500 transition-all"
+              >
                 <CardContent className="p-8 space-y-6">
                   <div>
                     <h3 className="text-3xl font-bold text-white mb-2 font-['Geist']">
                       {plan.name}
                     </h3>
-                    <p className="text-gray-400 font-['Geist']">{plan.duration}</p>
+                    <p className="text-gray-400 font-['Geist']">
+                      {plan.duration}
+                    </p>
                   </div>
 
                   <div className="py-6 border-y border-gray-700">
                     <div className="text-5xl font-bold text-white mb-2 font-['Geist']">
                       {plan.price}
                     </div>
-                    <p className="text-gray-400 font-['Geist']">{plan.description}</p>
+                    <p className="text-gray-400 font-['Geist']">
+                      {plan.description}
+                    </p>
                   </div>
 
                   <ul className="space-y-4">
                     {plan.features.map((feature, idx) => (
                       <li key={idx} className="flex items-start gap-3">
                         <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-300 font-['Geist']">{feature}</span>
+                        <span className="text-gray-300 font-['Geist']">
+                          {feature}
+                        </span>
                       </li>
                     ))}
                   </ul>
@@ -493,7 +570,8 @@ const HomePage = () => {
                 Frequently Asked Questions
               </h2>
               <p className="text-xl text-gray-400 font-['Geist']">
-                Can't find what you're looking for? Chat with our AI assistant below!
+                Can't find what you're looking for? Chat with our AI assistant
+                below!
               </p>
             </div>
 
@@ -550,10 +628,7 @@ const HomePage = () => {
         onClose={() => setIsContactOpen(false)}
       />
 
-      <AIChatbot
-        isOpen={isChatOpen}
-        onClose={() => setIsChatOpen(false)}
-      />
+      <AIChatbot isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
     </div>
   );
 };
