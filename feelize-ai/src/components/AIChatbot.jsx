@@ -19,6 +19,9 @@ export const AIChatbot = ({ isOpen, onClose }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [attachedFiles, setAttachedFiles] = useState([]);
   const [isGeneratingReport, setIsGeneratingReport] = useState(false);
+  const [reportHtml, setReportHtml] = useState(null);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [isMinimized, setIsMinimized] = useState(false);
   const messagesEndRef = useRef(null);
   const fileInputRef = useRef(null);
 
@@ -72,15 +75,43 @@ export const AIChatbot = ({ isOpen, onClose }) => {
     setIsGeneratingReport(true);
 
     try {
+      // Show progress in chat
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: '📊 Alright! Let me analyze our conversation and create a detailed report for you...' 
+      }]);
+
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       // Collect all files that were shared during the conversation
       const allChatFiles = messages
         .filter(msg => msg.files && msg.files.length > 0)
         .flatMap(msg => msg.files);
 
+      if (allChatFiles.length > 0) {
+        setMessages(prev => [...prev, { 
+          role: 'assistant', 
+          content: `📎 Processing ${allChatFiles.length} file${allChatFiles.length > 1 ? 's' : ''} you shared: ${allChatFiles.map(f => f.name).join(', ')}` 
+        }]);
+        await new Promise(resolve => setTimeout(resolve, 500));
+      }
+
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: '🔍 Analyzing our conversation and extracting key requirements...' 
+      }]);
+
+      await new Promise(resolve => setTimeout(resolve, 800));
+
       // Build a comprehensive description from the conversation
       const conversationSummary = messages
         .map(msg => `${msg.role === 'user' ? 'User' : 'Feely'}: ${msg.content}`)
         .join('\n\n');
+
+      setMessages(prev => [...prev, { 
+        role: 'assistant', 
+        content: '🤖 Generating comprehensive project analysis with timeline and budget...' 
+      }]);
 
       // Use the analyze-project endpoint which handles both description and files
       const response = await axios.post(`${API_BASE_URL}/api/ai/analyze-project`, {
@@ -93,37 +124,14 @@ export const AIChatbot = ({ isOpen, onClose }) => {
       });
 
       if (response.data.success) {
-        // Open in a new popup window with specific dimensions
-        const width = Math.min(1200, window.screen.width * 0.9);
-        const height = Math.min(900, window.screen.height * 0.9);
-        const left = (window.screen.width - width) / 2;
-        const top = (window.screen.height - height) / 2;
-        
-        const reportWindow = window.open(
-          'about:blank', 
-          '_blank',
-          `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
-        );
-        
-        if (!reportWindow) {
-          setMessages(prev => [...prev, { 
-            role: 'assistant', 
-            content: '⚠️ Please allow popups to view the report. Check your browser settings and try again.' 
-          }]);
-          return;
-        }
-
-        reportWindow.document.write(response.data.htmlReport);
-        reportWindow.document.close();
-
-        // Trigger print dialog
-        setTimeout(() => {
-          reportWindow.print();
-        }, 500);
+        // Show report in modal overlay
+        setReportHtml(response.data.htmlReport);
+        setShowReportModal(true);
+        setIsMinimized(false);
 
         setMessages(prev => [...prev, { 
           role: 'assistant', 
-          content: '🎉 I\'ve generated your project report! It should open in a new window. You can print it or save as PDF.' 
+          content: '🎉 I\'ve generated your project report! Check it out above - you can minimize it to continue chatting or close it when done.' 
         }]);
       }
     } catch (error) {
@@ -181,6 +189,11 @@ export const AIChatbot = ({ isOpen, onClose }) => {
 
       // Try to use Gemini API directly - use gemini-2.5-flash for fast chat responses
       if (GEMINI_API_KEY) {
+        // Build conversation history for context
+        const conversationContext = messages.slice(-10).map(msg => 
+          `${msg.role === 'user' ? 'User' : 'Feely'}: ${msg.content}`
+        ).join('\n\n');
+
         const response = await axios.post(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
           {
@@ -190,11 +203,21 @@ export const AIChatbot = ({ isOpen, onClose }) => {
                   {
                     text: `You are Feely (short for Feelize AI Personal Assistant - what your mom used to call you). You're a friendly, conversational AI assistant for Feelize, a development-first agency.
 
+IMPORTANT - CONVERSATION CONTEXT:
+- You're ALREADY in an ongoing conversation with this user
+- NEVER introduce yourself again if you already have in this conversation
+- Reference previous messages naturally to show you remember the conversation
+- Build on what was already discussed
+- The user knows who you are, so just continue the conversation naturally
+
+CONVERSATION SO FAR:
+${conversationContext}
+
 PERSONALITY & TONE:
 - Be conversational and warm, like chatting with a knowledgeable friend
 - Keep responses SHORT and to the point (2-4 sentences max unless explaining something complex)
-- If asked your name, say: "I'm Feely! It's what my mom used to call me - short for Feelize AI Personal Assistant 😊"
-- Be helpful and understand context from the conversation
+- ONLY if this is literally the FIRST message ever, say: "I'm Feely! 😊"
+- Be helpful and understand context from the conversation history above
 - Ask clarifying questions when needed
 - If gathering project info, guide users naturally toward details needed for a project report
 
@@ -404,6 +427,88 @@ Keep it natural and conversational - don't interrogate, just chat!
           </div>
         </div>
       </Card>
+
+      {/* Report Modal Overlay */}
+      {showReportModal && reportHtml && (
+        <div 
+          className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+          style={{ 
+            display: isMinimized ? 'none' : 'flex'
+          }}
+        >
+          <div className="relative w-full h-full max-w-6xl max-h-[90vh] bg-white rounded-lg shadow-2xl overflow-hidden flex flex-col">
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] px-6 py-3 flex items-center justify-between shrink-0">
+              <h3 className="text-white font-bold text-lg">📊 Your Project Report from Feely</h3>
+              <div className="flex gap-2">
+                <Button
+                  onClick={() => {
+                    // Extract title from report for filename
+                    const titleMatch = reportHtml.match(/<title>(.*?)<\/title>/i);
+                    const filename = titleMatch ? `${titleMatch[1].replace(/[^a-z0-9]/gi, '_')}.html` : 'Feelize_Project_Report.html';
+                    
+                    // Create blob and download
+                    const blob = new Blob([reportHtml], { type: 'text/html' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                  }}
+                  className="bg-white/20 hover:bg-white/30 text-white px-3 py-1 text-sm flex items-center gap-1"
+                  title="Download Report"
+                >
+                  <FileText className="w-4 h-4" />
+                  Save
+                </Button>
+                <Button
+                  onClick={() => setIsMinimized(true)}
+                  className="bg-white/20 hover:bg-white/30 text-white px-3 py-1 text-sm"
+                  title="Minimize - Continue chatting"
+                >
+                  _
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowReportModal(false);
+                    setReportHtml(null);
+                  }}
+                  className="bg-white/20 hover:bg-white/30 text-white px-3 py-1 text-sm"
+                  title="Close"
+                >
+                  ✕
+                </Button>
+              </div>
+            </div>
+
+            {/* Modal Content - Scrollable Report */}
+            <div className="flex-1 overflow-y-auto">
+              <iframe
+                srcDoc={reportHtml}
+                className="w-full h-full border-0"
+                title="Project Analysis Report"
+                sandbox="allow-same-origin allow-scripts allow-modals allow-popups allow-forms"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Minimized Report Button */}
+      {showReportModal && isMinimized && (
+        <div className="fixed bottom-24 right-6 z-[60]">
+          <Button
+            onClick={() => setIsMinimized(false)}
+            className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white px-6 py-3 shadow-2xl rounded-full flex items-center gap-2 animate-pulse"
+          >
+            <FileText className="w-5 h-5" />
+            View Report
+          </Button>
+        </div>
+      )}
     </div>
   );
 };

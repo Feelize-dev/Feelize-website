@@ -277,11 +277,21 @@ export default function Layout({ children, currentPageName }) {
                 {isLoadingUser ? (
                   <div className="h-10 w-44 bg-slate-700/50 animate-pulse rounded-xl" />
                 ) : !currentUser ? (
-                  <Link to={createPageUrl("StartProject")}>
-                    <Button className="bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold px-6 py-3 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-105 neon-glow">
-                      Start with AI Assistant
-                    </Button>
-                  </Link>
+                  <Button 
+                    onClick={() => {
+                      if (location.pathname === createPageUrl("Home") || location.pathname === '/') {
+                        const aiSection = document.getElementById('ai-analyzer');
+                        if (aiSection) {
+                          aiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        }
+                      } else {
+                        window.location.href = createPageUrl("Home") + '#ai-analyzer';
+                      }
+                    }}
+                    className="bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold px-6 py-3 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-105 neon-glow"
+                  >
+                    Start with AI Assistant
+                  </Button>
                 ) : (
                   <div className="text-slate-300 text-sm text-right">
                     Welcome, <span className="text-cyan-400 font-semibold">{currentUser?.full_name}</span>
@@ -368,11 +378,24 @@ export default function Layout({ children, currentPageName }) {
 
                 {!isLoadingUser && !currentUser && (
                   <div className="px-3 pt-2">
-                    <Link to={createPageUrl("StartProject")}>
-                      <Button className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold">
-                        Start with AI Assistant
-                      </Button>
-                    </Link>
+                    <Button 
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                        if (location.pathname === createPageUrl("Home") || location.pathname === '/') {
+                          setTimeout(() => {
+                            const aiSection = document.getElementById('ai-analyzer');
+                            if (aiSection) {
+                              aiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                            }
+                          }, 100);
+                        } else {
+                          window.location.href = createPageUrl("Home") + '#ai-analyzer';
+                        }
+                      }}
+                      className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold"
+                    >
+                      Start with AI Assistant
+                    </Button>
                   </div>
                 )}
               </div>

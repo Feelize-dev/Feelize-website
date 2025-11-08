@@ -2,16 +2,66 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
-import { Upload, FileText, Image as ImageIcon, File, Sparkles, Download, Loader2 } from 'lucide-react';
+import { Upload, FileText, Image as ImageIcon, File, Sparkles, Download, Loader2, ChevronRight } from 'lucide-react';
 import axios from 'axios';
 
 const API_BASE_URL = import.meta.env.VITE_SERVER_API_ENDPOINT || 'http://localhost:3000';
 
 export const ProjectAnalyzer = () => {
+  const [step, setStep] = useState(1); // 1: Questions, 2: Details & Files, 3: Report
+  const [answers, setAnswers] = useState({});
   const [projectDescription, setProjectDescription] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [reportData, setReportData] = useState(null);
+
+  // Pre-qualification questions
+  const questions = [
+    {
+      id: 'projectType',
+      question: 'What type of project do you need?',
+      options: [
+        { value: 'website', label: 'Marketing/Campaign Website' },
+        { value: 'ecommerce', label: 'E-commerce Store' },
+        { value: 'saas', label: 'SaaS Application' },
+        { value: 'mobile', label: 'Mobile App' },
+        { value: 'custom', label: 'Custom Software Solution' }
+      ]
+    },
+    {
+      id: 'timeline',
+      question: 'What is your desired timeline?',
+      options: [
+        { value: 'urgent', label: '1-2 weeks (Urgent)' },
+        { value: 'standard', label: '4-8 weeks (Standard)' },
+        { value: 'flexible', label: '2-4 months (Flexible)' },
+        { value: 'longterm', label: '4+ months (Complex Project)' }
+      ]
+    },
+    {
+      id: 'budget',
+      question: 'What is your approximate budget range?',
+      options: [
+        { value: 'small', label: 'Under $5,000' },
+        { value: 'medium', label: '$5,000 - $15,000' },
+        { value: 'large', label: '$15,000 - $50,000' },
+        { value: 'enterprise', label: '$50,000+' }
+      ]
+    },
+    {
+      id: 'features',
+      question: 'Which features are essential? (Select all that apply)',
+      multiple: true,
+      options: [
+        { value: 'auth', label: 'User Authentication' },
+        { value: 'payment', label: 'Payment Processing' },
+        { value: 'database', label: 'Complex Database' },
+        { value: 'api', label: 'API Integration' },
+        { value: 'admin', label: 'Admin Dashboard' },
+        { value: 'ai', label: 'AI Features' }
+      ]
+    }
+  ];
 
   const handleFileUpload = (event) => {
     const files = Array.from(event.target.files);
@@ -55,8 +105,31 @@ export const ProjectAnalyzer = () => {
     setIsAnalyzing(true);
 
     try {
+      // Build enhanced description with questionnaire context
+      const questionnaireContext = Object.entries(answers)
+        .map(([key, value]) => {
+          const q = questions.find(qu => qu.id === key);
+          if (!q) return '';
+          if (Array.isArray(value)) {
+            return `${q.question}: ${value.join(', ')}`;
+          }
+          const option = q.options.find(opt => opt.value === value);
+          return `${q.question}: ${option?.label || value}`;
+        })
+        .filter(Boolean)
+        .join('\n');
+
+      const enhancedDescription = `
+PROJECT QUESTIONNAIRE RESPONSES:
+${questionnaireContext}
+
+DETAILED PROJECT DESCRIPTION:
+${projectDescription}
+`;
+
       const response = await axios.post(`${API_BASE_URL}/api/ai/analyze-project`, {
-        description: projectDescription,
+        description: enhancedDescription,
+        questionnaire: answers,
         files: uploadedFiles.map(f => ({
           name: f.name,
           type: f.type,
@@ -64,7 +137,21 @@ export const ProjectAnalyzer = () => {
         }))
       });
 
-      setReportData(response.data);
+      if (response.data.success && response.data.htmlReport) {
+        // Open in new window immediately
+        const reportWindow = window.open('', '_blank', 'width=' + screen.availWidth + ',height=' + screen.availHeight + ',left=0,top=0,scrollbars=yes,resizable=yes');
+        
+        if (!reportWindow) {
+          alert('Please allow popups to view your report');
+          return;
+        }
+
+        reportWindow.document.write(response.data.htmlReport);
+        reportWindow.document.close();
+        
+        setReportData(response.data);
+        setStep(3);
+      }
     } catch (error) {
       console.error('Analysis failed:', error);
       alert('Analysis failed. Please try again.');
@@ -76,16 +163,14 @@ export const ProjectAnalyzer = () => {
   const downloadReport = () => {
     if (!reportData) return;
 
-    // Open in a new popup window with specific dimensions
-    const width = Math.min(1200, window.screen.width * 0.9);
-    const height = Math.min(900, window.screen.height * 0.9);
-    const left = (window.screen.width - width) / 2;
-    const top = (window.screen.height - height) / 2;
+    // Open in a new popup window - full screen size
+    const width = window.screen.availWidth;
+    const height = window.screen.availHeight;
     
     const reportWindow = window.open(
       'about:blank', 
       '_blank',
-      `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes`
+      `width=${width},height=${height},left=0,top=0,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no`
     );
     
     if (!reportWindow) {
@@ -95,11 +180,6 @@ export const ProjectAnalyzer = () => {
 
     reportWindow.document.write(reportData.htmlReport);
     reportWindow.document.close();
-
-    // Trigger print dialog after content loads
-    setTimeout(() => {
-      reportWindow.print();
-    }, 500);
   };
 
   const getFileIcon = (type) => {

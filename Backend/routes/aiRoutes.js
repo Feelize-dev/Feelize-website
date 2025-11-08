@@ -5,7 +5,7 @@ const axios = require('axios');
 // Enhanced AI Analysis endpoint with file upload support
 router.post('/ai/analyze-project', async (req, res) => {
   try {
-    const { description, files } = req.body;
+    const { description, files, questionnaire } = req.body;
 
     if (!description && (!files || files.length === 0)) {
       return res.status(400).json({
@@ -23,8 +23,29 @@ router.post('/ai/analyze-project', async (req, res) => {
       });
     }
 
+    // Determine recommended package based on questionnaire
+    let recommendedPackage = 'Custom Solution';
+    if (questionnaire) {
+      if (questionnaire.projectType === 'website') {
+        recommendedPackage = 'Campaign Site ($2,999 - 1-2 weeks)';
+      } else if (questionnaire.projectType === 'ecommerce') {
+        recommendedPackage = 'E-commerce Pro ($7,999 - 4-6 weeks)';
+      } else if (questionnaire.projectType === 'saas') {
+        recommendedPackage = 'SaaS Platform ($20,000+ - 8-16 weeks)';
+      }
+    }
+
     // Build comprehensive prompt with file information
     let fullPrompt = `As an expert software architect and project manager, analyze this project and create a comprehensive professional report.
+
+${questionnaire ? `QUESTIONNAIRE RESPONSES:
+Project Type: ${questionnaire.projectType}
+Timeline: ${questionnaire.timeline}
+Budget Range: ${questionnaire.budget}
+Required Features: ${questionnaire.features?.join(', ') || 'None specified'}
+
+RECOMMENDED PACKAGE: ${recommendedPackage}
+` : ''}
 
 PROJECT DESCRIPTION:
 ${description || 'No description provided'}
@@ -62,12 +83,18 @@ Generate a COMPLETE, PROFESSIONAL HTML PROJECT REPORT that includes:
    - How Feelize's AI-supercharged engineers deliver the same quality
    - Speed advantage (95% faster delivery)
    - Cost savings (typically 60-80% less than traditional)
-   - Our actual recommended pricing for this project
+   - Our actual recommended pricing for this project (based on: ${recommendedPackage})
    - Highlight: "Speed of AI + Quality of Professional Engineers"
    - Use gradient backgrounds and make this section visually stand out
 8. **Risk Analysis** - Potential challenges and mitigation strategies
 9. **Success Metrics** - KPIs and measurement criteria
-10. **Next Steps** - Recommended actions to proceed
+10. **Next Steps & Consultation CTA** - At the END of the report, include a prominent call-to-action section with:
+    - "Ready to bring your vision to life?"
+    - "Schedule a FREE 15-Minute Consultation Call"
+    - Calendly link: https://calendly.com/feelize-team/15min
+    - Contact form with fields: Name, Email, Phone, Project Interest Level (dropdown), Comments
+    - Form should submit to: https://feelize.com/api/submit-report-feedback
+    - Make this section visually prominent with gradient background
 
 IMPORTANT: Make the Feelize Advantage section highly visual with:
 - Comparison table showing Traditional vs Feelize
@@ -77,13 +104,25 @@ IMPORTANT: Make the Feelize Advantage section highly visual with:
 - Professional but compelling design
 
 FORMAT THE ENTIRE RESPONSE AS A COMPLETE HTML DOCUMENT with:
-- Professional styling using inline CSS
-- Print-friendly layout for PDF export
+- Professional styling using inline CSS with proper table formatting
+- ALL tables must have: border-collapse: collapse; width: 100%; border: 1px solid #ddd;
+- ALL table cells (th, td) must have: padding: 12px; border: 1px solid #ddd; text-align: left;
+- Table headers (th) should have: background: linear-gradient(135deg, #0580E8, #7000FF); color: white; font-weight: 600;
+- Alternate table rows with: background-color: #f9f9f9;
+- Print-friendly layout for PDF export (hide contact form when printing with @media print { .no-print { display: none; } })
 - Feelize branding colors (purple gradients: #0580E8 to #7000FF)
-- Modern, clean typography
-- Proper sections with headings
-- Tables for timeline and budget comparisons
+- Modern, clean typography (font-family: 'Segoe UI', system-ui, sans-serif)
+- Proper sections with headings (h1: 36px, h2: 28px, h3: 22px)
+- Section spacing: margin-bottom: 30px; padding: 20px;
+- White background cards with subtle shadows: box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+- Feature lists should use bullet points with proper indentation
+- Budget/timeline tables MUST be clearly formatted with borders
+- Comparison tables must show clear visual distinction between Traditional vs Feelize
+- Functional contact form with proper styling
+- Print button at top right with: window.print()
 - The HTML should be ready to open in a new window and print as PDF
+
+CRITICAL: Ensure ALL tables are properly formatted with visible borders and cell padding. No broken table layouts.
 
 Start with <!DOCTYPE html> and include full HTML structure.`;
 
@@ -204,6 +243,104 @@ router.post('/ai/analyze', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to analyze project. Please try again later.'
+    });
+  }
+});
+
+// Generate AI Questions endpoint - analyzes project and creates custom questions
+router.post('/ai/generate-questions', async (req, res) => {
+  try {
+    const { description, files } = req.body;
+
+    if (!description && (!files || files.length === 0)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide a project description or upload files'
+      });
+    }
+
+    const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+
+    if (!GEMINI_API_KEY) {
+      return res.status(500).json({
+        success: false,
+        message: 'AI service is not configured'
+      });
+    }
+
+    // Build prompt for generating questions
+    let prompt = `Analyze this project description and generate 3-5 SPECIFIC multiple-choice questions to better understand the project scope, requirements, budget, and timeline.
+
+PROJECT DESCRIPTION:
+${description}
+
+`;
+
+    if (files && files.length > 0) {
+      prompt += `\nATTACHED FILES (${files.length}):\n`;
+      files.forEach((file, index) => {
+        prompt += `File ${index + 1}: ${file.name}\n`;
+      });
+    }
+
+    prompt += `
+
+Generate questions that will help determine:
+1. Project complexity and scope
+2. Required features and functionality
+3. Budget expectations
+4. Timeline requirements
+5. Technical requirements
+
+IMPORTANT: Return ONLY a valid JSON array of question objects. Each question should have:
+- id: unique identifier (e.g., "q1", "q2")
+- question: the question text
+- options: array of option objects with "value" and "label"
+- multiple: boolean (true if multiple selections allowed, false for single choice)
+
+Example format:
+[
+  {
+    "id": "q1",
+    "question": "Based on your description, what's your primary goal?",
+    "options": [
+      {"value": "launch_mvp", "label": "Launch MVP quickly"},
+      {"value": "full_featured", "label": "Build full-featured product"},
+      {"value": "replace_existing", "label": "Replace existing system"}
+    ],
+    "multiple": false
+  }
+]
+
+Return ONLY the JSON array, no other text or markdown.`;
+
+    const response = await axios.post(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`,
+      {
+        contents: [{
+          parts: [{ text: prompt }]
+        }]
+      }
+    );
+
+    let questionsText = response.data.candidates[0].content.parts[0].text;
+    
+    // Clean up markdown code blocks if present
+    questionsText = questionsText.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+
+    // Parse JSON
+    const questions = JSON.parse(questionsText);
+
+    res.status(200).json({
+      success: true,
+      questions
+    });
+
+  } catch (error) {
+    console.error('Generate questions error:', error.response?.data || error.message);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate questions. Please try again.'
     });
   }
 });

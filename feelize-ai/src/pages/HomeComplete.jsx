@@ -25,7 +25,7 @@ import { motion } from "framer-motion";
 import axios from 'axios';
 import ContactForm from '@/components/ContactForm';
 import { AIChatbot, ChatButton } from '@/components/AIChatbot';
-import { ProjectAnalyzer } from '@/components/ProjectAnalyzer';
+import { ProjectAnalyzer } from '@/components/ProjectAnalyzerNew';
 
 const API_BASE_URL = import.meta.env.VITE_SERVER_API_ENDPOINT || 'http://localhost:3000';
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
@@ -190,10 +190,12 @@ const HomePage = () => {
       <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
         {/* Multiple purple gradient blurs throughout the page */}
         {[
-          { left: '-142px', top: '484px' },
-          { left: '864px', top: '860px' },
-          { left: '191px', top: '-188px' },
-          { left: '1226px', top: '3px' },
+          { left: '10%', top: '-350px' },
+          { left: '70%', top: '-250px' },
+          { left: '-142px', top: '200px' },
+          { left: '864px', top: '500px' },
+          { left: '191px', top: '100px' },
+          { left: '1226px', top: '300px' },
           { left: '-142px', top: '2664px' },
           { left: '864px', top: '3040px' },
           { left: '191px', top: '1992px' },
@@ -223,29 +225,34 @@ const HomePage = () => {
       {/* Main Content */}
       <div className="relative" style={{ zIndex: 1 }}>
         {/* Hero Section */}
-        <section className="container mx-auto px-10 py-16">
+        <section className="w-full px-10 pt-24 pb-32 min-h-screen flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col items-center text-center gap-8 max-w-6xl mx-auto"
+            className="flex flex-col items-center text-center gap-10 max-w-6xl w-full"
           >
             <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
               <Sparkles className="w-5 h-5 mr-2" />
               ✨ AI-Powered Development
             </Badge>
 
-            <h1 className="text-7xl lg:text-8xl font-normal leading-tight font-['Bricolage_Grotesque']">
+            <h1 className="text-7xl lg:text-8xl font-bold leading-tight font-['Bricolage_Grotesque']">
               AI-Supercharged Engineers
             </h1>
 
-            <p className="text-2xl text-gray-400 font-['Istok_Web']">
+            <p className="text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl">
               Speed of AI. Quality of professional engineers. Powered by the most advanced AI tools.
             </p>
 
             <Button 
               size="lg"
-              onClick={() => setIsContactOpen(true)}
+              onClick={() => {
+                const aiSection = document.getElementById('ai-analyzer');
+                if (aiSection) {
+                  aiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+              }}
               className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white px-8 py-6 text-lg rounded-full h-auto"
             >
               Start Using AI assistant
@@ -334,7 +341,7 @@ const HomePage = () => {
         </section>
 
         {/* AI Analyzer Section */}
-        <section className="container mx-auto px-16 py-24">
+        <section id="ai-analyzer" className="container mx-auto px-16 py-24 scroll-mt-24">
           <div className="max-w-6xl mx-auto">
             <div className="text-center space-y-6 mb-12">
               <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
@@ -536,110 +543,6 @@ const HomePage = () => {
             </div>
           </div>
         </section>
-
-        {/* Footer */}
-        <footer className="bg-[#0D1117] border-t border-gray-800 py-16">
-          <div className="container mx-auto px-16">
-            <div className="grid grid-cols-4 gap-12 mb-12">
-              {/* Logo and Description */}
-              <div className="space-y-6">
-                <h3 className="text-3xl font-bold text-white font-['Geist']">Feelize</h3>
-                <p className="text-gray-400 font-['Geist']">
-                  AI-supercharged engineers delivering the speed of AI with the quality of professional developers
-                </p>
-              </div>
-
-              {/* Services */}
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold text-white font-['Geist']">Services</h4>
-                <ul className="space-y-3">
-                  <li>
-                    <Link to="/services/campaigns" className="text-gray-400 hover:text-white transition-colors font-['Geist']">
-                      Campaign Sites
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/services/ecommerce" className="text-gray-400 hover:text-white transition-colors font-['Geist']">
-                      E-commerce
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/services/saas" className="text-gray-400 hover:text-white transition-colors font-['Geist']">
-                      SaaS Platforms
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/services/ai" className="text-gray-400 hover:text-white transition-colors font-['Geist']">
-                      AI Integration
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Company */}
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold text-white font-['Geist']">Company</h4>
-                <ul className="space-y-3">
-                  <li>
-                    <Link to="/about" className="text-gray-400 hover:text-white transition-colors font-['Geist']">
-                      About Us
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/work" className="text-gray-400 hover:text-white transition-colors font-['Geist']">
-                      Our Work
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/process" className="text-gray-400 hover:text-white transition-colors font-['Geist']">
-                      Process
-                    </Link>
-                  </li>
-                  <li>
-                    <Link to="/contact" className="text-gray-400 hover:text-white transition-colors font-['Geist']">
-                      Contact
-                    </Link>
-                  </li>
-                </ul>
-              </div>
-
-              {/* Contact Info */}
-              <div className="space-y-4">
-                <h4 className="text-lg font-semibold text-white font-['Geist']">Get in Touch</h4>
-                <ul className="space-y-3">
-                  <li className="flex items-center gap-3 text-gray-400">
-                    <Mail className="w-5 h-5" />
-                    <a href="mailto:hello@feelize.com" className="hover:text-white transition-colors font-['Geist']">
-                      hello@feelize.com
-                    </a>
-                  </li>
-                  <li className="flex items-center gap-3 text-gray-400">
-                    <Globe className="w-5 h-5" />
-                    <a href="https://feelize.com" className="hover:text-white transition-colors font-['Geist']">
-                      www.feelize.com
-                    </a>
-                  </li>
-                </ul>
-
-                <div className="flex gap-4 mt-6">
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                    <Github className="w-6 h-6" />
-                  </a>
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                    <Linkedin className="w-6 h-6" />
-                  </a>
-                  <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                    <Twitter className="w-6 h-6" />
-                  </a>
-                </div>
-              </div>
-            </div>
-
-            <div className="pt-8 border-t border-gray-800 text-center text-gray-400 font-['Geist']">
-              <p>&copy; {new Date().getFullYear()} Feelize. All rights reserved.</p>
-            </div>
-          </div>
-        </footer>
       </div>
 
       {/* Modals */}
