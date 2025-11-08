@@ -236,17 +236,28 @@ const HomePage = () => {
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center text-center gap-10 max-w-6xl w-full"
           >
-            <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
-              <Sparkles className="w-5 h-5 mr-2" />
-              ✨ AI-Powered Development
-            </Badge>
+            <div className="mb-4">
+              <svg width="120" height="40" viewBox="0 0 120 40" className="mx-auto">
+                <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" 
+                      className="font-['Bricolage_Grotesque'] font-bold" 
+                      style={{ fontSize: '28px', fill: 'url(#gradient)' }}>
+                  Feelize
+                </text>
+                <defs>
+                  <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" style={{ stopColor: '#0580E8', stopOpacity: 1 }} />
+                    <stop offset="100%" style={{ stopColor: '#7000FF', stopOpacity: 1 }} />
+                  </linearGradient>
+                </defs>
+              </svg>
+            </div>
 
             <h1 className="text-7xl lg:text-8xl font-bold leading-tight font-['Bricolage_Grotesque']">
-              AI-Supercharged Engineers
+              Developers Supercharged by AI
             </h1>
 
             <p className="text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl">
-              Speed of AI. Quality of professional engineers. Powered by the most advanced AI tools.
+              Speed of AI. The quality and creativity of our professional designers, engineers, and business strategists.
             </p>
 
             <Button 
@@ -277,7 +288,7 @@ const HomePage = () => {
                   Our Process
                 </h2>
                 <p className="text-xl text-gray-400 font-['Istok_Web'] leading-relaxed">
-                  At Feelize, we're redefining software development. Our AI-supercharged engineers combine the speed and innovation of cutting-edge AI tools with the quality, structure, and expertise of professional developers and designers—delivering exceptional digital experiences that scale.
+                  At Feelize, our process is built on one core principle: AI-Supercharged Engineering Teams. We unite our professional engineers, designers, and marketers with advanced AI tools, allowing us to blend innovation with structure. The result is scalable, creative digital experiences delivered at unparalleled speed.
                 </p>
               </div>
 
