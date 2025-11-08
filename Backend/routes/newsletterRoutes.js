@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const fs = require('fs');
 const path = require('path');
+const nodemailer = require('nodemailer');
 
 // Ensure data directory exists
 const dataDir = path.join(__dirname, '..', 'data');
@@ -11,6 +12,51 @@ if (!fs.existsSync(dataDir)) {
 
 const subscribersFile = path.join(dataDir, 'newsletter-subscribers.json');
 const projectsFile = path.join(dataDir, 'team-projects.json');
+
+// Email configuration (using Gmail as fallback, should be configured with proper SMTP)
+// TODO: Team should configure this with actual email service credentials
+const createEmailTransporter = () => {
+  if (process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS) {
+    return nodemailer.createTransport({
+      host: process.env.SMTP_HOST,
+      port: process.env.SMTP_PORT || 587,
+      secure: process.env.SMTP_SECURE === 'true',
+      auth: {
+        user: process.env.SMTP_USER,
+        pass: process.env.SMTP_PASS,
+      },
+    });
+  }
+  return null;
+};
+
+// Send email notification to contact@feelize.com
+const sendEmailNotification = async (subject, htmlContent, textContent) => {
+  try {
+    const transporter = createEmailTransporter();
+    
+    if (!transporter) {
+      console.warn('⚠️ Email transporter not configured. Email notification skipped.');
+      console.log('📧 Would have sent:', { subject, to: 'contact@feelize.com' });
+      return false;
+    }
+
+    const mailOptions = {
+      from: process.env.SMTP_FROM || process.env.SMTP_USER,
+      to: 'contact@feelize.com',
+      subject: subject,
+      text: textContent,
+      html: htmlContent,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log('✅ Email sent:', info.messageId);
+    return true;
+  } catch (error) {
+    console.error('❌ Email send error:', error.message);
+    return false;
+  }
+};
 
 // Initialize files if they don't exist
 if (!fs.existsSync(subscribersFile)) {
@@ -73,9 +119,10 @@ router.post('/subscribe', async (req, res) => {
     }
 
     // Add new subscriber
+    const subscribedAt = new Date().toISOString();
     data.subscribers.push({
       email,
-      subscribedAt: new Date().toISOString(),
+      subscribedAt,
       source: 'team-builder',
       active: true
     });
@@ -88,6 +135,30 @@ router.post('/subscribe', async (req, res) => {
     }
 
     console.log(`✅ New newsletter subscriber: ${email}`);
+
+    // Send email notification to contact@feelize.com
+    const emailSubject = '🎉 New Newsletter Signup - Team Builder';
+    const emailHtml = `
+      <h2>New Newsletter Subscriber</h2>
+      <p><strong>Email:</strong> ${email}</p>
+      <p><strong>Source:</strong> Team Builder</p>
+      <p><strong>Subscribed At:</strong> ${new Date(subscribedAt).toLocaleString()}</p>
+      <hr>
+      <p><em>This subscriber signed up to access AI features and project reports.</em></p>
+    `;
+    const emailText = `
+New Newsletter Subscriber
+
+Email: ${email}
+Source: Team Builder
+Subscribed At: ${new Date(subscribedAt).toLocaleString()}
+
+This subscriber signed up to access AI features and project reports.
+    `;
+
+    // Send notification (non-blocking)
+    sendEmailNotification(emailSubject, emailHtml, emailText)
+      .catch(err => console.error('Email notification failed:', err));
 
     res.json({ 
       success: true, 
@@ -171,6 +242,59 @@ router.post('/create-project', async (req, res) => {
     console.log(`✅ New project created: ${projectId} for ${email}`);
     console.log(`   Team: ${team.map(m => m.name).join(', ')}`);
     console.log(`   Type: ${projectType || 'custom'}`);
+
+    // Send project creation notification to contact@feelize.com
+    const projectEmailSubject = '🚀 New Project Created - Team Builder';
+    const projectEmailHtml = `
+      <h2>New Project Created</h2>
+      <p><strong>Project ID:</strong> ${projectId}</p>
+      <p><strong>Client Email:</strong> ${email}</p>
+      <p><strong>Project Type:</strong> ${projectType || 'Custom'}</p>
+      <p><strong>Team Size:</strong> ${team.length} members</p>
+      <hr>
+      <h3>Team Composition</h3>
+      <ul>
+        ${team.map(m => `<li><strong>${m.name}</strong> - ${m.role}</li>`).join('')}
+      </ul>
+      <hr>
+      <h3>Team Stats</h3>
+      <ul>
+        <li>Engineering: ${project.teamStats.engineering}/10</li>
+        <li>Product: ${project.teamStats.product}/10</li>
+        <li>Delivery: ${project.teamStats.delivery}/10</li>
+        <li>Strategy: ${project.teamStats.strategy}/10</li>
+        <li><strong>Average Power: ${project.teamStats.avgPower}/10</strong></li>
+      </ul>
+      <hr>
+      <p><strong>Created At:</strong> ${new Date(project.createdAt).toLocaleString()}</p>
+      <p><em>Client is ready to start their project. Please follow up!</em></p>
+    `;
+    const projectEmailText = `
+New Project Created
+
+Project ID: ${projectId}
+Client Email: ${email}
+Project Type: ${projectType || 'Custom'}
+Team Size: ${team.length} members
+
+Team Composition:
+${team.map(m => `- ${m.name} (${m.role})`).join('\n')}
+
+Team Stats:
+- Engineering: ${project.teamStats.engineering}/10
+- Product: ${project.teamStats.product}/10
+- Delivery: ${project.teamStats.delivery}/10
+- Strategy: ${project.teamStats.strategy}/10
+- Average Power: ${project.teamStats.avgPower}/10
+
+Created At: ${new Date(project.createdAt).toLocaleString()}
+
+Client is ready to start their project. Please follow up!
+    `;
+
+    // Send notification (non-blocking)
+    sendEmailNotification(projectEmailSubject, projectEmailHtml, projectEmailText)
+      .catch(err => console.error('Project notification email failed:', err));
 
     res.json({ 
       success: true, 

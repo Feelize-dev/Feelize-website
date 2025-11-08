@@ -391,7 +391,8 @@ const TeamBuilderPage = () => {
     setIsSubmittingEmail(true);
     try {
       // Send to backend newsletter API
-      const response = await fetch('http://localhost:3000/api/newsletter/subscribe', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${apiUrl}/api/newsletter/subscribe`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -415,7 +416,12 @@ const TeamBuilderPage = () => {
       
     } catch (error) {
       console.error('Email signup error:', error);
-      alert('Failed to sign up. Please try again.');
+      // Still allow access even if backend fails (graceful degradation)
+      localStorage.setItem('feelize_user_email', emailInput);
+      setUserEmail(emailInput);
+      setShowEmailPrompt(false);
+      setEmailInput('');
+      alert('⚠️ Signed up locally. Full features may require backend connection.');
     } finally {
       setIsSubmittingEmail(false);
     }
@@ -451,7 +457,8 @@ const TeamBuilderPage = () => {
       };
 
       // Send to backend API to create project
-      const response = await fetch('http://localhost:3000/api/newsletter/create-project', {
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+      const response = await fetch(`${apiUrl}/api/newsletter/create-project`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -475,7 +482,9 @@ const TeamBuilderPage = () => {
       
     } catch (error) {
       console.error('Project creation error:', error);
-      alert('Failed to create project. Please try again.');
+      // Still allow navigation even if backend fails
+      console.warn('Proceeding without backend project creation');
+      window.location.href = createPageUrl("StartProject");
     }
   };
 
