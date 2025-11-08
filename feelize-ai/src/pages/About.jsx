@@ -490,13 +490,13 @@ const TeamBuilderPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0A0E14] text-white relative overflow-hidden p-8">
+    <div className="min-h-screen bg-[#0A0E14] text-white relative overflow-hidden p-4 sm:p-6 md:p-8">
       {/* Fixed Background with Gradient Ellipses */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
         {backgroundBlurs.map((pos, i) => (
           <div
             key={i}
-            className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
+            className="absolute w-[300px] h-[280px] sm:w-[542px] sm:h-[494px] rounded-full blur-[75px]"
             style={{
               left: pos.left,
               top: pos.top,
@@ -512,38 +512,39 @@ const TeamBuilderPage = () => {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="absolute top-8 right-8 z-20"
+          className="absolute top-4 right-4 sm:top-8 sm:right-8 z-20"
         >
-          <div className="px-4 py-2 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/50 rounded-lg flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 text-green-400" />
-            <span className="text-sm text-green-300">Signed Up - Full Access</span>
+          <div className="px-3 py-1.5 sm:px-4 sm:py-2 bg-gradient-to-r from-green-600/20 to-emerald-600/20 border border-green-500/50 rounded-lg flex items-center gap-2">
+            <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />
+            <span className="text-xs sm:text-sm text-green-300">Signed Up - Full Access</span>
           </div>
         </motion.div>
       )}
 
       {/* Header */}
-      <div className="text-center mb-12 relative z-10">
+      <div className="text-center mb-8 sm:mb-10 md:mb-12 relative z-10">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-7xl lg:text-8xl font-bold leading-tight font-['Bricolage_Grotesque'] mb-6">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight font-['Bricolage_Grotesque'] mb-4 sm:mb-6">
             🎲 Assemble Your<br />
             <span className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] bg-clip-text text-transparent">Epic Team</span>
           </h1>
-          <p className="text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl mx-auto mb-6">
+          <p className="text-base sm:text-xl md:text-2xl lg:text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl mx-auto mb-4 sm:mb-6 px-4">
             Choose a project type for instant recommendations, or build your custom dream team champion by champion.
           </p>
           
           {/* Project Template Selector */}
-          <div className="flex justify-center gap-3 mb-6 flex-wrap max-w-5xl mx-auto">
+          <div className="flex justify-center gap-2 sm:gap-3 mb-4 sm:mb-6 flex-wrap max-w-5xl mx-auto px-2">
             {Object.entries(PROJECT_TEMPLATES).map(([key, template]) => (
               <Button
                 key={key}
                 onClick={() => loadTeamTemplate(key)}
                 variant={selectedProject === key ? "default" : "outline"}
                 className={`
+                  text-xs sm:text-sm md:text-base
                   ${selectedProject === key 
                     ? 'bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0' 
                     : 'bg-slate-800/50 text-slate-300 border-slate-600 hover:bg-slate-700/50'}
@@ -641,7 +642,7 @@ const TeamBuilderPage = () => {
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex flex-col lg:flex-row gap-8 relative z-10">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 md:gap-8 relative z-10">
 
           {/* Left Panel: Champion Roster */}
           <div className="lg:w-2/3">
@@ -649,13 +650,13 @@ const TeamBuilderPage = () => {
               initial={{ opacity: 0, x: -50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.2 }}
-              className="p-6 bg-black/40 backdrop-blur-xl border-2 border-purple-500/30 rounded-3xl shadow-2xl"
+              className="p-4 sm:p-5 md:p-6 bg-black/40 backdrop-blur-xl border-2 border-purple-500/30 rounded-2xl sm:rounded-3xl shadow-2xl"
             >
-              <div className="flex items-center gap-3 mb-6">
-                <Shield className="w-8 h-8 text-purple-400" />
-                <h2 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent font-['Bricolage_Grotesque']">Available Champions</h2>
+              <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
+                <Shield className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-purple-400" />
+                <h2 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent font-['Bricolage_Grotesque']">Available Champions</h2>
               </div>
-              <div className="space-y-6 max-h-[80vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-transparent">
+              <div className="space-y-4 sm:space-y-6 max-h-[60vh] sm:max-h-[70vh] lg:max-h-[80vh] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-transparent">
                 {Object.entries(columns).map(([key, members]) => {
                   if (key === 'selectedTeam' || members.length === 0) return null;
                   return (
@@ -712,24 +713,24 @@ const TeamBuilderPage = () => {
           </div>
 
           {/* Right Panel: Your Team & Details */}
-          <div className="lg:w-1/3 flex flex-col gap-8">
+          <div className="lg:w-1/3 flex flex-col gap-4 sm:gap-6 md:gap-8">
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ duration: 0.6, delay: 0.3 }}
-              className="p-6 bg-black/40 backdrop-blur-xl border-2 border-purple-500/30 rounded-3xl flex-grow flex flex-col shadow-2xl"
+              className="p-4 sm:p-5 md:p-6 bg-black/40 backdrop-blur-xl border-2 border-purple-500/30 rounded-2xl sm:rounded-3xl flex-grow flex flex-col shadow-2xl"
             >
-              <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center gap-3">
-                  <Swords className="w-8 h-8 text-blue-400" />
-                  <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-['Bricolage_Grotesque']">Your Party</h2>
+              <div className="flex items-center justify-between mb-4 sm:mb-6">
+                <div className="flex items-center gap-2 sm:gap-3">
+                  <Swords className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8 text-blue-400" />
+                  <h2 className="text-xl sm:text-2xl md:text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent font-['Bricolage_Grotesque']">Your Party</h2>
                 </div>
                 {columns.selectedTeam.length > 0 && (
                   <Button
                     onClick={resetTeam}
                     variant="ghost"
                     size="sm"
-                    className="text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                    className="text-xs sm:text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10"
                   >
                     Reset
                   </Button>
@@ -740,7 +741,7 @@ const TeamBuilderPage = () => {
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className={`space-y-3 min-h-[300px] p-4 rounded-xl border-2 border-dashed transition-all duration-300 ${
+                    className={`space-y-2 sm:space-y-3 min-h-[200px] sm:min-h-[300px] p-3 sm:p-4 rounded-xl border-2 border-dashed transition-all duration-300 ${
                       snapshot.isDraggingOver 
                         ? 'border-cyan-400 bg-cyan-500/20 shadow-lg shadow-cyan-500/30 scale-[1.02]' 
                         : 'border-slate-700'
@@ -786,21 +787,22 @@ const TeamBuilderPage = () => {
               {columns.selectedTeam.length > 0 &&
                 <TeamAnalysis team={columns.selectedTeam} roster={ALL_MEMBERS} />
               }
-              <div className="space-y-3 mt-6">
+              <div className="space-y-2 sm:space-y-3 mt-4 sm:mt-6">
                 {!hasAccess() && columns.selectedTeam.length > 0 && (
-                  <div className="p-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-lg text-center">
-                    <p className="text-sm text-yellow-300 mb-2">🔒 Sign up for our newsletter to generate project reports!</p>
+                  <div className="p-2 sm:p-3 bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-lg text-center">
+                    <p className="text-xs sm:text-sm text-yellow-300 mb-1 sm:mb-2">🔒 Sign up for our newsletter to generate project reports!</p>
                   </div>
                 )}
-                <div className="flex gap-4">
+                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                   <Button 
                     onClick={handleLockInTeam}
                     disabled={columns.selectedTeam.length === 0} 
-                    className="flex-1 bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold hover:from-cyan-500 hover:to-blue-600"
+                    className="flex-1 bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold hover:from-cyan-500 hover:to-blue-600 text-xs sm:text-sm md:text-base py-4 sm:py-3"
                   >
-                    {hasAccess() ? 'Lock In Team & Generate Report' : 'Lock In Team (Sign Up Required)'}
+                    <span className="hidden sm:inline">{hasAccess() ? 'Lock In Team & Generate Report' : 'Lock In Team (Sign Up Required)'}</span>
+                    <span className="sm:hidden">{hasAccess() ? 'Generate Report' : 'Lock In (Sign Up)'}</span>
                   </Button>
-                  <Button variant="outline" onClick={resetTeam} className="bg-background text-blue-950 px-4 py-2 text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input hover:bg-accent hover:text-accent-foreground h-10">Reset</Button>
+                  <Button variant="outline" onClick={resetTeam} className="bg-background text-blue-950 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium rounded-md inline-flex items-center justify-center gap-2 whitespace-nowrap ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0 border border-input hover:bg-accent hover:text-accent-foreground h-auto">Reset</Button>
                 </div>
               </div>
             </motion.div>

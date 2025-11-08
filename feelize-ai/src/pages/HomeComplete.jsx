@@ -229,15 +229,15 @@ const HomePage = () => {
       {/* Main Content */}
       <div className="relative" style={{ zIndex: 1 }}>
         {/* Hero Section */}
-        <section className="w-full px-10 pt-24 pb-32 min-h-screen flex items-center justify-center">
+        <section className="w-full px-4 sm:px-6 md:px-10 pt-20 sm:pt-24 pb-16 sm:pb-24 md:pb-32 min-h-screen flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col items-center text-center gap-10 max-w-6xl w-full"
+            className="flex flex-col items-center text-center gap-6 sm:gap-8 md:gap-10 max-w-6xl w-full"
           >
-            <div className="mb-4">
-              <svg width="120" height="40" viewBox="0 0 120 40" className="mx-auto">
+            <div className="mb-2 sm:mb-4">
+              <svg width="100" height="35" viewBox="0 0 120 40" className="mx-auto sm:w-[120px] sm:h-[40px]">
                 <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle" 
                       className="font-['Bricolage_Grotesque'] font-bold" 
                       style={{ fontSize: '28px', fill: 'url(#gradient)' }}>
@@ -252,11 +252,11 @@ const HomePage = () => {
               </svg>
             </div>
 
-            <h1 className="text-7xl lg:text-8xl font-bold leading-tight font-['Bricolage_Grotesque']">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight font-['Bricolage_Grotesque'] px-4">
               Developers Supercharged by AI
             </h1>
 
-            <p className="text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl px-4">
               Speed of AI. The quality and creativity of our professional designers, engineers, and business strategists.
             </p>
 
@@ -268,7 +268,7 @@ const HomePage = () => {
                   aiSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
               }}
-              className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white px-8 py-6 text-lg rounded-full h-auto"
+              className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white px-6 py-4 sm:px-8 sm:py-6 text-base sm:text-lg rounded-full h-auto"
             >
               Start Using AI assistant
             </Button>
@@ -276,42 +276,42 @@ const HomePage = () => {
         </section>
 
         {/* Process Section */}
-        <section className="container mx-auto px-16 py-28">
-          <div className="flex flex-col items-center gap-12 mb-16">
-            <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
+        <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-28">
+          <div className="flex flex-col items-center gap-8 sm:gap-10 md:gap-12 mb-12 sm:mb-16">
+            <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
               ✨ AI-Optimized Workflow
             </Badge>
             
-            <div className="flex justify-between items-start w-full max-w-7xl gap-12">
-              <div className="flex-1 space-y-6">
-                <h2 className="text-5xl font-semibold text-white font-['Geist']">
+            <div className="flex flex-col lg:flex-row justify-between items-start w-full max-w-7xl gap-8 sm:gap-10 lg:gap-12">
+              <div className="w-full lg:flex-1 space-y-4 sm:space-y-6">
+                <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white font-['Geist']">
                   Our Process
                 </h2>
-                <p className="text-xl text-gray-400 font-['Istok_Web'] leading-relaxed">
+                <p className="text-base sm:text-lg md:text-xl text-gray-400 font-['Istok_Web'] leading-relaxed">
                   At Feelize, our process is built on one core principle: AI-Supercharged Engineering Teams. We unite our professional engineers, designers, and marketers with advanced AI tools, allowing us to blend innovation with structure. The result is scalable, creative digital experiences delivered at unparalleled speed.
                 </p>
               </div>
 
-              <div className="flex-1 space-y-4">
+              <div className="w-full lg:flex-1 space-y-3 sm:space-y-4">
                 {processSteps.map((step, index) => {
                   const Icon = step.icon;
                   return (
-                    <div key={index} className="flex items-start gap-10">
-                      <div className="flex flex-col items-center gap-4">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-[#0580E8] to-[#7000FF] flex items-center justify-center">
-                          <Icon className="w-6 h-6 text-white" />
+                    <div key={index} className="flex items-start gap-4 sm:gap-6 md:gap-10">
+                      <div className="flex flex-col items-center gap-2 sm:gap-4">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-gradient-to-r from-[#0580E8] to-[#7000FF] flex items-center justify-center flex-shrink-0">
+                          <Icon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
                         {index < processSteps.length - 1 && (
-                          <div className="w-0.5 h-20 bg-gradient-to-b from-purple-500/50 to-transparent" />
+                          <div className="w-0.5 h-12 sm:h-16 md:h-20 bg-gradient-to-b from-purple-500/50 to-transparent" />
                         )}
                       </div>
 
-                      <div className="flex-1 pb-4">
-                        <p className="text-sm font-semibold text-white mb-1 font-['Geist']">{step.subtitle}</p>
-                        <h3 className="text-3xl font-semibold text-white mb-2 font-['Geist']">
+                      <div className="flex-1 pb-2 sm:pb-4">
+                        <p className="text-xs sm:text-sm font-semibold text-white mb-1 font-['Geist']">{step.subtitle}</p>
+                        <h3 className="text-xl sm:text-2xl md:text-3xl font-semibold text-white mb-1 sm:mb-2 font-['Geist']">
                           {step.title}
                         </h3>
-                        <p className="text-gray-400 font-['Geist']">{step.description}</p>
+                        <p className="text-sm sm:text-base text-gray-400 font-['Geist']">{step.description}</p>
                       </div>
                     </div>
                   );
@@ -322,51 +322,51 @@ const HomePage = () => {
         </section>
 
         {/* Success Metrics Section */}
-        <section className="container mx-auto px-16 py-16">
-          <div className="flex flex-col items-center gap-16">
-            <div className="text-center space-y-6 max-w-6xl">
-              <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
+        <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-8 sm:py-12 md:py-16">
+          <div className="flex flex-col items-center gap-8 sm:gap-12 md:gap-16">
+            <div className="text-center space-y-4 sm:space-y-6 max-w-6xl">
+              <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
                 Why Choose Us
               </Badge>
-              <div className="grid grid-cols-2 gap-28 items-center">
-                <h2 className="text-5xl font-bold text-white text-left font-['Geist']">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 md:gap-16 lg:gap-28 items-center">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white text-center lg:text-left font-['Geist']">
                   Discover Our Unmatched Success Rates
                 </h2>
-                <p className="text-2xl text-gray-400 leading-relaxed text-left font-['Geist']">
+                <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-400 leading-relaxed text-center lg:text-left font-['Geist']">
                   At Feelize, we pride ourselves on delivering exceptional results for our clients. With a proven track record and a commitment to customer satisfaction, we ensure that your projects are in capable hands. Join the ranks of our successful clients today!
                 </p>
               </div>
             </div>
 
-            <div className="flex justify-center items-center gap-32">
-              <div className="text-center px-6">
-                <h3 className="text-7xl font-bold text-white mb-1 font-['Geist']">95%</h3>
-                <p className="text-2xl text-gray-400 font-['Geist']">Faster Delivery</p>
+            <div className="flex flex-col sm:flex-row justify-center items-center gap-8 sm:gap-12 md:gap-16 lg:gap-32 w-full">
+              <div className="text-center px-4 sm:px-6">
+                <h3 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-1 font-['Geist']">95%</h3>
+                <p className="text-lg sm:text-xl md:text-2xl text-gray-400 font-['Geist']">Faster Delivery</p>
               </div>
-              <div className="text-center px-6">
-                <h3 className="text-7xl font-bold text-white mb-1 font-['Geist']">80%</h3>
-                <p className="text-2xl text-gray-400 font-['Geist']">Cost Savings</p>
+              <div className="text-center px-4 sm:px-6">
+                <h3 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-1 font-['Geist']">80%</h3>
+                <p className="text-lg sm:text-xl md:text-2xl text-gray-400 font-['Geist']">Cost Savings</p>
               </div>
-              <div className="text-center px-6">
-                <h3 className="text-7xl font-bold text-white mb-1 font-['Geist']">100%</h3>
-                <p className="text-2xl text-gray-400 font-['Geist']">Client Satisfaction Rate</p>
+              <div className="text-center px-4 sm:px-6">
+                <h3 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-1 font-['Geist']">100%</h3>
+                <p className="text-lg sm:text-xl md:text-2xl text-gray-400 font-['Geist']">Client Satisfaction Rate</p>
               </div>
             </div>
           </div>
         </section>
 
         {/* AI Analyzer Section */}
-        <section id="ai-analyzer" className="container mx-auto px-16 py-24 scroll-mt-24">
+        <section id="ai-analyzer" className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-24 scroll-mt-24">
           <div className="max-w-6xl mx-auto">
-            <div className="text-center space-y-6 mb-12">
-              <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
-                <Sparkles className="w-5 h-5 mr-2" />
+            <div className="text-center space-y-4 sm:space-y-6 mb-8 sm:mb-10 md:mb-12">
+              <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
+                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                 AI-Powered Analysis
               </Badge>
-              <h2 className="text-5xl font-bold text-white font-['Geist']">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-['Geist']">
                 Free AI Project Analyzer
               </h2>
-              <p className="text-xl text-gray-400 font-['Geist']">
+              <p className="text-base sm:text-lg md:text-xl text-gray-400 font-['Geist'] px-4">
                 Upload files, describe your project, and get a professional report with timeline and budget
               </p>
             </div>
@@ -376,36 +376,36 @@ const HomePage = () => {
         </section>
 
         {/* Testimonials Section */}
-        <section className="container mx-auto px-16 py-24">
-          <div className="text-center space-y-6 mb-16">
-            <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
+        <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-24">
+          <div className="text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12 md:mb-16">
+            <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
               Success Stories
             </Badge>
-            <h2 className="text-5xl font-bold text-white font-['Geist']">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-['Geist']">
               What Our Clients Say
             </h2>
           </div>
 
-          <div className="space-y-8">
+          <div className="space-y-4 sm:space-y-6 md:space-y-8">
             {/* First Row */}
-            <div className="grid grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
               {testimonials.map((testimonial, index) => (
                 <Card key={index} className="bg-[#141324] border-gray-700">
-                  <CardContent className="p-8 space-y-6">
+                  <CardContent className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
                     <div className="flex gap-1">
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="w-5 h-5 fill-yellow-500 text-yellow-500" />
+                        <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 fill-yellow-500 text-yellow-500" />
                       ))}
                     </div>
-                    <p className="text-gray-300 text-lg leading-relaxed font-['Geist']">
+                    <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed font-['Geist']">
                       "{testimonial.quote}"
                     </p>
-                    <div className="pt-4 border-t border-gray-700">
-                      <p className="text-white font-semibold font-['Geist']">{testimonial.author}</p>
-                      <p className="text-gray-400 text-sm font-['Geist']">{testimonial.title}</p>
-                      <div className="mt-4 flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 text-green-500" />
-                        <p className="text-green-500 text-sm font-semibold font-['Geist']">
+                    <div className="pt-3 sm:pt-4 border-t border-gray-700">
+                      <p className="text-white font-semibold text-sm sm:text-base font-['Geist']">{testimonial.author}</p>
+                      <p className="text-gray-400 text-xs sm:text-sm font-['Geist']">{testimonial.title}</p>
+                      <div className="mt-3 sm:mt-4 flex items-center gap-2">
+                        <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                        <p className="text-green-500 text-xs sm:text-sm font-semibold font-['Geist']">
                           {testimonial.metric}
                         </p>
                       </div>
@@ -416,24 +416,24 @@ const HomePage = () => {
             </div>
 
             {/* Second Row */}
-            <div className="grid grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
               {testimonials.map((testimonial, index) => (
                 <Card key={index + 3} className="bg-[#141324] border-gray-700">
-                  <CardContent className="p-8 space-y-6">
+                  <CardContent className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
                     <div className="flex gap-1">
                       {[...Array(testimonial.rating)].map((_, i) => (
-                        <Star key={i} className="w-5 h-5 fill-yellow-500 text-yellow-500" />
+                        <Star key={i} className="w-4 h-4 sm:w-5 sm:h-5 fill-yellow-500 text-yellow-500" />
                       ))}
                     </div>
-                    <p className="text-gray-300 text-lg leading-relaxed font-['Geist']">
+                    <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed font-['Geist']">
                       "{testimonial.quote}"
                     </p>
-                    <div className="pt-4 border-t border-gray-700">
-                      <p className="text-white font-semibold font-['Geist']">{testimonial.author}</p>
-                      <p className="text-gray-400 text-sm font-['Geist']">{testimonial.title}</p>
-                      <div className="mt-4 flex items-center gap-2">
-                        <TrendingUp className="w-4 h-4 text-green-500" />
-                        <p className="text-green-500 text-sm font-semibold font-['Geist']">
+                    <div className="pt-3 sm:pt-4 border-t border-gray-700">
+                      <p className="text-white font-semibold text-sm sm:text-base font-['Geist']">{testimonial.author}</p>
+                      <p className="text-gray-400 text-xs sm:text-sm font-['Geist']">{testimonial.title}</p>
+                      <div className="mt-3 sm:mt-4 flex items-center gap-2">
+                        <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-500" />
+                        <p className="text-green-500 text-xs sm:text-sm font-semibold font-['Geist']">
                           {testimonial.metric}
                         </p>
                       </div>
@@ -446,49 +446,49 @@ const HomePage = () => {
         </section>
 
         {/* Pricing Section */}
-        <section className="container mx-auto px-16 py-24">
-          <div className="text-center space-y-6 mb-16">
-            <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
+        <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-24">
+          <div className="text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12 md:mb-16">
+            <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
               Transparent Pricing
             </Badge>
-            <h2 className="text-5xl font-bold text-white font-['Geist']">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-['Geist']">
               Choose Your Package
             </h2>
-            <p className="text-xl text-gray-400 font-['Geist']">
+            <p className="text-base sm:text-lg md:text-xl text-gray-400 font-['Geist']">
               Flexible solutions for every stage of your journey
             </p>
           </div>
 
-          <div className="grid grid-cols-3 gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-7xl mx-auto">
             {pricingPlans.map((plan, index) => (
               <Card key={index} className="bg-[#141324] border-gray-700 hover:border-purple-500 transition-all">
-                <CardContent className="p-8 space-y-6">
+                <CardContent className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
                   <div>
-                    <h3 className="text-3xl font-bold text-white mb-2 font-['Geist']">
+                    <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2 font-['Geist']">
                       {plan.name}
                     </h3>
-                    <p className="text-gray-400 font-['Geist']">{plan.duration}</p>
+                    <p className="text-sm sm:text-base text-gray-400 font-['Geist']">{plan.duration}</p>
                   </div>
 
-                  <div className="py-6 border-y border-gray-700">
-                    <div className="text-5xl font-bold text-white mb-2 font-['Geist']">
+                  <div className="py-4 sm:py-6 border-y border-gray-700">
+                    <div className="text-3xl sm:text-4xl md:text-5xl font-bold text-white mb-2 font-['Geist']">
                       {plan.price}
                     </div>
-                    <p className="text-gray-400 font-['Geist']">{plan.description}</p>
+                    <p className="text-sm sm:text-base text-gray-400 font-['Geist']">{plan.description}</p>
                   </div>
 
-                  <ul className="space-y-4">
+                  <ul className="space-y-3 sm:space-y-4">
                     {plan.features.map((feature, idx) => (
-                      <li key={idx} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                        <span className="text-gray-300 font-['Geist']">{feature}</span>
+                      <li key={idx} className="flex items-start gap-2 sm:gap-3">
+                        <Check className="w-4 h-4 sm:w-5 sm:h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                        <span className="text-sm sm:text-base text-gray-300 font-['Geist']">{feature}</span>
                       </li>
                     ))}
                   </ul>
 
                   <Button 
                     onClick={() => setIsContactOpen(true)}
-                    className="w-full bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white py-6 text-lg"
+                    className="w-full bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white py-4 sm:py-6 text-base sm:text-lg"
                   >
                     Get Started
                   </Button>
@@ -499,35 +499,35 @@ const HomePage = () => {
         </section>
 
         {/* FAQ Section */}
-        <section className="container mx-auto px-16 py-24">
+        <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-24">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center space-y-6 mb-16">
-              <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
+            <div className="text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12 md:mb-16">
+              <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
                 Got Questions?
               </Badge>
-              <h2 className="text-5xl font-bold text-white font-['Geist']">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-['Geist']">
                 Frequently Asked Questions
               </h2>
-              <p className="text-xl text-gray-400 font-['Geist']">
+              <p className="text-base sm:text-lg md:text-xl text-gray-400 font-['Geist']">
                 Can't find what you're looking for? Chat with our AI assistant below!
               </p>
             </div>
 
-            <div className="space-y-4">
+            <div className="space-y-3 sm:space-y-4">
               {faqs.map((faq, index) => (
                 <Card key={index} className="bg-[#141324] border-gray-700">
                   <CardContent className="p-0">
                     <button
                       onClick={() => toggleFaq(index)}
-                      className="w-full flex items-center justify-between p-6 text-left hover:bg-gray-800/50 transition-colors"
+                      className="w-full flex items-center justify-between p-4 sm:p-6 text-left hover:bg-gray-800/50 transition-colors"
                     >
-                      <span className="text-xl font-semibold text-white font-['Geist']">
+                      <span className="text-base sm:text-lg md:text-xl font-semibold text-white font-['Geist'] pr-4">
                         {faq.question}
                       </span>
                       {openFaqIndex === index ? (
-                        <ChevronUp className="w-6 h-6 text-gray-400 flex-shrink-0" />
+                        <ChevronUp className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 flex-shrink-0" />
                       ) : (
-                        <ChevronDown className="w-6 h-6 text-gray-400 flex-shrink-0" />
+                        <ChevronDown className="w-5 h-5 sm:w-6 sm:h-6 text-gray-400 flex-shrink-0" />
                       )}
                     </button>
                     
@@ -537,9 +537,9 @@ const HomePage = () => {
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="px-6 pb-6"
+                        className="px-4 sm:px-6 pb-4 sm:pb-6"
                       >
-                        <p className="text-gray-400 text-lg leading-relaxed font-['Geist']">
+                        <p className="text-gray-400 text-sm sm:text-base md:text-lg leading-relaxed font-['Geist']">
                           {faq.answer}
                         </p>
                       </motion.div>
@@ -550,8 +550,8 @@ const HomePage = () => {
             </div>
 
             {/* AI Chatbot Button */}
-            <div className="mt-12 text-center">
-              <p className="text-gray-400 mb-6 text-lg font-['Geist']">
+            <div className="mt-8 sm:mt-10 md:mt-12 text-center">
+              <p className="text-gray-400 mb-4 sm:mb-6 text-base sm:text-lg font-['Geist'] px-4">
                 Still have questions? Our AI assistant is here to help!
               </p>
               <ChatButton onClick={() => setIsChatOpen(true)} />

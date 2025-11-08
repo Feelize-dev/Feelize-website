@@ -123,20 +123,20 @@ export default function ProcessPage() {
 
       {/* Main Content */}
       <div className="relative" style={{ zIndex: 1 }}>
-        <div className="container mx-auto px-16 py-24">
+        <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-24">
           
           {/* Header */}
-          <div className="text-center mb-20">
-            <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none mb-8">
-              <Sparkles className="w-5 h-5 mr-2" />
+          <div className="text-center mb-12 sm:mb-16 md:mb-20">
+            <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-sm sm:text-base md:text-lg rounded-full bg-transparent border-none mb-6 sm:mb-8">
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               ✨ AI-Optimized Workflow
             </Badge>
             
-            <h1 className="text-7xl lg:text-8xl font-bold leading-tight font-['Bricolage_Grotesque'] mb-6">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight font-['Bricolage_Grotesque'] mb-4 sm:mb-6 px-4">
               Our Process,<br />
               <span className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] bg-clip-text text-transparent">AI-Supercharged</span>
             </h1>
-            <p className="text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl mx-auto">
+            <p className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl mx-auto px-4">
               We've engineered a process that integrates AI at every stage to maximize efficiency, precision, and value for you.
             </p>
           </div>
@@ -188,9 +188,9 @@ export default function ProcessPage() {
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >
-              <Card className="bg-black/40 backdrop-blur-xl border-2 border-purple-500/30 rounded-3xl overflow-hidden">
+              <Card className="bg-black/40 backdrop-blur-xl border-2 border-purple-500/30 rounded-2xl sm:rounded-3xl overflow-hidden">
                 <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-blue-600/10 opacity-30" />
-                <CardContent className="relative p-12">
+                <CardContent className="relative p-6 sm:p-8 md:p-10 lg:p-12">
                   
                   {/* Mobile Navigation Arrows */}
                   <div className="flex sm:hidden justify-between items-center mb-6">
@@ -213,23 +213,23 @@ export default function ProcessPage() {
                     </button>
                   </div>
 
-                  <div className="text-center mb-8">
-                    <div className="inline-flex p-6 bg-gradient-to-br from-[#0580E8] to-[#7000FF] rounded-3xl shadow-2xl mb-6">
-                      {React.createElement(phases[activePhase].icon, { className: "w-12 h-12 text-white" })}
+                  <div className="text-center mb-6 sm:mb-8">
+                    <div className="inline-flex p-4 sm:p-5 md:p-6 bg-gradient-to-br from-[#0580E8] to-[#7000FF] rounded-2xl sm:rounded-3xl shadow-2xl mb-4 sm:mb-6">
+                      {React.createElement(phases[activePhase].icon, { className: "w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-white" })}
                     </div>
-                    <h3 className="text-3xl font-bold text-white mb-3 font-['Bricolage_Grotesque']">
+                    <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2 sm:mb-3 font-['Bricolage_Grotesque']">
                       {phases[activePhase].title}
                     </h3>
-                    <Badge className="bg-purple-600/20 text-purple-300 text-sm border border-purple-500/30 font-['Geist']">
+                    <Badge className="bg-purple-600/20 text-purple-300 text-xs sm:text-sm border border-purple-500/30 font-['Geist']">
                       {phases[activePhase].duration}
                     </Badge>
                   </div>
 
-                  <p className="text-xl text-gray-300 mb-8 text-center leading-relaxed font-['Geist']">
+                  <p className="text-base sm:text-lg md:text-xl text-gray-300 mb-6 sm:mb-8 text-center leading-relaxed font-['Geist']">
                     {phases[activePhase].description}
                   </p>
 
-                  <div className="grid sm:grid-cols-2 gap-8">
+                  <div className="grid sm:grid-cols-2 gap-6 sm:gap-8">
                     <div className="text-center sm:text-left">
                       <div className="flex items-center justify-center sm:justify-start gap-3 mb-4">
                         <TrendingUp className="w-6 h-6 text-purple-400" />
