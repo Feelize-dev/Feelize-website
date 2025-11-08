@@ -4,10 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { 
-  Sparkles, 
-  Star, 
-  ChevronDown, 
+import {
+  Sparkles,
+  Star,
+  ChevronDown,
   ChevronUp,
   Phone,
   Rocket,
@@ -227,13 +227,12 @@ const HomePage = () => {
         {/* Hero Section */}
         <section className="w-full px-10 pt-24 pb-32 min-h-screen flex items-center justify-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 200 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center text-center gap-10 max-w-6xl w-full"
           >
-            <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
-              <Sparkles className="w-5 h-5 mr-2" />
+            <Badge className="px-6 py-4 text-md md:text-lg font-light rounded-full bg-transparent border-2 border-blue-600">
               ✨ AI-Powered Development
             </Badge>
 
@@ -245,7 +244,7 @@ const HomePage = () => {
               Speed of AI. Quality of professional engineers. Powered by the most advanced AI tools.
             </p>
 
-            <Button 
+            <Button
               size="lg"
               onClick={() => {
                 const aiSection = document.getElementById('ai-analyzer');
@@ -266,7 +265,7 @@ const HomePage = () => {
             <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
               ✨ AI-Optimized Workflow
             </Badge>
-            
+
             <div className="flex justify-between items-start w-full max-w-7xl gap-12">
               <div className="flex-1 space-y-6">
                 <h2 className="text-5xl font-semibold text-white font-['Geist']">
@@ -471,7 +470,7 @@ const HomePage = () => {
                     ))}
                   </ul>
 
-                  <Button 
+                  <Button
                     onClick={() => setIsContactOpen(true)}
                     className="w-full bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white py-6 text-lg"
                   >
@@ -515,7 +514,7 @@ const HomePage = () => {
                         <ChevronDown className="w-6 h-6 text-gray-400 flex-shrink-0" />
                       )}
                     </button>
-                    
+
                     {openFaqIndex === index && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
@@ -546,14 +545,14 @@ const HomePage = () => {
       </div>
 
       {/* Modals */}
-      <ContactForm 
-        isOpen={isContactOpen} 
-        onClose={() => setIsContactOpen(false)} 
+      <ContactForm
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
       />
 
-      <AIChatbot 
-        isOpen={isChatOpen} 
-        onClose={() => setIsChatOpen(false)} 
+      <AIChatbot
+        isOpen={isChatOpen}
+        onClose={() => setIsChatOpen(false)}
       />
     </div>
   );
