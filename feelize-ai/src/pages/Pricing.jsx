@@ -20,6 +20,15 @@ import {
 export default function PricingPage() {
   const [hoveredPlan, setHoveredPlan] = useState(null);
 
+  const backgroundBlurs = [
+    { left: '10%', top: '-200px' },
+    { left: '70%', top: '-100px' },
+    { left: '-142px', top: '1000px' },
+    { left: '864px', top: '1500px' },
+    { left: '191px', top: '800px' },
+    { left: '1226px', top: '1200px' },
+  ];
+
   const packages = [
     {
       id: "campaign",
@@ -96,29 +105,40 @@ export default function PricingPage() {
   ];
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-green-400/10 to-blue-600/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-purple-600/10 to-pink-600/10 rounded-full blur-3xl animate-pulse delay-1000" />
+    <div className="min-h-screen bg-[#0A0E14] text-white relative">
+      {/* Fixed Background with Gradient Ellipses */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
+        {backgroundBlurs.map((pos, i) => (
+          <div
+            key={i}
+            className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
+            style={{
+              left: pos.left,
+              top: pos.top,
+              background: 'rgba(80, 0, 181, 0.67)',
+              opacity: 0.25
+            }}
+          />
+        ))}
       </div>
 
-      <div className="relative py-16 sm:py-24 lg:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Main Content */}
+      <div className="relative" style={{ zIndex: 1 }}>
+        <div className="container mx-auto px-16 py-24">
           
           {/* Header */}
-          <div className="text-center mb-12 sm:mb-20">
-            <div className="inline-flex items-center gap-2 px-4 sm:px-6 py-3 bg-slate-800/50 rounded-full border border-green-500/30 mb-6 sm:mb-8 backdrop-blur-xl">
-              <TrendingUp className="w-4 h-4 text-green-400" />
-              <span className="text-green-400 text-xs sm:text-sm font-medium">Transparent Pricing • Maximum Value</span>
-            </div>
+          <div className="text-center mb-20">
+            <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none mb-8">
+              <Sparkles className="w-5 h-5 mr-2" />
+              ✨ Transparent Pricing • Maximum Value
+            </Badge>
             
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-white mb-4 sm:mb-6">
-              Premium Quality,
-              <span className="block gradient-text">AI-Accelerated Pricing</span>
+            <h1 className="text-7xl lg:text-8xl font-bold leading-tight font-['Bricolage_Grotesque'] mb-6">
+              AI-Supercharged<br />
+              <span className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] bg-clip-text text-transparent">Engineer Pricing</span>
             </h1>
-            <p className="text-lg sm:text-xl text-slate-300 max-w-3xl mx-auto mb-6 sm:mb-8">
-              Our AI-powered efficiency means you get top-tier agency quality without the premium price tag. Smart technology, smarter pricing.
+            <p className="text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl mx-auto">
+              Speed of AI + Quality of Professional Engineers = Unbeatable Value
             </p>
           </div>
 
@@ -127,41 +147,41 @@ export default function PricingPage() {
             {packages.map((pkg) => (
               <div
                 key={pkg.id}
-                className="transition-all duration-300 ease-in-out hover:!scale-105 hover:-translate-y-2 sm:hover:-translate-4 hover:z-10"
+                className="transition-all duration-300 ease-in-out hover:scale-105 hover:-translate-y-2 hover:z-10"
               >
-                <Card className="h-full glass-morphism border-2 rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-500 border-white/20 hover:border-cyan-400/50 shadow-xl shadow-black/20">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${pkg.color} opacity-5`} />
+                <Card className="h-full bg-black/40 backdrop-blur-xl border-2 rounded-3xl overflow-hidden transition-all duration-500 border-purple-500/30 hover:border-purple-400/70 shadow-2xl hover:shadow-purple-500/20">
+                  <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-blue-600/10 opacity-30" />
                   
-                  <CardContent className="relative p-6 sm:p-8 h-full flex flex-col">
+                  <CardContent className="relative p-8 h-full flex flex-col">
                     <div className="flex-grow">
-                      <div className="text-center mb-6 sm:mb-8">
-                        <div className={`inline-flex p-3 sm:p-4 bg-gradient-to-br ${pkg.color} rounded-xl sm:rounded-2xl shadow-lg mb-4 sm:mb-6`}>
-                          <pkg.icon className="w-6 sm:w-8 h-6 sm:h-8 text-white" />
+                      <div className="text-center mb-8">
+                        <div className="inline-flex p-4 bg-gradient-to-br from-[#0580E8] to-[#7000FF] rounded-2xl shadow-lg mb-6">
+                          <pkg.icon className="w-8 h-8 text-white" />
                         </div>
-                        <h3 className="text-xl sm:text-2xl font-bold text-white mb-2">{pkg.name}</h3>
-                        <p className="text-slate-400 text-sm h-10 sm:h-12">{pkg.description}</p>
+                        <h3 className="text-2xl font-bold text-white mb-2 font-['Bricolage_Grotesque']">{pkg.name}</h3>
+                        <p className="text-gray-400 text-sm font-['Geist'] h-12">{pkg.description}</p>
                       </div>
 
-                      <div className="text-center mb-6 sm:mb-8">
-                        {pkg.id !== "hourly" && <p className="text-sm text-slate-400 mb-1">Starting at</p>}
-                        <span className="text-3xl sm:text-4xl lg:text-5xl font-black text-white">{pkg.price}</span>
+                      <div className="text-center mb-8">
+                        {pkg.id !== "hourly" && <p className="text-sm text-gray-400 mb-1 font-['Geist']">Starting at</p>}
+                        <span className="text-5xl font-black text-white font-['Bricolage_Grotesque']">{pkg.price}</span>
                       </div>
 
-                      <div className="text-center mb-6 sm:mb-8">
-                        <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-slate-800/50 rounded-full">
-                          <Clock className="w-3 sm:w-4 h-3 sm:h-4 text-cyan-400" />
-                          <span className="text-slate-300 text-xs sm:text-sm">{pkg.timeline}</span>
+                      <div className="text-center mb-8">
+                        <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600/20 rounded-full border border-purple-500/30">
+                          <Clock className="w-4 h-4 text-purple-400" />
+                          <span className="text-gray-300 text-sm font-['Geist']">{pkg.timeline}</span>
                         </div>
                       </div>
 
-                      <ul className="space-y-2 sm:space-y-3">
+                      <ul className="space-y-3">
                         {pkg.features.map((feature, idx) => (
-                          <li key={idx} className="flex items-start gap-2 sm:gap-3 text-xs sm:text-sm">
-                            <div className="w-4 sm:w-5 h-4 sm:h-5 bg-green-500/20 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
-                              <Check className="w-2.5 sm:w-3 h-2.5 sm:h-3 text-green-400" />
+                          <li key={idx} className="flex items-start gap-3 text-sm">
+                            <div className="w-5 h-5 bg-purple-500/20 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 border border-purple-500/30">
+                              <Check className="w-3 h-3 text-purple-400" />
                             </div>
-                            <span className={`${
-                              feature.includes('Everything') ? 'text-cyan-400 font-semibold' : 'text-slate-300'
+                            <span className={`font-['Geist'] ${
+                              feature.includes('Everything') ? 'text-purple-400 font-semibold' : 'text-gray-300'
                             }`}>
                               {feature}
                             </span>
@@ -170,11 +190,11 @@ export default function PricingPage() {
                       </ul>
                     </div>
 
-                    <div className="mt-6 sm:mt-8">
+                    <div className="mt-8">
                       <Link to={createPageUrl("StartProject")}>
-                        <Button className={`w-full font-bold py-3 sm:py-4 rounded-xl sm:rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 ${pkg.buttonClass}`}>
+                        <Button className="w-full font-bold py-4 rounded-2xl shadow-lg transition-all duration-300 hover:scale-105 bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:from-[#0580E8]/90 hover:to-[#7000FF]/90 text-white font-['Bricolage_Grotesque']">
                           Get Started
-                          <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5 ml-2" />
+                          <ArrowRight className="w-5 h-5 ml-2" />
                         </Button>
                       </Link>
                     </div>
@@ -185,26 +205,26 @@ export default function PricingPage() {
           </div>
 
           {/* Custom Offer Box */}
-          <Card className="glass-morphism border border-cyan-400/30 rounded-2xl sm:rounded-3xl overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-purple-500/5" />
-            <CardContent className="relative p-6 sm:p-8 lg:p-12">
-                <div className="grid md:grid-cols-3 items-center gap-6 sm:gap-8">
+          <Card className="bg-black/40 backdrop-blur-xl border border-purple-500/30 rounded-3xl overflow-hidden">
+            <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-blue-600/10 to-purple-500/10 opacity-30" />
+            <CardContent className="relative p-12">
+                <div className="grid md:grid-cols-3 items-center gap-8">
                     <div className="md:col-span-2">
-                        <div className="w-16 sm:w-20 h-16 sm:h-20 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg shadow-cyan-500/30">
-                            <MessageSquare className="w-8 sm:w-10 h-8 sm:h-10 text-white" />
+                        <div className="w-20 h-20 bg-gradient-to-br from-[#0580E8] to-[#7000FF] rounded-3xl flex items-center justify-center mb-6 shadow-lg shadow-purple-500/30">
+                            <MessageSquare className="w-10 h-10 text-white" />
                         </div>
-                        <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mb-3 sm:mb-4">
+                        <h2 className="text-4xl font-bold text-white mb-4 font-['Bricolage_Grotesque']">
                             Need a Custom Solution?
                         </h2>
-                        <p className="text-slate-300 text-base sm:text-lg max-w-2xl">
-                            Have a unique project, a tight deadline, or specific enterprise needs? Let's talk. We build custom solutions tailored to your exact requirements.
+                        <p className="text-gray-300 text-lg max-w-2xl font-['Geist']">
+                            Have a unique project, a tight deadline, or specific enterprise needs? Let's talk. We build custom solutions tailored to your exact requirements with AI-supercharged efficiency.
                         </p>
                     </div>
                     <div className="text-center md:text-right">
                         <Link to={createPageUrl("StartProject")}>
-                            <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold px-8 sm:px-12 py-4 sm:py-6 text-base sm:text-lg rounded-xl sm:rounded-2xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105">
+                            <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:from-[#0580E8]/90 hover:to-[#7000FF]/90 text-white font-bold px-12 py-6 text-lg rounded-2xl shadow-lg shadow-purple-500/25 hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 font-['Bricolage_Grotesque']">
                                 Contact Us
-                                <Sparkles className="w-4 sm:w-5 h-4 sm:h-5 ml-2 sm:ml-3" />
+                                <Sparkles className="w-5 h-5 ml-3" />
                             </Button>
                         </Link>
                     </div>
