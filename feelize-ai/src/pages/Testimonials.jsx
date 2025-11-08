@@ -23,6 +23,15 @@ export default function TestimonialsPage() {
   const [currentTestimonial, setCurrentTestimonial] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
+  const backgroundBlurs = [
+    { left: '10%', top: '-200px' },
+    { left: '70%', top: '-100px' },
+    { left: '-142px', top: '1000px' },
+    { left: '864px', top: '1500px' },
+    { left: '191px', top: '800px' },
+    { left: '1226px', top: '1200px' },
+  ];
+
   const testimonials = [
     {
       id: 1,
@@ -133,41 +142,52 @@ export default function TestimonialsPage() {
   const currentData = testimonials[currentTestimonial];
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-yellow-400/10 to-orange-600/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gradient-to-br from-pink-600/10 to-purple-600/10 rounded-full blur-3xl animate-pulse delay-1000" />
+    <div className="min-h-screen bg-[#0A0E14] text-white relative">
+      {/* Fixed Background with Gradient Ellipses */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
+        {backgroundBlurs.map((pos, i) => (
+          <div
+            key={i}
+            className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
+            style={{
+              left: pos.left,
+              top: pos.top,
+              background: 'rgba(80, 0, 181, 0.67)',
+              opacity: 0.25
+            }}
+          />
+        ))}
       </div>
 
-      <div className="relative py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Main Content */}
+      <div className="relative" style={{ zIndex: 1 }}>
+        <div className="container mx-auto px-16 py-24">
           
           {/* Header */}
           <div className="text-center mb-20">
-            <div className="inline-flex items-center gap-2 px-6 py-3 bg-slate-800/50 rounded-full border border-yellow-500/30 mb-8 backdrop-blur-xl">
-              <Heart className="w-4 h-4 text-yellow-400" />
-              <span className="text-yellow-400 text-sm font-medium">Client Love • Real Results</span>
-            </div>
+            <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none mb-8">
+              <Heart className="w-5 h-5 mr-2" />
+              ✨ Client Love • Real Results
+            </Badge>
             
-            <h1 className="text-5xl lg:text-7xl font-black text-white mb-6">
-              What Our Clients Say
-              <span className="block gradient-text">About Working With Us</span>
+            <h1 className="text-7xl lg:text-8xl font-bold leading-tight font-['Bricolage_Grotesque'] mb-6">
+              What Our Clients Say<br />
+              <span className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] bg-clip-text text-transparent">About Working With Us</span>
             </h1>
-            <p className="text-xl text-slate-300 max-w-4xl mx-auto mb-8">
-              Don't just take our word for it. See what business leaders are saying about our AI-powered approach to development and the results we've delivered together.
+            <p className="text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl mx-auto">
+              Don't just take our word for it. See what business leaders are saying about our AI-supercharged engineers and the results we've delivered together.
             </p>
           </div>
 
           {/* Stats Section */}
           <div className="grid md:grid-cols-4 gap-6 mb-20">
             {stats.map((stat, index) => (
-              <Card key={index} className="glass-morphism border border-white/10 rounded-3xl p-6 text-center hover:scale-105 transition-all duration-300">
-                <div className={`w-12 h-12 mx-auto mb-4 rounded-2xl bg-slate-800/50 flex items-center justify-center`}>
-                  <stat.icon className={`w-6 h-6 ${stat.color}`} />
+              <Card key={index} className="bg-black/40 backdrop-blur-xl border border-purple-500/30 rounded-3xl p-6 text-center hover:scale-105 transition-all duration-300 shadow-xl">
+                <div className="w-12 h-12 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-[#0580E8] to-[#7000FF] flex items-center justify-center">
+                  <stat.icon className="w-6 h-6 text-white" />
                 </div>
-                <h3 className={`text-3xl font-bold ${stat.color} mb-2`}>{stat.value}</h3>
-                <p className="text-slate-400 text-sm">{stat.label}</p>
+                <h3 className="text-3xl font-bold text-purple-400 mb-2 font-['Bricolage_Grotesque']">{stat.value}</h3>
+                <p className="text-gray-400 text-sm font-['Geist']">{stat.label}</p>
               </Card>
             ))}
           </div>
@@ -178,8 +198,8 @@ export default function TestimonialsPage() {
             onMouseEnter={() => setIsAutoPlaying(false)}
             onMouseLeave={() => setIsAutoPlaying(true)}
           >
-            <Card className="max-w-5xl mx-auto glass-morphism border border-white/20 rounded-3xl overflow-hidden">
-              <div className={`absolute inset-0 bg-gradient-to-br ${currentData.color} opacity-5`} />
+            <Card className="max-w-5xl mx-auto bg-black/40 backdrop-blur-xl border-2 border-purple-500/30 rounded-3xl overflow-hidden shadow-2xl">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-blue-600/10 opacity-30" />
               
               <CardContent className="relative p-12">
                 <div className="grid lg:grid-cols-3 gap-8 items-center">
@@ -187,8 +207,8 @@ export default function TestimonialsPage() {
                   {/* Quote Side */}
                   <div className="lg:col-span-2">
                     <div className="mb-6">
-                      <Quote className="w-12 h-12 text-cyan-400 mb-4 opacity-50" />
-                      <p className="text-2xl lg:text-3xl text-white leading-relaxed font-light">
+                      <Quote className="w-12 h-12 text-purple-400 mb-4 opacity-50" />
+                      <p className="text-2xl lg:text-3xl text-white leading-relaxed font-light font-['Geist']">
                         "{currentData.quote}"
                       </p>
                     </div>
@@ -197,14 +217,14 @@ export default function TestimonialsPage() {
                       <img 
                         src={currentData.avatar} 
                         alt={currentData.name}
-                        className="w-16 h-16 rounded-full object-cover border-2 border-cyan-400/30"
+                        className="w-16 h-16 rounded-full object-cover border-2 border-purple-400/30"
                       />
                       <div>
-                        <h4 className="text-white font-bold text-lg">{currentData.name}</h4>
-                        <p className="text-slate-400">{currentData.role}, {currentData.company}</p>
+                        <h4 className="text-white font-bold text-lg font-['Bricolage_Grotesque']">{currentData.name}</h4>
+                        <p className="text-gray-400 font-['Geist']">{currentData.role}, {currentData.company}</p>
                         <div className="flex gap-1 mt-1">
                           {[...Array(currentData.rating)].map((_, i) => (
-                            <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
+                            <Star key={i} className="w-4 h-4 fill-purple-400 text-purple-400" />
                           ))}
                         </div>
                       </div>
@@ -214,19 +234,19 @@ export default function TestimonialsPage() {
                   {/* Results Side */}
                   <div className="space-y-6">
                     <div>
-                      <h5 className="text-white font-semibold mb-2 flex items-center gap-2">
-                        <Award className="w-5 h-5 text-cyan-400" />
+                      <h5 className="text-white font-semibold mb-2 flex items-center gap-2 font-['Bricolage_Grotesque']">
+                        <Award className="w-5 h-5 text-purple-400" />
                         Project
                       </h5>
-                      <p className="text-slate-300">{currentData.project}</p>
+                      <p className="text-gray-300 font-['Geist']">{currentData.project}</p>
                     </div>
                     
                     <div>
-                      <h5 className="text-white font-semibold mb-2 flex items-center gap-2">
-                        <TrendingUp className="w-5 h-5 text-green-400" />
+                      <h5 className="text-white font-semibold mb-2 flex items-center gap-2 font-['Bricolage_Grotesque']">
+                        <TrendingUp className="w-5 h-5 text-purple-400" />
                         Key Result
                       </h5>
-                      <Badge className="bg-green-500/20 text-green-300 border border-green-500/30 text-sm py-2 px-4">
+                      <Badge className="bg-purple-500/20 text-purple-300 border border-purple-500/30 text-sm py-2 px-4 font-['Geist']">
                         {currentData.results}
                       </Badge>
                     </div>
@@ -241,7 +261,7 @@ export default function TestimonialsPage() {
                 variant="ghost"
                 size="icon"
                 onClick={prevTestimonial}
-                className="w-12 h-12 rounded-full bg-slate-800/50 text-white hover:bg-cyan-400/20 hover:text-cyan-400 transition-all duration-300"
+                className="w-12 h-12 rounded-full bg-purple-600/20 text-white hover:bg-purple-400/30 hover:text-purple-400 transition-all duration-300 border border-purple-500/30"
               >
                 <ChevronLeft className="w-5 h-5" />
               </Button>
@@ -253,8 +273,8 @@ export default function TestimonialsPage() {
                     onClick={() => setCurrentTestimonial(index)}
                     className={`w-3 h-3 rounded-full transition-all duration-300 ${
                       index === currentTestimonial 
-                        ? 'bg-cyan-400 w-8' 
-                        : 'bg-slate-600 hover:bg-slate-500'
+                        ? 'bg-purple-400 w-8' 
+                        : 'bg-gray-600 hover:bg-gray-500'
                     }`}
                   />
                 ))}
@@ -264,7 +284,7 @@ export default function TestimonialsPage() {
                 variant="ghost"
                 size="icon"
                 onClick={nextTestimonial}
-                className="w-12 h-12 rounded-full bg-slate-800/50 text-white hover:bg-cyan-400/20 hover:text-cyan-400 transition-all duration-300"
+                className="w-12 h-12 rounded-full bg-purple-600/20 text-white hover:bg-purple-400/30 hover:text-purple-400 transition-all duration-300 border border-purple-500/30"
               >
                 <ChevronRight className="w-5 h-5" />
               </Button>
@@ -273,27 +293,27 @@ export default function TestimonialsPage() {
 
           {/* Additional Testimonials Grid */}
           <div className="mb-20">
-            <h2 className="text-3xl font-bold text-white text-center mb-12">More Success Stories</h2>
+            <h2 className="text-3xl font-bold text-white text-center mb-12 font-['Bricolage_Grotesque']">More Success Stories</h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {testimonials.filter((_, index) => index !== currentTestimonial).slice(0, 3).map((testimonial) => (
-                <Card key={testimonial.id} className="glass-morphism border border-white/10 rounded-3xl p-6 hover:border-cyan-400/30 transition-all duration-300 hover:scale-105">
+                <Card key={testimonial.id} className="bg-black/40 backdrop-blur-xl border border-purple-500/30 rounded-3xl p-6 hover:border-purple-400/70 transition-all duration-300 hover:scale-105 shadow-xl">
                   <div className="flex items-center gap-3 mb-4">
                     <img 
                       src={testimonial.avatar} 
                       alt={testimonial.name}
-                      className="w-12 h-12 rounded-full object-cover"
+                      className="w-12 h-12 rounded-full object-cover border-2 border-purple-400/30"
                     />
                     <div>
-                      <h4 className="text-white font-semibold text-sm">{testimonial.name}</h4>
-                      <p className="text-slate-400 text-xs">{testimonial.company}</p>
+                      <h4 className="text-white font-semibold text-sm font-['Bricolage_Grotesque']">{testimonial.name}</h4>
+                      <p className="text-gray-400 text-xs font-['Geist']">{testimonial.company}</p>
                     </div>
                   </div>
                   <div className="flex gap-1 mb-3">
                     {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star key={i} className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                      <Star key={i} className="w-3 h-3 fill-purple-400 text-purple-400" />
                     ))}
                   </div>
-                  <p className="text-slate-300 text-sm leading-relaxed">
+                  <p className="text-gray-300 text-sm leading-relaxed font-['Geist']">
                     "{testimonial.quote.substring(0, 100)}..."
                   </p>
                 </Card>
@@ -302,19 +322,19 @@ export default function TestimonialsPage() {
           </div>
 
           {/* CTA Section */}
-          <Card className="bg-gradient-to-r from-slate-900 via-blue-900/50 to-purple-900/50 border border-cyan-400/30 rounded-3xl overflow-hidden">
+          <Card className="bg-black/40 backdrop-blur-xl border border-purple-500/30 rounded-3xl overflow-hidden">
             <CardContent className="p-12 text-center relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-purple-500/5" />
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-blue-600/10 opacity-30" />
               <div className="relative">
-                <h2 className="text-4xl lg:text-5xl font-bold text-white mb-6">
+                <h2 className="text-5xl font-bold text-white mb-6 font-['Bricolage_Grotesque']">
                   Ready to Become Our 
-                  <span className="block gradient-text mt-2">Next Success Story?</span>
+                  <span className="block bg-gradient-to-r from-[#0580E8] to-[#7000FF] bg-clip-text text-transparent mt-2">Next Success Story?</span>
                 </h2>
-                <p className="text-xl text-slate-300 mb-8 max-w-2xl mx-auto">
-                  Join the growing list of satisfied clients who've experienced the power of AI-enhanced development. Your success story starts with a simple conversation.
+                <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto font-['Geist']">
+                  Join the growing list of satisfied clients who've experienced the power of AI-supercharged engineers. Your success story starts with a simple conversation.
                 </p>
                 <Link to={createPageUrl("StartProject")}>
-                  <Button size="lg" className="bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold px-12 py-6 text-lg rounded-2xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105">
+                  <Button size="lg" className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:from-[#0580E8]/90 hover:to-[#7000FF]/90 text-white font-bold px-12 py-6 text-lg rounded-2xl shadow-lg shadow-purple-500/25 hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 font-['Bricolage_Grotesque']">
                     Start Your Project Today
                     <ArrowRight className="w-5 h-5 ml-3" />
                   </Button>

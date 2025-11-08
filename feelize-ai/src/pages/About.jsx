@@ -186,6 +186,15 @@ const TeamBuilderPage = () => {
   }));
   const [selectedMember, setSelectedMember] = useState(null);
 
+  const backgroundBlurs = [
+    { left: '10%', top: '-200px' },
+    { left: '70%', top: '-100px' },
+    { left: '-142px', top: '1000px' },
+    { left: '864px', top: '1500px' },
+    { left: '191px', top: '800px' },
+    { left: '1226px', top: '1200px' },
+  ];
+
   const onDragEnd = (result) => {
     const { source, destination } = result;
     if (!destination) return;
@@ -248,18 +257,31 @@ const TeamBuilderPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white overflow-hidden p-4 sm:p-6 lg:p-8">
-      {/* Background Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
+    <div className="min-h-screen bg-[#0A0E14] text-white relative overflow-hidden p-8">
+      {/* Fixed Background with Gradient Ellipses */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
+        {backgroundBlurs.map((pos, i) => (
+          <div
+            key={i}
+            className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
+            style={{
+              left: pos.left,
+              top: pos.top,
+              background: 'rgba(80, 0, 181, 0.67)',
+              opacity: 0.25
+            }}
+          />
+        ))}
+      </div>
 
       {/* Header */}
       <div className="text-center mb-12 relative z-10">
-        <h1 className="text-5xl lg:text-7xl font-black text-white mb-4">
-          Assemble Your
-          <span className="block gradient-text">Dream Team</span>
+        <h1 className="text-7xl lg:text-8xl font-bold leading-tight font-['Bricolage_Grotesque'] mb-6">
+          Assemble Your<br />
+          <span className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] bg-clip-text text-transparent">Dream Team</span>
         </h1>
-        <p className="text-xl text-slate-300 max-w-4xl mx-auto">
-          Drag and drop our experts to build your project's perfect lineup. Click on any member to see their unique abilities.
+        <p className="text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl mx-auto">
+          Drag and drop our AI-supercharged experts to build your project's perfect lineup. Click on any member to see their unique abilities.
         </p>
       </div>
 

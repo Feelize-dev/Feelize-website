@@ -23,6 +23,15 @@ import {
 export default function ProcessPage() {
   const [activePhase, setActivePhase] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
+
+  const backgroundBlurs = [
+    { left: '10%', top: '-200px' },
+    { left: '70%', top: '-100px' },
+    { left: '-142px', top: '1000px' },
+    { left: '864px', top: '1500px' },
+    { left: '191px', top: '800px' },
+    { left: '1226px', top: '1200px' },
+  ];
   
   const phases = [
     {
@@ -95,28 +104,39 @@ export default function ProcessPage() {
   };
 
   return (
-    <div className="relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-10 w-72 sm:w-96 h-72 sm:h-96 bg-gradient-to-br from-cyan-400/10 to-blue-600/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-72 sm:w-96 h-72 sm:h-96 bg-gradient-to-br from-purple-600/10 to-pink-600/10 rounded-full blur-3xl animate-pulse delay-1000" />
+    <div className="min-h-screen bg-[#0A0E14] text-white relative">
+      {/* Fixed Background with Gradient Ellipses */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
+        {backgroundBlurs.map((pos, i) => (
+          <div
+            key={i}
+            className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
+            style={{
+              left: pos.left,
+              top: pos.top,
+              background: 'rgba(80, 0, 181, 0.67)',
+              opacity: 0.25
+            }}
+          />
+        ))}
       </div>
 
-      <div className="relative py-16 sm:py-24 lg:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      {/* Main Content */}
+      <div className="relative" style={{ zIndex: 1 }}>
+        <div className="container mx-auto px-16 py-24">
           
           {/* Header */}
-          <div className="text-center mb-12 sm:mb-16 lg:mb-20">
-            <div className="inline-flex items-center gap-2 px-4 sm:px-6 py-3 bg-slate-800/50 rounded-full border border-cyan-500/30 mb-6 sm:mb-8 backdrop-blur-xl">
-              <Sparkles className="w-4 h-4 text-cyan-400" />
-              <span className="text-cyan-400 text-xs sm:text-sm font-medium">AI-Optimized Workflow</span>
-            </div>
+          <div className="text-center mb-20">
+            <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none mb-8">
+              <Sparkles className="w-5 h-5 mr-2" />
+              ✨ AI-Optimized Workflow
+            </Badge>
             
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-7xl font-black text-white mb-4 sm:mb-6">
-              Our Process,
-              <span className="block gradient-text">Supercharged</span>
+            <h1 className="text-7xl lg:text-8xl font-bold leading-tight font-['Bricolage_Grotesque'] mb-6">
+              Our Process,<br />
+              <span className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] bg-clip-text text-transparent">AI-Supercharged</span>
             </h1>
-            <p className="text-base sm:text-lg lg:text-xl text-slate-300 max-w-3xl mx-auto px-4">
+            <p className="text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl mx-auto">
               We've engineered a process that integrates AI at every stage to maximize efficiency, precision, and value for you.
             </p>
           </div>
@@ -144,16 +164,16 @@ export default function ProcessPage() {
             </div>
 
             {/* Desktop Phase Navigation */}
-            <div className="hidden sm:flex justify-center mb-8 lg:mb-12">
-              <div className="flex gap-2 p-2 bg-slate-800/50 rounded-2xl backdrop-blur-xl border border-white/10">
+            <div className="hidden sm:flex justify-center mb-12">
+              <div className="flex gap-2 p-2 bg-black/40 backdrop-blur-xl rounded-2xl border border-purple-500/30">
                 {phases.map((phase, index) => (
                   <button
                     key={phase.phase}
                     onClick={() => setActivePhase(index)}
-                    className={`px-4 lg:px-6 py-3 rounded-xl font-medium transition-all duration-300 text-sm lg:text-base ${
+                    className={`px-6 py-3 rounded-xl font-medium transition-all duration-300 text-base font-['Geist'] ${
                       activePhase === index
-                        ? 'bg-gradient-to-r from-cyan-400 to-blue-500 text-black shadow-lg'
-                        : 'text-slate-400 hover:text-white hover:bg-white/5'
+                        ? 'bg-gradient-to-r from-[#0580E8] to-[#7000FF] text-white shadow-lg'
+                        : 'text-gray-400 hover:text-white hover:bg-purple-500/20'
                     }`}
                   >
                     Phase {phase.phase}
@@ -168,65 +188,65 @@ export default function ProcessPage() {
               onMouseEnter={() => setIsPaused(true)}
               onMouseLeave={() => setIsPaused(false)}
             >
-              <Card className="glass-morphism border border-white/20 rounded-2xl sm:rounded-3xl overflow-hidden">
-                <div className={`absolute inset-0 bg-gradient-to-br ${phases[activePhase].color} opacity-5`} />
-                <CardContent className="relative p-6 sm:p-8 lg:p-12">
+              <Card className="bg-black/40 backdrop-blur-xl border-2 border-purple-500/30 rounded-3xl overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-blue-600/10 opacity-30" />
+                <CardContent className="relative p-12">
                   
                   {/* Mobile Navigation Arrows */}
                   <div className="flex sm:hidden justify-between items-center mb-6">
                     <button
                       onClick={prevPhase}
-                      className="w-10 h-10 bg-slate-800/50 rounded-full flex items-center justify-center text-white hover:bg-slate-700/50 transition-colors"
+                      className="w-10 h-10 bg-purple-600/20 rounded-full flex items-center justify-center text-white hover:bg-purple-600/30 transition-colors border border-purple-500/30"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
                     <div className="text-center">
-                      <span className="text-cyan-400 text-sm font-medium">
+                      <span className="text-purple-400 text-sm font-medium font-['Geist']">
                         {activePhase + 1} / {phases.length}
                       </span>
                     </div>
                     <button
                       onClick={nextPhase}
-                      className="w-10 h-10 bg-slate-800/50 rounded-full flex items-center justify-center text-white hover:bg-slate-700/50 transition-colors"
+                      className="w-10 h-10 bg-purple-600/20 rounded-full flex items-center justify-center text-white hover:bg-purple-600/30 transition-colors border border-purple-500/30"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>
                   </div>
 
-                  <div className="text-center mb-6 sm:mb-8">
-                    <div className={`inline-flex p-4 sm:p-6 bg-gradient-to-br ${phases[activePhase].color} rounded-2xl sm:rounded-3xl shadow-2xl mb-4 sm:mb-6`}>
-                      {React.createElement(phases[activePhase].icon, { className: "w-8 h-8 sm:w-10 lg:w-12 h-8 sm:h-10 lg:h-12 text-white" })}
+                  <div className="text-center mb-8">
+                    <div className="inline-flex p-6 bg-gradient-to-br from-[#0580E8] to-[#7000FF] rounded-3xl shadow-2xl mb-6">
+                      {React.createElement(phases[activePhase].icon, { className: "w-12 h-12 text-white" })}
                     </div>
-                    <h3 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white mb-2 sm:mb-3 px-4">
+                    <h3 className="text-3xl font-bold text-white mb-3 font-['Bricolage_Grotesque']">
                       {phases[activePhase].title}
                     </h3>
-                    <Badge className="bg-slate-700/50 text-slate-300 text-sm">
+                    <Badge className="bg-purple-600/20 text-purple-300 text-sm border border-purple-500/30 font-['Geist']">
                       {phases[activePhase].duration}
                     </Badge>
                   </div>
 
-                  <p className="text-base sm:text-lg lg:text-xl text-slate-300 mb-6 sm:mb-8 text-center leading-relaxed px-2 sm:px-0">
+                  <p className="text-xl text-gray-300 mb-8 text-center leading-relaxed font-['Geist']">
                     {phases[activePhase].description}
                   </p>
 
-                  <div className="grid sm:grid-cols-2 gap-6 sm:gap-8">
+                  <div className="grid sm:grid-cols-2 gap-8">
                     <div className="text-center sm:text-left">
-                      <div className="flex items-center justify-center sm:justify-start gap-3 mb-3 sm:mb-4">
-                        <TrendingUp className="w-5 h-5 sm:w-6 h-6 text-green-400" />
-                        <h4 className="text-base sm:text-lg font-bold text-white">AI Boost</h4>
+                      <div className="flex items-center justify-center sm:justify-start gap-3 mb-4">
+                        <TrendingUp className="w-6 h-6 text-purple-400" />
+                        <h4 className="text-lg font-bold text-white font-['Bricolage_Grotesque']">AI Boost</h4>
                       </div>
-                      <p className="text-green-400 font-semibold text-base sm:text-lg">{phases[activePhase].aiBoost}</p>
+                      <p className="text-purple-400 font-semibold text-lg font-['Geist']">{phases[activePhase].aiBoost}</p>
                     </div>
 
                     <div className="text-center sm:text-left">
-                      <div className="flex items-center justify-center sm:justify-start gap-3 mb-3 sm:mb-4">
-                        <CheckCircle className="w-5 h-5 sm:w-6 h-6 text-cyan-400" />
-                        <h4 className="text-base sm:text-lg font-bold text-white">Key Benefits</h4>
+                      <div className="flex items-center justify-center sm:justify-start gap-3 mb-4">
+                        <CheckCircle className="w-6 h-6 text-purple-400" />
+                        <h4 className="text-lg font-bold text-white font-['Bricolage_Grotesque']">Key Benefits</h4>
                       </div>
                       <ul className="space-y-2">
                         {phases[activePhase].benefits.map((benefit, idx) => (
-                          <li key={idx} className="flex items-center justify-center sm:justify-start gap-2 text-slate-300 text-sm sm:text-base">
-                            <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full flex-shrink-0" />
+                          <li key={idx} className="flex items-center justify-center sm:justify-start gap-2 text-gray-300 text-base font-['Geist']">
+                            <div className="w-1.5 h-1.5 bg-purple-400 rounded-full flex-shrink-0" />
                             {benefit}
                           </li>
                         ))}
@@ -239,48 +259,48 @@ export default function ProcessPage() {
           </div>
 
           {/* Efficiency Stats */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-12 sm:mb-16 lg:mb-20">
-            <Card className="glass-morphism border border-white/10 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <Clock className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-20">
+            <Card className="bg-black/40 backdrop-blur-xl border border-purple-500/30 rounded-3xl p-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#0580E8] to-[#7000FF] rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <Clock className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">60%</h3>
-              <p className="text-slate-300 text-sm sm:text-base">Faster Delivery</p>
+              <h3 className="text-3xl font-bold text-white mb-2 font-['Bricolage_Grotesque']">60%</h3>
+              <p className="text-gray-300 text-base font-['Geist']">Faster Delivery</p>
             </Card>
 
-            <Card className="glass-morphism border border-white/10 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+            <Card className="bg-black/40 backdrop-blur-xl border border-purple-500/30 rounded-3xl p-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#0580E8] to-[#7000FF] rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <TrendingUp className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">40%</h3>
-              <p className="text-slate-300 text-sm sm:text-base">Higher Accuracy</p>
+              <h3 className="text-3xl font-bold text-white mb-2 font-['Bricolage_Grotesque']">40%</h3>
+              <p className="text-gray-300 text-base font-['Geist']">Higher Accuracy</p>
             </Card>
 
-            <Card className="glass-morphism border border-white/10 rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center">
-              <div className="w-12 h-12 sm:w-16 sm:h-16 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-4 sm:mb-6">
-                <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-white" />
+            <Card className="bg-black/40 backdrop-blur-xl border border-purple-500/30 rounded-3xl p-8 text-center">
+              <div className="w-16 h-16 bg-gradient-to-br from-[#0580E8] to-[#7000FF] rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <DollarSign className="w-8 h-8 text-white" />
               </div>
-              <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">35%</h3>
-              <p className="text-slate-300 text-sm sm:text-base">Cost Savings</p>
+              <h3 className="text-3xl font-bold text-white mb-2 font-['Bricolage_Grotesque']">35%</h3>
+              <p className="text-gray-300 text-base font-['Geist']">Cost Savings</p>
             </Card>
           </div>
 
           {/* CTA Section */}
-          <Card className="bg-gradient-to-r from-slate-900 via-blue-900/50 to-purple-900/50 border border-cyan-400/30 rounded-2xl sm:rounded-3xl overflow-hidden">
-            <CardContent className="p-8 sm:p-10 lg:p-12 text-center relative">
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-purple-500/5" />
+          <Card className="bg-black/40 backdrop-blur-xl border border-purple-500/30 rounded-3xl overflow-hidden">
+            <CardContent className="p-12 text-center relative">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-blue-600/10 opacity-30" />
               <div className="relative">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl xl:text-5xl font-bold text-white mb-4 sm:mb-6">
+                <h2 className="text-5xl font-bold text-white mb-6 font-['Bricolage_Grotesque']">
                   Ready to Experience 
-                  <span className="block gradient-text mt-2">AI-Powered Development?</span>
+                  <span className="block bg-gradient-to-r from-[#0580E8] to-[#7000FF] bg-clip-text text-transparent mt-2">AI-Supercharged Development?</span>
                 </h2>
-                <p className="text-base sm:text-lg lg:text-xl text-slate-300 mb-6 sm:mb-8 max-w-2xl mx-auto px-4">
+                <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto font-['Geist']">
                   See how our AI-optimized process can bring your vision to life faster and more cost-effectively than ever before.
                 </p>
                 <Link to={createPageUrl("StartProject")}>
-                  <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold px-8 sm:px-12 py-4 sm:py-6 text-base sm:text-lg rounded-xl sm:rounded-2xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105">
+                  <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:from-[#0580E8]/90 hover:to-[#7000FF]/90 text-white font-bold px-12 py-6 text-lg rounded-2xl shadow-lg shadow-purple-500/25 hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 font-['Bricolage_Grotesque']">
                     Start with our AI Assistant
-                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 ml-2 sm:ml-3" />
+                    <ArrowRight className="w-5 h-5 ml-3" />
                   </Button>
                 </Link>
               </div>
