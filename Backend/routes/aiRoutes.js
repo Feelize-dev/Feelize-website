@@ -68,6 +68,15 @@ ${description || 'No description provided'}
 
 Generate a COMPLETE, PROFESSIONAL HTML PROJECT REPORT that includes:
 
+**DOCUMENT TITLE:** Create a descriptive title based on the project (e.g., "E-commerce Platform Analysis Report" or "SaaS Dashboard Project Proposal"). 
+- Use this EXACT title in both the <title> tag AND the main <h1> heading at the top of the document
+- The title should reflect the specific project type, NOT just "Feelize Project Analysis Report"
+- Example titles: "Mobile App Development Analysis", "AI-Powered Analytics Platform Proposal", "Custom CRM System Analysis"
+
+**IMPORTANT: Add a prominent disclaimer banner at the very TOP of the report (right after the title) stating:**
+"⚠️ PRELIMINARY ANALYSIS - This report provides an initial assessment and indicative estimates only. This is not a binding offer. Final scope, timeline, and pricing will be confirmed during formal consultation."
+(Style this with a light yellow/orange background, border, and center-aligned text)
+
 1. **Executive Summary** - Brief overview of the project vision
 2. **Project Overview** - Detailed description and objectives
 3. **Key Features** - List 7-10 specific features with descriptions
@@ -88,7 +97,13 @@ Generate a COMPLETE, PROFESSIONAL HTML PROJECT REPORT that includes:
    - Use gradient backgrounds and make this section visually stand out
 8. **Risk Analysis** - Potential challenges and mitigation strategies
 9. **Success Metrics** - KPIs and measurement criteria
-10. **Next Steps & Consultation CTA** - At the END of the report, include a prominent call-to-action section with:
+10. **Important Disclaimer** - Add a clear disclaimer section BEFORE the Next Steps, stating:
+    - "IMPORTANT: This report is an initial analysis based on the information provided and serves as an indicative estimate only."
+    - "This is NOT a binding offer or final proposal."
+    - "Actual project scope, timeline, and pricing will be determined during our detailed consultation and may vary based on specific requirements, technical complexity, and project evolution."
+    - "All estimates are subject to change upon further discussion and formal project scoping."
+    - Style this with a light gray background box, border, and italic text for emphasis
+11. **Next Steps & Consultation CTA** - At the END of the report, include a prominent call-to-action section with:
     - "Ready to bring your vision to life?"
     - "Schedule a FREE 15-Minute Consultation Call"
     - Calendly link: https://calendly.com/feelize-team/15min
@@ -162,6 +177,31 @@ Start with <!DOCTYPE html> and include full HTML structure.`;
     ${htmlReport}
 </body>
 </html>`;
+    }
+
+    // Save report to disk for development/archival purposes
+    try {
+      const fs = require('fs');
+      const path = require('path');
+      
+      // Create reports directory if it doesn't exist
+      const reportsDir = path.join(__dirname, '../reports');
+      if (!fs.existsSync(reportsDir)) {
+        fs.mkdirSync(reportsDir, { recursive: true });
+      }
+      
+      // Generate filename with timestamp and sanitized project description
+      const timestamp = new Date().toISOString().replace(/[:.]/g, '-').substring(0, 19);
+      const projectSnippet = (description || 'project').substring(0, 50).replace(/[^a-zA-Z0-9]/g, '_');
+      const filename = `${timestamp}_${projectSnippet}.html`;
+      const filepath = path.join(reportsDir, filename);
+      
+      // Save the report
+      fs.writeFileSync(filepath, htmlReport, 'utf8');
+      console.log(`✅ Report saved: ${filename}`);
+    } catch (saveError) {
+      console.error('⚠️ Failed to save report:', saveError.message);
+      // Don't fail the request if saving fails
     }
 
     res.status(200).json({
@@ -585,6 +625,101 @@ If the conversation doesn't have enough details, make reasonable assumptions bas
     res.status(500).json({
       success: false,
       message: 'Failed to generate report. Please try again later.'
+    });
+  }
+});
+
+// Get list of saved reports (for development/admin use)
+router.get('/ai/reports', async (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    
+    const reportsDir = path.join(__dirname, '../reports');
+    
+    // Check if directory exists
+    if (!fs.existsSync(reportsDir)) {
+      return res.status(200).json({
+        success: true,
+        reports: [],
+        message: 'No reports directory found'
+      });
+    }
+    
+    // Read all files in reports directory
+    const files = fs.readdirSync(reportsDir);
+    const htmlFiles = files.filter(f => f.endsWith('.html'));
+    
+    // Get file stats
+    const reports = htmlFiles.map(filename => {
+      const filepath = path.join(reportsDir, filename);
+      const stats = fs.statSync(filepath);
+      return {
+        filename,
+        createdAt: stats.birthtime,
+        size: stats.size,
+        sizeKB: Math.round(stats.size / 1024)
+      };
+    }).sort((a, b) => b.createdAt - a.createdAt); // Most recent first
+    
+    res.status(200).json({
+      success: true,
+      reports,
+      total: reports.length
+    });
+    
+  } catch (error) {
+    console.error('Error listing reports:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to list reports',
+      error: error.message
+    });
+  }
+});
+
+// Get specific report by filename (for development/admin use)
+router.get('/ai/reports/:filename', async (req, res) => {
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    
+    const { filename } = req.params;
+    
+    // Sanitize filename to prevent directory traversal
+    const sanitized = path.basename(filename);
+    if (sanitized !== filename || !filename.endsWith('.html')) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid filename'
+      });
+    }
+    
+    const filepath = path.join(__dirname, '../reports', sanitized);
+    
+    // Check if file exists
+    if (!fs.existsSync(filepath)) {
+      return res.status(404).json({
+        success: false,
+        message: 'Report not found'
+      });
+    }
+    
+    // Read and return the HTML content
+    const htmlContent = fs.readFileSync(filepath, 'utf8');
+    
+    res.status(200).json({
+      success: true,
+      filename: sanitized,
+      content: htmlContent
+    });
+    
+  } catch (error) {
+    console.error('Error retrieving report:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to retrieve report',
+      error: error.message
     });
   }
 });

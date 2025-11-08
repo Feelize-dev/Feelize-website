@@ -21,10 +21,12 @@ connectDB();
 const userRoutes = require('./routes/userRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const aiRoutes = require('./routes/aiRoutes');
+const newsletterRoutes = require('./routes/newsletterRoutes');
 
 app.use('/api/users', userRoutes);
 app.use('/api', contactRoutes);
 app.use('/api', aiRoutes);
+app.use('/api/newsletter', newsletterRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

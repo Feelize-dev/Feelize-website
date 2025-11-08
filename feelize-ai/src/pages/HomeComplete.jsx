@@ -19,7 +19,11 @@ import {
   Github,
   Linkedin,
   Twitter,
-  MessageCircle
+  MessageCircle,
+  Zap,
+  Code2,
+  ShieldCheck,
+  TrendingUpIcon
 } from "lucide-react";
 import { motion } from "framer-motion";
 import axios from 'axios';
@@ -71,19 +75,19 @@ const HomePage = () => {
       description: "We start with understanding your vision, goals, and requirements through detailed consultation."
     },
     {
-      icon: Rocket,
+      icon: Zap,
       title: "AI-Powered Planning",
       subtitle: "Phase 2",
       description: "Our AI analyzes your needs and creates an optimized development roadmap for maximum efficiency."
     },
     {
-      icon: QrCode,
+      icon: Code2,
       title: "Rapid Development",
       subtitle: "Phase 3",
       description: "Lightning-fast coding powered by AI, with human oversight ensuring quality and creativity."
     },
     {
-      icon: QrCode,
+      icon: ShieldCheck,
       title: "Quality Assurance",
       subtitle: "Phase 4",
       description: "Rigorous testing and refinement to ensure your product exceeds industry standards."
