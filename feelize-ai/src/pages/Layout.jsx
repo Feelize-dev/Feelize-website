@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Menu, X, Gift } from "lucide-react";
+import { Menu, X, Gift, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { auth } from "@/config/firebaseConfig";
@@ -9,10 +9,10 @@ import { onAuthStateChanged } from "firebase/auth";
 
 const navigationItems = [
   { name: "Home", url: createPageUrl("Home") },
-  { name: "Service", url: createPageUrl("Process") },
-  { name: "Process", url: createPageUrl("Work") },
-  { name: "Portfolio", url: createPageUrl("Pricing") },
-  { name: "Pricing", url: createPageUrl("About") },
+  { name: "Service", url: createPageUrl("About") },
+  { name: "Process", url: createPageUrl("Process") },
+  { name: "Portfolio", url: createPageUrl("Work") },
+  { name: "Pricing", url: createPageUrl("Pricing") },
   { name: "Testimonials", url: createPageUrl("Testimonials") },
 ];
 
@@ -541,11 +541,49 @@ export default function Layout({ children, currentPageName }) {
               <p className="text-slate-400 mb-6 text-sm">
                 Ready to experience the future of development?
               </p>
-              <Link to={createPageUrl("StartProject")}>
-                <Button className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold hover:from-cyan-300 hover:to-blue-400 transition-all duration-300 hover:scale-105">
+              <Link>
+                <Button
+                  onClick={() => {
+                    if (
+                      location.pathname === createPageUrl("Home") ||
+                      location.pathname === "/"
+                    ) {
+                      const aiSection = document.getElementById("ai-analyzer");
+                      if (aiSection) {
+                        aiSection.scrollIntoView({
+                          behavior: "smooth",
+                          block: "start",
+                        });
+                      }
+                    } else {
+                      window.location.href =
+                        createPageUrl("Home") + "#ai-analyzer";
+                    }
+                  }}
+                  className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] text-black font-bold hover:from-cyan-300 hover:to-blue-400 transition-all duration-300 hover:scale-105"
+                >
                   Start Your Project
                 </Button>
               </Link>
+            </div>
+
+            {/* Contact */}
+            <div>
+              <h3 className="text-lg font-semibold mb-4 text-white">Contact</h3>
+              <div className="space-y-3 text-slate-400 text-sm">
+                <div className="flex items-center space-x-2">
+                  <Mail className="w-4 h-4 text-cyan-400" />
+                  <p>info@feelize.com</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <Phone className="w-4 h-4 text-cyan-400" />
+                  <p>(800) 227-9944</p>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <MapPin className="w-4 h-4  text-cyan-400" />
+                  <p>New York City, USA</p>
+                </div>
+              </div>
             </div>
           </div>
 
