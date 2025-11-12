@@ -3,7 +3,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Menu, X, Gift } from "lucide-react";
+import { Menu, X, Gift, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { auth } from "@/config/firebaseConfig";
@@ -195,7 +195,7 @@ export default function Layout({ children, currentPageName }) {
             <div className="flex justify-between items-center">
               {/* Logo */}
               <Link to={createPageUrl("Home")} className="flex items-center space-x-3 group">
-                <img src="https://i.imgur.com/vHqB9d3.png" alt="Feelize Logo" className="w-10 h-10 rounded-xl group-hover:scale-110 transition-transform duration-300" />
+                <img src="../favicon.svg" alt="Feelize Logo" className="w-10 h-10 rounded-xl group-hover:scale-110 transition-transform duration-300" />
                 <span className="text-2xl font-bold text-white">
                   Feelize
                 </span>
