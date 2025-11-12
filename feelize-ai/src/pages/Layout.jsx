@@ -409,85 +409,112 @@ export default function Layout({ children, currentPageName }) {
         {children}
       </main>
 
-      {/* Footer */}
-      <footer className="relative z-10 bg-slate-900/50 backdrop-blur-xl border-t border-white/10 mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="grid md:grid-cols-4 gap-8">
-            <div>
-              <div className="flex items-center space-x-3 mb-6">
-                <img src="https://i.imgur.com/vHqB9d3.png" alt="Feelize Logo" className="w-10 h-10 rounded-xl" />
-                <span className="text-2xl font-bold text-white">Feelize</span>
-              </div>
-              <p className="text-slate-400 mb-4 text-sm leading-relaxed">
-                Human Experts, Supercharged by AI.
-                <br />The future of development is here.
-              </p>
-            </div>
+{/* Footer */}
+<footer className="relative z-10 bg-slate-900/50 backdrop-blur-xl border-t border-white/10 mt-20">
+  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div className="grid md:grid-cols-4 gap-8">
 
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-white">Navigation</h3>
-              <div className="space-y-3">
-                {navigationItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.url}
-                    className="block text-slate-400 hover:text-cyan-400 transition-colors"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
-              </div>
-            </div>
+      {/* Column 1: Brand & Social */}
+      <div>
+        <div className="flex items-center space-x-3 mb-6">
+          <svg
+            width="35"
+            height="35"
+            viewBox="0 0 48 48"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              d="M16.8598 12.8718C22.7336 8.77621 29.2185 8.02145 35.5533 6.59971C41.6549 5.26572 42.6908 4.79766 48 0C47.596 2.5685 47.5338 4.58118 46.9641 6.33057C45.3739 11.2569 42.1625 14.1414 38.4539 16.2769C33.2742 19.2843 27.675 19.9922 22.1276 20.8932C18.0511 21.5719 14.0421 22.2331 11.9443 27.8206C11.507 23.0909 9.63489 18.6776 6.64552 15.3291C4.75791 13.2801 2.48678 11.7365 0 10.8123C4.22143 5.51731 10.2039 6.21355 16.8598 12.8718Z"
+              fill="white"
+            />
+            <path
+              d="M26.5563 35.6139C28.1102 40.2945 30.5653 44.2087 33.5592 48C32.0985 47.7777 30.6171 47.6665 29.1772 47.3213C24.5174 46.2388 20.2574 43.587 16.9583 39.7153C13.1927 35.3857 14.8865 29.9386 17.5644 27.2121C21.1901 23.5203 25.6757 23.1166 30.0888 22.0985C34.6624 21.0571 38.7026 19.7582 43.0742 16.1073C43.0173 19.3896 42.6495 20.2672 41.5928 22.9527C39.6867 27.7855 35.1234 28.9089 31.1247 30.0732C30.3219 30.3131 29.5087 30.5061 28.6851 30.6875C26.8878 31.0854 25.8467 33.49 26.5563 35.6139Z"
+              fill="white"
+            />
+          </svg>
+          <span className="text-2xl font-bold text-white">Feelize</span>
+        </div>
+        <p className="text-slate-400 mb-6 text-sm leading-relaxed">
+          Human Experts, Supercharged by AI.
+          <br />
+          The future of development is here.
+        </p>
 
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-white">For You</h3>
-              <div className="space-y-3">
-                {!isLoadingUser && currentUser && (
-                  <>
-                    <Link
-                      to={createPageUrl("UserDashboard")}
-                      className="block text-slate-400 hover:text-cyan-400 transition-colors"
-                    >
-                      My Projects
-                    </Link>
-                    {currentUser.role === 'admin' && (
-                      <Link
-                        to={createPageUrl("AdminDashboard")}
-                        className="block text-slate-400 hover:text-cyan-400 transition-colors"
-                      >
-                        Admin Dashboard
-                      </Link>
-                    )}
-                  </>
-                )}
-                <Link
-                  to={createPageUrl("AffiliateSignup")}
-                  className="block text-slate-400 hover:text-cyan-400 transition-colors"
-                >
-                  <Gift className="w-4 h-4 inline mr-1" />
-                  Affiliate Program
-                </Link>
-              </div>
-            </div>
+        {/* Social Icons */}
+        <div className="flex space-x-4">
+          <a href="#" className="text-slate-400 hover:text-cyan-400 transition-colors">
+            <i className="fab fa-linkedin text-lg"></i>
+          </a>
+          <a href="#" className="text-slate-400 hover:text-cyan-400 transition-colors">
+            <i className="fab fa-twitter text-lg"></i>
+          </a>
+          <a href="#" className="text-slate-400 hover:text-cyan-400 transition-colors">
+            <i className="fab fa-github text-lg"></i>
+          </a>
+        </div>
+      </div>
 
-            <div>
-              <h3 className="text-lg font-semibold mb-4 text-white">Get Started</h3>
-              <p className="text-slate-400 mb-6 text-sm">
-                Ready to experience the future of development?
-              </p>
-              <Link to={createPageUrl("StartProject")}>
-                <Button className="bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold hover:from-cyan-300 hover:to-blue-400 transition-all duration-300 hover:scale-105">
-                  Start Your Project
-                </Button>
-              </Link>
-            </div>
+      {/* Column 2: Company */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4 text-white">Company</h3>
+        <ul className="space-y-3 text-slate-400 text-sm">
+          <li><Link to={createPageUrl("About")} className="hover:text-cyan-400">About</Link></li>
+          <li><Link to={createPageUrl("Portfolio")} className="hover:text-cyan-400">Portfolio</Link></li>
+          <li><Link to={createPageUrl("Testimonials")} className="hover:text-cyan-400">Testimonials</Link></li>
+          <li><Link to={createPageUrl("Careers")} className="hover:text-cyan-400">Careers</Link></li>
+        </ul>
+      </div>
+
+      {/* Column 3: Services */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4 text-white">Services</h3>
+        <ul className="space-y-3 text-slate-400 text-sm">
+          <li><Link to={createPageUrl("Process")} className="hover:text-cyan-400">Process</Link></li>
+          <li><Link to={createPageUrl("Pricing")} className="hover:text-cyan-400">Pricing</Link></li>
+          <li><Link to={createPageUrl("AffiliateSignup")} className="hover:text-cyan-400">Affiliate Program</Link></li>
+          <li><Link to={createPageUrl("StartProject")} className="hover:text-cyan-400">Start Your Project</Link></li>
+        </ul>
+      </div>
+
+      {/* Column 4: Get in Touch */}
+      <div>
+        <h3 className="text-lg font-semibold mb-4 text-white">Get in Touch</h3>
+        <div className="space-y-3 text-slate-400 text-sm">
+          <div className="flex items-center space-x-2">
+            <Mail className="w-4 h-4 text-cyan-400" />
+            <p>info@feelize.com</p>
           </div>
-
-          <div className="border-t border-white/10 pt-8 mt-8 text-center">
-            <p className="text-slate-400 text-sm">&copy; 2025 Feelize. Crafting the future, one project at a time.</p>
+          <div className="flex items-center space-x-2">
+            <Phone className="w-4 h-4 text-cyan-400" />
+            <p>(800) 227-9944</p>
+          </div>
+          <div className="flex items-center space-x-2">
+            <MapPin className="w-4 h-4 text-cyan-400" />
+            <p>New York City, USA</p>
           </div>
         </div>
-      </footer>
+      </div>
+    </div>
+
+    {/* Bottom Bar */}
+    <div className="border-t border-white/10 pt-8 mt-8 text-center text-slate-400 text-sm">
+      <p>
+        &copy; 2025 Feelize. Crafting the future, one project at a time.
+      </p>
+      <div className="mt-2 space-x-4">
+        <Link to={createPageUrl("PrivacyPolicy")} className="hover:text-cyan-400">
+          Privacy Policy
+        </Link>
+        <span>|</span>
+        <Link to={createPageUrl("TermsOfService")} className="hover:text-cyan-400">
+          Terms of Service
+        </Link>
+      </div>
+    </div>
+  </div>
+</footer>
+
     </div>
   );
 }
