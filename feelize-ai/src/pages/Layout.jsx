@@ -9,10 +9,10 @@ import { onAuthStateChanged } from "firebase/auth";
 
 const navigationItems = [
   { name: "Home", url: createPageUrl("Home") },
-  { name: "Service", url: createPageUrl("About") },
   { name: "Process", url: createPageUrl("Process") },
-  { name: "Portfolio", url: createPageUrl("Work") },
   { name: "Pricing", url: createPageUrl("Pricing") },
+  { name: "Portfolio", url: createPageUrl("Work") },
+  { name: "About", url: createPageUrl("About") },
   { name: "Testimonials", url: createPageUrl("Testimonials") },
 ];
 
