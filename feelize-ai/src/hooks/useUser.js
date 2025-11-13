@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 
 const fetchUser = async () => {
-    const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/user/verifySession`, {
+    const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/verify`, {
         withCredentials: true
     });
     return res.data.data

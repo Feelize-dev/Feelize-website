@@ -1,4 +1,6 @@
-const express = require('express');
+import express from "express"
+import { revokeSession, verifyFirebaseTokenId } from '../controllers/auth.controller.js';
+import { createNewUser, verifyUserSession } from '../controllers/user.controller.js';
 const router = express.Router();
 
 // Placeholder for user routes
@@ -11,4 +13,8 @@ router.get('/me', (req, res) => {
   });
 });
 
-module.exports = router;
+router.get('/sessionLogin', verifyFirebaseTokenId, createNewUser)
+router.get('/verify', verifyUserSession)
+router.get('/logout',verifyUserSession,revokeSession)
+
+export default router;

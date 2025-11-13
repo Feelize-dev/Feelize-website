@@ -1,15 +1,19 @@
-require('dotenv').config();
-const express = require('express');
-const cors = require('cors');
-const connectDB = require('./config/db');
+import { configDotenv } from 'dotenv';
+import express from "express"
+import cors from "cors"
+import connectDB from './config/db.js';
+import cookieParser from 'cookie-parser';
 
 const app = express();
+configDotenv()
 
 // Middleware
 app.use(cors({
   origin: process.env.DEVELOPMENT_CLIENT_URL || 'http://localhost:5173',
   credentials: true
 }));
+app.use(cookieParser());
+
 // Increased payload limit for file uploads
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -18,13 +22,13 @@ app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 connectDB();
 
 // Routes
-const userRoutes = require('./routes/userRoutes');
-const contactRoutes = require('./routes/contactRoutes');
-const aiRoutes = require('./routes/aiRoutes');
+import userRoutes from './routes/userRoutes.js';
+// const contactRoutes = require('./routes/contactRoutes');
+// const aiRoutes = require('./routes/aiRoutes');
 
 app.use('/api/users', userRoutes);
-app.use('/api', contactRoutes);
-app.use('/api', aiRoutes);
+// app.use('/api', contactRoutes);
+// app.use('/api', aiRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
@@ -56,5 +60,3 @@ app.listen(PORT, () => {
   console.log(`📡 API available at http://localhost:${PORT}`);
   console.log(`🌐 CORS enabled for ${process.env.DEVELOPMENT_CLIENT_URL || 'http://localhost:5173'}`);
 });
-
-module.exports = app;
