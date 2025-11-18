@@ -24,8 +24,8 @@ import {
 } from "lucide-react";
 
 export default function AffiliateSignup() {
-  const [currentUser, setCurrentUser] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // const [currentUser, setCurrentUser] = useState(null);
+  // const [isLoading, setIsLoading] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [existingAffiliate, setExistingAffiliate] = useState(null);
   const [copied, setCopied] = useState(false);
@@ -34,7 +34,7 @@ export default function AffiliateSignup() {
     payment_details: "",
     why_join: ""
   });
-  // const { data: user, isLoading, refetch } = useUser();
+  const { data: user, isLoading, refetch } = useUser();
 
 
   useEffect(() => {
