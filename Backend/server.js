@@ -35,7 +35,7 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
-app.use("/user", userRoutes);
+app.use("/api/users", userRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 3000;

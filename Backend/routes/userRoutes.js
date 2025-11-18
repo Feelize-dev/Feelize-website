@@ -18,7 +18,7 @@ const router = express.Router();
 
 // Authentication routes
 router.get("/sessionLogin", verifyFirebaseToken, createNewUser)
-router.get("/verifySession", verifySession)
+router.get("/verify", verifySession)
 
 // Projects API
 router.post("/project", verifySessionMiddleware, createProject)
