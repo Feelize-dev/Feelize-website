@@ -74,10 +74,16 @@ export default function Layout({ children, currentPageName }) {
   };
 
   const handleLogout = async () => {
+    console.log("hi");
+
     try {
-      await auth.signOut();
-      setCurrentUser(null);
-      window.location.href = createPageUrl("Home");
+
+      await axios.post(
+        `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/logout`,
+        {},
+        { withCredentials: true }
+      );
+      await refetch()
     } catch (error) {
       console.error("Logout error:", error);
     }

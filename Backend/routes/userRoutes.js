@@ -1,5 +1,5 @@
 import express from "express"
-import { revokeSession, verifyFirebaseTokenId } from '../controllers/auth.controller.js';
+import { deleteSession, verifyFirebaseTokenId } from '../controllers/auth.controller.js';
 import { createNewUser, verifyUserSession } from '../controllers/user.controller.js';
 const router = express.Router();
 
@@ -14,7 +14,13 @@ router.get('/me', (req, res) => {
 });
 
 router.get('/sessionLogin', verifyFirebaseTokenId, createNewUser)
-router.get('/verify', verifyUserSession)
-router.get('/logout',verifyUserSession,revokeSession)
+router.get('/verify', verifyUserSession, (req, res) => {
+  res.json({
+    data: req.user,
+    success: false,
+    message: "Session Successfully verified"
+  });
+})
+router.post('/logout', verifyUserSession, deleteSession)
 
 export default router;
