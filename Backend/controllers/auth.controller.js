@@ -1,4 +1,5 @@
 import admin from "../config/firebaseAdmin.js";
+import { cookieSafetyMeasures } from "../middleware/tokenAndCookies.js";
 
 export const verifyFirebaseTokenId = async (req, res, next) => {
 
@@ -35,7 +36,33 @@ export const verifyFirebaseTokenId = async (req, res, next) => {
     }
 }
 
-export const revokeSession = (req, res) => {
+export const deleteSession = async (req, res) => {
+
+    // console.log(req.cookies.feelize_loginSession);
+    
+    try {
+
+        const sessionCookie = req.cookies.feelize_loginSession;
+        const decodedCookie = await admin.auth().verifySessionCookie(sessionCookie, true);
+        await admin.auth().revokeRefreshTokens(decodedCookie.sub);
+
+        console.log("usee", decodedCookie.email, "hase been logged out");
+
+        res.clearCookie("feelize_loginSession", cookieSafetyMeasures);
+
+        return res.status(200).json({
+            message: "User logged out successfully — session revoked",
+            success: true,
+        });
 
 
+    } catch (error) {
+
+        console.error("Logout failed:", error);
+        return res.status(400).json({
+            message: "Failed to log out user",
+            data: error,
+            success: false,
+        });
+    }
 }

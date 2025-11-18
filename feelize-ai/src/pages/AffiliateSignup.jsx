@@ -34,6 +34,8 @@ export default function AffiliateSignup() {
     payment_details: "",
     why_join: ""
   });
+  // const { data: user, isLoading, refetch } = useUser();
+
 
   useEffect(() => {
     checkUser();
@@ -62,33 +64,34 @@ export default function AffiliateSignup() {
     return `${prefix}${random}`;
   };
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
-    setIsSubmitting(true);
+  // const handleSignup = async (e) => {
+  //   e.preventDefault();
+  //   setIsSubmitting(true);
 
-    try {
-      const referralCode = generateReferralCode(currentUser.email);
+  //   try {
+  //     const referralCode = generateReferralCode(currentUser.email);
 
-      await base44.entities.Affiliate.create({
-        user_email: currentUser.email,
-        referral_code: referralCode,
-        status: "active",
-        payment_method: formData.payment_method,
-        payment_details: formData.payment_details,
-        total_referrals: 0,
-        total_earnings: 0,
-        pending_earnings: 0
-      });
+  //     await base44.entities.Affiliate.create({
+  //       user_email: currentUser.email,
+  //       referral_code: referralCode,
+  //       status: "active",
+  //       payment_method: formData.payment_method,
+  //       payment_details: formData.payment_details,
+  //       total_referrals: 0,
+  //       total_earnings: 0,
+  //       pending_earnings: 0
+  //     });
 
-      // Reload to show new affiliate
-      await checkUser();
-    } catch (error) {
-      console.error("Error creating affiliate:", error);
-      alert("Failed to create affiliate account. Please try again.");
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+  //     // Reload to show new affiliate
+  //     await checkUser();
+  //   } catch (error) {
+  //     console.error("Error creating affiliate:", error);
+  //     alert("Failed to create affiliate account. Please try again.");
+  //   } finally {
+  //     setIsSubmitting(false);
+  //   }
+  // };
+
 
   const copyReferralLink = () => {
     const link = `${window.location.origin}${createPageUrl("StartProject")}?ref=${existingAffiliate.referral_code}`;
@@ -113,7 +116,7 @@ export default function AffiliateSignup() {
             <Gift className="w-16 h-16 mx-auto mb-4 text-indigo-600" />
             <h2 className="text-2xl font-bold text-slate-900 mb-4">Sign In Required</h2>
             <p className="text-slate-600 mb-6">Please sign in to join our affiliate program</p>
-            <Button onClick={() => base44.auth.redirectToLogin(window.location.href)} className="w-full">
+            <Button onClick={handleLogin} className="w-full">
               Sign In to Continue
             </Button>
           </CardContent>
@@ -128,7 +131,7 @@ export default function AffiliateSignup() {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 py-12">
         <div className="max-w-6xl mx-auto px-4">
-          
+
           {/* Header */}
           <div className="text-center mb-12">
             <Badge className="bg-green-100 text-green-800 mb-4">
@@ -197,9 +200,9 @@ export default function AffiliateSignup() {
             </CardHeader>
             <CardContent>
               <div className="flex gap-2">
-                <Input 
-                  value={referralLink} 
-                  readOnly 
+                <Input
+                  value={referralLink}
+                  readOnly
                   className="font-mono text-sm"
                 />
                 <Button onClick={copyReferralLink} className="flex-shrink-0">
@@ -264,7 +267,7 @@ export default function AffiliateSignup() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 py-12">
       <div className="max-w-4xl mx-auto px-4">
-        
+
         {/* Header */}
         <div className="text-center mb-12">
           <div className="w-20 h-20 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -322,7 +325,7 @@ export default function AffiliateSignup() {
                 </label>
                 <Input
                   value={formData.payment_method}
-                  onChange={(e) => setFormData({...formData, payment_method: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
                   placeholder="e.g., PayPal, Bank Transfer, Venmo"
                   required
                 />
@@ -334,7 +337,7 @@ export default function AffiliateSignup() {
                 </label>
                 <Input
                   value={formData.payment_details}
-                  onChange={(e) => setFormData({...formData, payment_details: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, payment_details: e.target.value })}
                   placeholder="Your PayPal email or account details"
                   required
                 />
@@ -346,7 +349,7 @@ export default function AffiliateSignup() {
                 </label>
                 <Textarea
                   value={formData.why_join}
-                  onChange={(e) => setFormData({...formData, why_join: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, why_join: e.target.value })}
                   placeholder="Tell us about your network or how you plan to promote Feelize..."
                   className="h-24"
                 />
@@ -362,8 +365,8 @@ export default function AffiliateSignup() {
                 </ul>
               </div>
 
-              <Button 
-                type="submit" 
+              <Button
+                type="submit"
                 disabled={isSubmitting}
                 className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
               >

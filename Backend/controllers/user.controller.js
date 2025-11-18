@@ -62,7 +62,7 @@ export const createNewUser = async (req, res) => {
     }
 }
 
-export const verifyUserSession = async (req, res) => {
+export const verifyUserSession = async (req, res, next) => {
 
     try {
 
@@ -96,13 +96,14 @@ export const verifyUserSession = async (req, res) => {
                 success: false,
             })
         }
+        req.user = userInDb;
+        next();
+        // return res.status(200).json({
 
-        return res.status(200).json({
-
-            message: "User Successfully verified",
-            success: true,
-            data: userInDb
-        })
+        //     message: "User Successfully verified",
+        //     success: true,
+        //     data: userInDb
+        // })
 
     } catch (error) {
 
