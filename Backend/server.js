@@ -1,62 +1,42 @@
-import { configDotenv } from 'dotenv';
-import express from "express"
-import cors from "cors"
-import connectDB from './config/db.js';
-import cookieParser from 'cookie-parser';
+// server.js
+import express from "express";
+import dotenv from "dotenv";
+import cors from "cors";
+import connectDB from "./config/db.js";
+import userRoutes from "./routes/userRoutes.js"
+import cookieParser from "cookie-parser";
+
+dotenv.config(); // Load .env variables
 
 const app = express();
-configDotenv()
-
-// Middleware
-app.use(cors({
-  origin: process.env.DEVELOPMENT_CLIENT_URL || 'http://localhost:5173',
-  credentials: true
-}));
-app.use(cookieParser());
-
-// Increased payload limit for file uploads
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // Connect to MongoDB
 connectDB();
 
-// Routes
-import userRoutes from './routes/userRoutes.js';
-// const contactRoutes = require('./routes/contactRoutes');
-// const aiRoutes = require('./routes/aiRoutes');
+// Middleware
+if (process.env.ENVIRONMENT === "Development") {
 
-app.use('/api/users', userRoutes);
-// app.use('/api', contactRoutes);
-// app.use('/api', aiRoutes);
+  app.use(cors({
+    credentials: true,
+    origin: process.env.DEVELOPMENT_CLIENT_URL
+  }))
+} else if (process.env.ENVIRONMENT === "Production") {
 
-// Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', message: 'Server is running' });
+  app.use(cors({
+    credentials: true,
+    origin: process.env.PRODUCTION_CLIENT_URL
+  }))
+}
+app.use(express.json()); // Parse JSON body
+app.use(cookieParser())
+
+// Test route
+app.get("/", (req, res) => {
+  res.send("API is running...");
 });
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Server error:', err);
-  res.status(500).json({
-    success: false,
-    message: 'An internal server error occurred',
-    error: process.env.NODE_ENV === 'development' ? err.message : undefined
-  });
-});
+app.use("/user", userRoutes);
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({
-    success: false,
-    message: 'Route not found'
-  });
-});
-
+// Start Server
 const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`🚀 Server is running on port ${PORT}`);
-  console.log(`📡 API available at http://localhost:${PORT}`);
-  console.log(`🌐 CORS enabled for ${process.env.DEVELOPMENT_CLIENT_URL || 'http://localhost:5173'}`);
-});
+app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
