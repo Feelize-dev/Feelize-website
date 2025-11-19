@@ -30,21 +30,7 @@ export default function Layout({ children, currentPageName }) {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
-    // const loadUser = async () => {
-    //   try {
-    //     const unsubscribe = onAuthStateChanged(auth, (user) => {
-    //       setCurrentUser(user);
-    //     });
-    //     return unsubscribe;
-    //   } catch (error) {
-    //     // User not logged in or session expired
-    //     setCurrentUser(null);
-    //     setIsLoadingUser(false);
-    //   }
-    // };
-
     window.addEventListener("mousemove", handleMouseMove);
-    // loadUser();
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
