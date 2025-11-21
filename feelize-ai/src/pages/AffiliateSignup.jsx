@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { Affiliate, User } from "@/api/entities";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,8 +34,6 @@ export default function AffiliateSignup() {
     payment_details: "",
     why_join: ""
   });
-  
-  // const { data: user, isLoading, refetch } = useUser();
 
   useEffect(() => {
     checkUser();
@@ -43,18 +41,32 @@ export default function AffiliateSignup() {
 
   const checkUser = async () => {
     try {
-      const user = await base44.auth.me();
+      const user = await User.me();
       setCurrentUser(user);
 
-      // Check if already an affiliate
-      const affiliates = await base44.entities.Affiliate.filter({ user_email: user.email });
-      if (affiliates.length > 0) {
-        setExistingAffiliate(affiliates[0]);
+      if (user) {
+        // Check if already an affiliate
+        const affiliates = await Affiliate.filter({ user_email: user.email });
+        if (affiliates && affiliates.length > 0) {
+          setExistingAffiliate(affiliates[0]);
+        }
       }
     } catch (error) {
       console.error("Error loading user:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleLogin = async () => {
+    try {
+      const user = await User.login();
+      if (user) {
+        setCurrentUser(user);
+        checkUser();
+      }
+    } catch (error) {
+      console.error("Login failed:", error);
     }
   };
 
@@ -64,33 +76,33 @@ export default function AffiliateSignup() {
     return `${prefix}${random}`;
   };
 
-  // const handleSignup = async (e) => {
-  //   e.preventDefault();
-  //   setIsSubmitting(true);
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-  //   try {
-  //     const referralCode = generateReferralCode(currentUser.email);
+    try {
+      const referralCode = generateReferralCode(currentUser.email);
 
-  //     await base44.entities.Affiliate.create({
-  //       user_email: currentUser.email,
-  //       referral_code: referralCode,
-  //       status: "active",
-  //       payment_method: formData.payment_method,
-  //       payment_details: formData.payment_details,
-  //       total_referrals: 0,
-  //       total_earnings: 0,
-  //       pending_earnings: 0
-  //     });
+      await Affiliate.create({
+        user_email: currentUser.email,
+        referral_code: referralCode,
+        status: "active",
+        payment_method: formData.payment_method,
+        payment_details: formData.payment_details,
+        total_referrals: 0,
+        total_earnings: 0,
+        pending_earnings: 0
+      });
 
-  //     // Reload to show new affiliate
-  //     await checkUser();
-  //   } catch (error) {
-  //     console.error("Error creating affiliate:", error);
-  //     alert("Failed to create affiliate account. Please try again.");
-  //   } finally {
-  //     setIsSubmitting(false);
-  //   }
-  // };
+      // Reload to show new affiliate
+      await checkUser();
+    } catch (error) {
+      console.error("Error creating affiliate:", error);
+      alert("Failed to create affiliate account. Please try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
 
   const copyReferralLink = () => {
@@ -132,133 +144,133 @@ export default function AffiliateSignup() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 py-12">
         <div className="max-w-6xl mx-auto px-4">
 
-          {/* Header */}
+          {/*   Header */}
           <div className="text-center mb-12">
-            <Badge className="bg-green-100 text-green-800 mb-4">
-              <CheckCircle className="w-3 h-3 mr-1" />
-              Active Affiliate
-            </Badge>
+            <Bad ge className="bg-green-100 text-green-800 mb-4">
+              <Che ckCircle className="w-3 h-3 mr-1" />
+              Acti  ve Affiliate
+            </Ba  dge>
             <h1 className="text-4xl font-bold text-slate-900 mb-2">Your Affiliate Dashboard</h1>
-            <p className="text-slate-600">Share your link and earn 10% commission on every sale</p>
-          </div>
+            <p c lassName="text-slate-600">Share your link and earn 10% commission on every sale</p>
+          </di  v>
 
-          {/* Stats */}
+          {/*   Stats */}
           <div className="grid md:grid-cols-3 gap-6 mb-8">
-            <Card>
-              <CardContent className="p-6">
+            <Car d>
+              <Car dContent className="p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-slate-600 text-sm mb-1">Total Earnings</p>
-                    <p className="text-3xl font-bold text-green-600">
-                      ${(existingAffiliate.total_earnings || 0).toLocaleString()}
+                  <div  >
+                    <p c lassName="text-slate-600 text-sm mb-1">Total Earnings</p>
+                    <p c lassName="text-3xl font-bold text-green-600">
+                      ${(e  xistingAffiliate.total_earnings || 0).toLocaleString()}
                     </p>
-                  </div>
+                  </di  v>
                   <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                    <DollarSign className="w-6 h-6 text-green-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                    <Dol larSign className="w-6 h-6 text-green-600" />
+                  </di  v>
+                </di  v>
+              </Ca  rdContent>
+            </Ca  rd>
 
-            <Card>
-              <CardContent className="p-6">
+            <Car d>
+              <Car dContent className="p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-slate-600 text-sm mb-1">Pending Earnings</p>
-                    <p className="text-3xl font-bold text-yellow-600">
-                      ${(existingAffiliate.pending_earnings || 0).toLocaleString()}
+                  <div  >
+                    <p c lassName="text-slate-600 text-sm mb-1">Pending Earnings</p>
+                    <p c lassName="text-3xl font-bold text-yellow-600">
+                      ${(e  xistingAffiliate.pending_earnings || 0).toLocaleString()}
                     </p>
-                  </div>
+                  </di  v>
                   <div className="w-12 h-12 bg-yellow-100 rounded-xl flex items-center justify-center">
-                    <TrendingUp className="w-6 h-6 text-yellow-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                    <Tre ndingUp className="w-6 h-6 text-yellow-600" />
+                  </di  v>
+                </di  v>
+              </Ca  rdContent>
+            </Ca  rd>
 
-            <Card>
-              <CardContent className="p-6">
+            <Car d>
+              <Car dContent className="p-6">
                 <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-slate-600 text-sm mb-1">Total Referrals</p>
-                    <p className="text-3xl font-bold text-indigo-600">
-                      {existingAffiliate.total_referrals || 0}
+                  <div  >
+                    <p c lassName="text-slate-600 text-sm mb-1">Total Referrals</p>
+                    <p c lassName="text-3xl font-bold text-indigo-600">
+                      {exi  stingAffiliate.total_referrals || 0}
                     </p>
-                  </div>
+                  </di  v>
                   <div className="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center">
-                    <Users className="w-6 h-6 text-indigo-600" />
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+                    <Use rs className="w-6 h-6 text-indigo-600" />
+                  </di  v>
+                </di  v>
+              </Ca  rdContent>
+            </Ca  rd>
+          </di  v>
 
-          {/* Referral Link */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Your Referral Link</CardTitle>
-            </CardHeader>
-            <CardContent>
+          {/*   Referral Link */}
+          <Car d className="mb-8">
+            <Car dHeader>
+              <Car dTitle>Your Referral Link</CardTitle>
+            </Ca  rdHeader>
+            <Car dContent>
               <div className="flex gap-2">
-                <Input
-                  value={referralLink}
-                  readOnly
-                  className="font-mono text-sm"
+                <Inp ut
+                  valu e={referralLink}
+                  read Only
+                  clas sName="font-mono text-sm"
                 />
-                <Button onClick={copyReferralLink} className="flex-shrink-0">
-                  {copied ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
-                  {copied ? "Copied!" : "Copy"}
-                </Button>
-              </div>
-              <p className="text-slate-600 text-sm mt-2">
-                Your referral code: <span className="font-bold text-indigo-600">{existingAffiliate.referral_code}</span>
+                <But ton onClick={copyReferralLink} className="flex-shrink-0">
+                  {cop  ied ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+                  {cop  ied ? "Copied!" : "Copy"}
+                </Bu  tton>
+              </di  v>
+              <p c lassName="text-slate-600 text-sm mt-2">
+                Your   referral code: <span className="font-bold text-indigo-600">{existingAffiliate.referral_code}</span>
               </p>
-            </CardContent>
-          </Card>
+            </Ca  rdContent>
+          </Ca  rd>
 
-          {/* How It Works */}
-          <Card>
-            <CardHeader>
-              <CardTitle>How It Works</CardTitle>
-            </CardHeader>
-            <CardContent>
+          {/*   How It Works */}
+          <Car d>
+            <Car dHeader>
+              <Car dTitle>How It Works</CardTitle>
+            </Ca  rdHeader>
+            <Car dContent>
               <div className="grid md:grid-cols-3 gap-6">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-indigo-600">1</span>
-                  </div>
+                    <spa n className="text-2xl font-bold text-indigo-600">1</span>
+                  </di  v>
                   <h3 className="font-bold text-slate-900 mb-2">Share Your Link</h3>
-                  <p className="text-slate-600 text-sm">Share your unique referral link with friends, clients, or on social media</p>
-                </div>
+                  <p c lassName="text-slate-600 text-sm">Share your unique referral link with friends, clients, or on social media</p>
+                </di  v>
 
                 <div className="text-center">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-green-600">2</span>
-                  </div>
+                    <spa n className="text-2xl font-bold text-green-600">2</span>
+                  </di  v>
                   <h3 className="font-bold text-slate-900 mb-2">They Start a Project</h3>
-                  <p className="text-slate-600 text-sm">When someone uses your link and starts a project, you get credited</p>
-                </div>
+                  <p c lassName="text-slate-600 text-sm">When someone uses your link and starts a project, you get credited</p>
+                </di  v>
 
                 <div className="text-center">
                   <div className="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <span className="text-2xl font-bold text-purple-600">3</span>
-                  </div>
+                    <spa n className="text-2xl font-bold text-purple-600">3</span>
+                  </di  v>
                   <h3 className="font-bold text-slate-900 mb-2">Earn 10% Commission</h3>
-                  <p className="text-slate-600 text-sm">You earn 10% commission on every project they complete</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                  <p c lassName="text-slate-600 text-sm">You earn 10% commission on every project they complete</p>
+                </di  v>
+              </di  v>
+            </Ca  rdContent>
+          </Ca  rd>
 
-          {/* Back to Dashboard */}
+          {/*   Back to Dashboard */}
           <div className="mt-8 text-center">
-            <Link to={createPageUrl("UserDashboard")}>
-              <Button variant="outline">
-                Back to Dashboard
-              </Button>
-            </Link>
-          </div>
-        </div>
+            <Lin k to={createPageUrl("UserDashboard")}>
+              <But ton variant="outline">
+                Back   to Dashboard
+              </Bu  tton>
+            </Li  nk>
+          </di  v>
+        </di  v>
       </div>
     );
   }

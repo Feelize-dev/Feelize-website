@@ -29,13 +29,6 @@ router.get("/verify", verifySession, (req, res) => {
 })
 router.post("/logout", verifySession, deleteSession)
 
-// Projects API
-router.post("/project", verifySessionMiddleware, createProject)
-router.get("/projects", verifySessionMiddleware, listProjects)
-router.get("/project/:id", verifySessionMiddleware, getProject)
-router.put("/project/:id", verifySessionMiddleware, updateProject)
-router.post("/project/:id/generate-report", verifySessionMiddleware, generateReport)
-
 // Messages API
 router.get("/project/:projectId/messages", verifySessionMiddleware, getProjectMessages)
 router.post("/project/:projectId/messages", verifySessionMiddleware, sendMessage)

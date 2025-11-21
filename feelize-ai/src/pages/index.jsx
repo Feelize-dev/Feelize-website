@@ -31,35 +31,35 @@ import AffiliateSignup from "./AffiliateSignup";
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
-    
+
     Home: Home,
-    
+
     StartProject: StartProject,
-    
+
     Process: Process,
-    
+
     Pricing: Pricing,
-    
+
     About: About,
-    
+
     Work: Work,
-    
+
     Testimonials: Testimonials,
-    
+
     AdminDashboard: AdminDashboard,
-    
+
     UserDashboard: UserDashboard,
-    
+
     DeveloperDashboard: DeveloperDashboard,
-    
+
     ProjectReport: ProjectReport,
-    
+
     TeamReport: TeamReport,
-    
+
     ProjectDashboard: ProjectDashboard,
-    
+
     AffiliateSignup: AffiliateSignup,
-    
+
 }
 
 function _getCurrentPage(url) {
@@ -79,42 +79,42 @@ function _getCurrentPage(url) {
 function PagesContent() {
     const location = useLocation();
     const currentPage = _getCurrentPage(location.pathname);
-    
+
     return (
         <Layout currentPageName={currentPage}>
-            <Routes>            
-                
-                    <Route path="/" element={<Home />} />
-                
-                
+            <Routes>
+
+                <Route path="/" element={<Home />} />
+
+
                 <Route path="/Home" element={<Home />} />
-                
+
                 <Route path="/StartProject" element={<StartProject />} />
-                
+
                 <Route path="/Process" element={<Process />} />
-                
+
                 <Route path="/Pricing" element={<Pricing />} />
-                
+
                 <Route path="/About" element={<About />} />
-                
+
                 <Route path="/Work" element={<Work />} />
-                
+
                 <Route path="/Testimonials" element={<Testimonials />} />
-                
+
                 <Route path="/AdminDashboard" element={<AdminDashboard />} />
-                
+
                 <Route path="/UserDashboard" element={<UserDashboard />} />
-                
+
                 <Route path="/DeveloperDashboard" element={<DeveloperDashboard />} />
-                
+
                 <Route path="/ProjectReport" element={<ProjectReport />} />
-                
+
                 <Route path="/TeamReport" element={<TeamReport />} />
-                
+
                 <Route path="/ProjectDashboard" element={<ProjectDashboard />} />
-                
+
                 <Route path="/AffiliateSignup" element={<AffiliateSignup />} />
-                
+
             </Routes>
         </Layout>
     );
