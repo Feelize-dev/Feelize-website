@@ -13,20 +13,31 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
-// Middleware
-if (process.env.ENVIRONMENT === "Development") {
+// Middleware - CORS Configuration
+const corsOptions = {
+  credentials: true,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, Postman, etc.)
+    if (!origin) {
+      return callback(null, true);
+    }
 
-  app.use(cors({
-    credentials: true,
-    origin: process.env.DEVELOPMENT_CLIENT_URL
-  }))
-} else if (process.env.ENVIRONMENT === "Production") {
+    const allowedOrigin = process.env.ENVIRONMENT === "Production"
+      ? process.env.PRODUCTION_CLIENT_URL
+      : process.env.DEVELOPMENT_CLIENT_URL || "http://localhost:5174";
 
-  app.use(cors({
-    credentials: true,
-    origin: process.env.PRODUCTION_CLIENT_URL
-  }))
-}
+    if (origin === allowedOrigin) {
+      callback(null, true);
+    } else {
+      console.warn(`⚠️  CORS: Blocked request from origin: ${origin}`);
+      console.warn(`   Expected origin: ${allowedOrigin}`);
+      console.warn(`   Environment: ${process.env.ENVIRONMENT || 'Development (default)'}`);
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
+
+app.use(cors(corsOptions));
 app.use(express.json()); // Parse JSON body
 app.use(cookieParser())
 
@@ -56,4 +67,22 @@ app.use("/api", integrationRoutes); // Mounts at /api/llm, /api/email, etc.
 
 // Start Server
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`📝 Environment: ${process.env.ENVIRONMENT || 'Development (default)'}`);
+  const allowedOrigin = process.env.ENVIRONMENT === "Production"
+    ? process.env.PRODUCTION_CLIENT_URL
+    : process.env.DEVELOPMENT_CLIENT_URL || "http://localhost:5174";
+  console.log(`🌐 CORS allowed origin: ${allowedOrigin}`);
+  
+  // Check for Firebase configuration
+  if (!process.env.FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID === 'your-firebase-project-id') {
+    console.warn('⚠️  WARNING: Firebase credentials not configured in .env file');
+    console.warn('   Please update FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, and FIREBASE_PRIVATE_KEY');
+  }
+  
+  // Check for MongoDB configuration
+  if (!process.env.MONGO_DB_CONNECTION_STRING || process.env.MONGO_DB_CONNECTION_STRING === 'mongodb://localhost:27017/feelize') {
+    console.warn('⚠️  WARNING: Using default MongoDB connection string');
+  }
+});
