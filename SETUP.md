@@ -101,6 +101,18 @@ npm run dev
 
 The frontend will run on `http://localhost:5174`
 
+### 4. Testing CORS Configuration (Optional)
+
+Once the backend is running, you can test the CORS configuration:
+
+```bash
+cd Backend
+chmod +x test-cors.sh  # Make executable (first time only)
+./test-cors.sh          # Run the tests
+```
+
+This will verify that CORS is properly configured and working.
+
 ## Troubleshooting
 
 ### CORS Errors

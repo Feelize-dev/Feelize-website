@@ -2,6 +2,14 @@
 
 # Simple CORS test script for the Feelize backend
 # This script tests if CORS is properly configured
+#
+# Usage:
+#   chmod +x test-cors.sh  # Make executable (first time only)
+#   ./test-cors.sh          # Run the tests
+#
+# Prerequisites:
+#   - Backend server must be running on http://localhost:3000
+#   - curl must be installed
 
 echo "🧪 Testing CORS Configuration..."
 echo ""
