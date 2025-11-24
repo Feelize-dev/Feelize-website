@@ -1,5 +1,7 @@
 import Project from "../model/project.js";
 import Task from "../model/task.js";
+import Affiliate from "../model/affiliate.js";
+import Referral from "../model/referral.js";
 import { generateWithLLM } from "../services/llmService.js";
 
 // Create a new project from StartProject form
@@ -26,6 +28,7 @@ export const createProject = async (req, res) => {
       estimated_hours,
       recommended_price,
       complexity_score,
+      referral_code, // Extract referral code
     } = req.body;
 
     // Basic validation
@@ -55,6 +58,33 @@ export const createProject = async (req, res) => {
       recommended_price,
       complexity_score,
     });
+
+    // Handle Referral
+    if (referral_code) {
+      try {
+        const affiliate = await Affiliate.findOne({ referral_code });
+        if (affiliate) {
+          await Referral.create({
+            affiliate_id: affiliate._id,
+            referred_user_email: client_email,
+            project_id: newProject._id,
+            status: "pending",
+            commission_amount: 0, // Will be calculated later based on project value
+            conversion_date: new Date(),
+          });
+          
+          // Update affiliate stats
+          await Affiliate.findByIdAndUpdate(affiliate._id, {
+            $inc: { total_referrals: 1 }
+          });
+          
+          console.log(`Referral recorded for affiliate: ${affiliate.name}`);
+        }
+      } catch (referralError) {
+        console.error("Error processing referral:", referralError);
+        // Don't fail the project creation if referral fails
+      }
+    }
 
     // Optionally create tasks if provided in body.tasks
     if (Array.isArray(req.body.tasks) && req.body.tasks.length > 0) {

@@ -14,19 +14,30 @@ const app = express();
 connectDB();
 
 // Middleware
-if (process.env.ENVIRONMENT === "Development") {
+app.use(cors({
+  credentials: true,
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    
+    // Allow any localhost origin in development
+    if (process.env.ENVIRONMENT === "Development" && origin.match(/^http:\/\/localhost:\d+$/)) {
+      return callback(null, true);
+    }
 
-  app.use(cors({
-    credentials: true,
-    origin: process.env.DEVELOPMENT_CLIENT_URL
-  }))
-} else if (process.env.ENVIRONMENT === "Production") {
+    const allowedOrigins = [
+      process.env.DEVELOPMENT_CLIENT_URL,
+      process.env.PRODUCTION_CLIENT_URL
+    ].filter(Boolean);
 
-  app.use(cors({
-    credentials: true,
-    origin: process.env.PRODUCTION_CLIENT_URL
-  }))
-}
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+}));
+
 app.use(express.json()); // Parse JSON body
 app.use(cookieParser())
 
