@@ -35,6 +35,16 @@ export default function Layout({ children, currentPageName }) {
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
+  // Check for referral code in URL
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const refCode = params.get("ref");
+    if (refCode) {
+      sessionStorage.setItem("referral_code", refCode);
+      console.log("Referral code captured:", refCode);
+    }
+  }, [location]);
+
   const handleLogout = async () => {
     console.log("hi");
 

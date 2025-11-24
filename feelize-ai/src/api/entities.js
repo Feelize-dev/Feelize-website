@@ -74,6 +74,14 @@ export const User = {
   async login() {
     const provider = new GoogleAuthProvider();
     const result = await signInWithPopup(auth, provider);
+    
+    // Create backend session
+    const token = await result.user.getIdToken();
+    await axios.get(`${API_BASE_URL}/api/users/sessionLogin`, {
+      headers: { Authorization: `Bearer ${token}` },
+      withCredentials: true
+    });
+
     return result.user;
   },
 

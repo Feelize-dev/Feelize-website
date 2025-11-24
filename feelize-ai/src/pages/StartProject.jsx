@@ -78,7 +78,7 @@ export default function StartProjectPage() {
       console.log(token);
 
 
-      const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/user/sessionLogin`,
+      const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/sessionLogin`,
 
         {
           headers: { Authorization: `Bearer ${token}` },
@@ -146,13 +146,14 @@ export default function StartProjectPage() {
         ...projectData,
         uploaded_files: uploadedFiles.map(f => f.url),
         ai_analysis: aiAnalysis,
-        status: "completed"
+        status: "completed",
+        referral_code: sessionStorage.getItem("referral_code") || null // Include referral code
       };
 
       // Send to backend API to persist in MongoDB (session cookie required)
       try {
         const apiRes = await axios.post(
-          `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/user/project`,
+          `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/projects`,
           briefData,
           { withCredentials: true }
         );
