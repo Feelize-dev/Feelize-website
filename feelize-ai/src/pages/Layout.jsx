@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { Menu, X, Gift, Mail, Phone, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,6 +24,7 @@ export default function Layout({ children, currentPageName }) {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const { data: user, isLoading, refetch } = useUser();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -33,31 +34,6 @@ export default function Layout({ children, currentPageName }) {
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
-
-  // FIXED: Scroll to top when location changes
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "instant" });
-  }, [location.pathname]);
-
-  const handleLogin = async () => {
-    try {
-
-      const result = await signInWithGooglePopup();
-      const token = await result.user.getIdToken();
-      console.log(token);
-
-      await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/sessionLogin`,
-
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        })
-      await refetch();
-
-    } catch (error) {
-      console.error("Login error:", error);
-    }
-  };
 
   const handleLogout = async () => {
     console.log("hi");
@@ -198,9 +174,6 @@ export default function Layout({ children, currentPageName }) {
         }}
       />
 
-      {/* Grid Background */}
-      <div className="fixed inset-0 bg-[linear-gradient(rgba(0,212,255,0.06)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.06)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
-
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 py-6">
         <div className="max-w-7xl mx-auto px-4 md:px-6">
@@ -324,23 +297,8 @@ export default function Layout({ children, currentPageName }) {
                 ) : !user ? (
                   <Button
                     onClick={() => {
-                      handleLogin()
-                      if (
-                        location.pathname === createPageUrl("Home") ||
-                        location.pathname === "/"
-                      ) {
-                        const aiSection =
-                          document.getElementById("ai-analyzer");
-                        if (aiSection) {
-                          aiSection.scrollIntoView({
-                            behavior: "smooth",
-                            block: "start",
-                          });
-                        }
-                      } else {
-                        window.location.href =
-                          createPageUrl("Home") + "#ai-analyzer";
-                      }
+
+                      navigate('/StartProject');
                     }}
                     className="bg-gradient-to-r from-blue-500 via-blue-700 to-purple-700 hover:from-blue-600 hover:via-blue-800 hover:to-purple-800 tracking-wide px-14 py-3 rounded-full shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all ease-in-out duration-300 hover:scale-105"
                   >
@@ -441,8 +399,11 @@ export default function Layout({ children, currentPageName }) {
 
               {!isLoading && !user && (
                 <div className="px-3 pt-2">
-                  <Link to={createPageUrl("StartProject")}>
-                    <Button className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold">
+                  <Link to={createPageUrl("StartProject")} >
+                    <Button className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                      }}>
                       Start with AI Assistant
                     </Button>
                   </Link>
@@ -454,7 +415,7 @@ export default function Layout({ children, currentPageName }) {
       </nav>
 
       {/* Main Content */}
-      <main className="relative z-10 pt-32 sm:pt-40">{children}</main>
+      <main className="relative z-10">{children}</main>
 
       {/* Footer */}
       <footer className="relative z-10 bg-slate-900/50 backdrop-blur-xl border-t border-white/10 mt-20">

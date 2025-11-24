@@ -183,7 +183,7 @@ export default function StartProjectPage() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4">
         <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
       </div>
     );
@@ -192,7 +192,44 @@ export default function StartProjectPage() {
   // Login Required Screen
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 pointer-events-none overflow-hidden"
+          style={{ zIndex: 0 }}
+        >
+          {/* Multiple purple gradient blurs throughout the page */}
+          {[
+            { left: "10%", top: "-350px" },
+            { left: "70%", top: "-250px" },
+            { left: "-142px", top: "200px" },
+            { left: "864px", top: "500px" },
+            { left: "191px", top: "100px" },
+            { left: "1226px", top: "300px" },
+            { left: "-142px", top: "2664px" },
+            { left: "864px", top: "3040px" },
+            { left: "191px", top: "1992px" },
+            { left: "1226px", top: "2183px" },
+            { left: "-142px", top: "4774px" },
+            { left: "864px", top: "5150px" },
+            { left: "191px", top: "4102px" },
+            { left: "1226px", top: "4293px" },
+            { left: "-142px", top: "6644px" },
+            { left: "864px", top: "7020px" },
+            { left: "191px", top: "5972px" },
+            { left: "1226px", top: "6163px" },
+          ].map((pos, i) => (
+            <div
+              key={i}
+              className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
+              style={{
+                left: pos.left,
+                top: pos.top,
+                background: "rgba(80, 0, 181, 0.67)",
+                opacity: 0.25,
+              }}
+            />
+          ))}
+        </div>
         <div className="max-w-md w-full">
           <Card className="glass-morphism border border-white/20 rounded-3xl overflow-hidden">
             <CardContent className="p-8">

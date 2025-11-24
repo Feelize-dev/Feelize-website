@@ -247,24 +247,24 @@ const HomePage = () => {
       {/* Main Content */}
       <div className="relative" style={{ zIndex: 1 }}>
         {/* Hero Section */}
-        <section className="w-full px-10 pt-24 pb-32 min-h-screen flex items-center justify-center">
+        <section className="w-full px-10 pt-20 md:pt-60 pb-5 md:pb-10 h-screen flex items-center justify-center">
           <motion.div
-            initial={{ opacity: 0, y: 200 }}
+            initial={{ opacity: 0, y: 150 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            className="flex flex-col items-center text-center gap-10 max-w-6xl w-full"
+            transition={{ duration: 0.7 }}
+            className="flex flex-col items-center text-center gap-7 max-w-6xl w-full"
           >
-            <Badge className="px-6 py-4 text-md md:text-lg font-light rounded-full bg-transparent border-2 border-blue-600">
+            <Badge className="px-5 py-3 text-md md:text-lg font-light rounded-full bg-transparent border-2 border-blue-600">
               ✨ AI-Powered Development
             </Badge>
 
-            <h1 className="text-7xl lg:text-8xl font-bold leading-tight font-['Bricolage_Grotesque']">
+            <h1 className="text-5xl lg:text-8xl font-bold leading-tight font-['Bricolage_Grotesque']">
               Developers Supercharged by AI
             </h1>
 
-            <p className="text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl">
+            <p className="text-2xl md:text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl">
               Speed of AI. The quality and creativity of our professional
-              ,designers, engineers, and business strategists.
+              designers, engineers, and business strategists.
             </p>
 
             <Button
@@ -278,7 +278,7 @@ const HomePage = () => {
                   });
                 }
               }}
-              className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white px-8 py-6 text-lg rounded-full h-auto"
+              className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white px-7 py-5 text-lg rounded-full h-auto"
             >
               Start Using AI assistant
             </Button>
@@ -286,13 +286,13 @@ const HomePage = () => {
         </section>
 
         {/* Process Section */}
-        <section className="container mx-auto px-16 py-28">
+        <section className="container mx-auto px-16 py-20 md:py-28">
           <div className="flex flex-col items-center gap-12 mb-16">
             <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
               ✨ AI-Optimized Workflow
             </Badge>
 
-            <div className="flex justify-between items-start w-full max-w-7xl gap-12">
+            <div className="flex-col md:flex md:flex-row justify-between items-start w-full max-w-7xl gap-12 space-y-10 md:space-y-0">
               <div className="flex-1 space-y-6">
                 <h2 className="text-5xl font-semibold text-white font-['Geist']">
                   Our Process
@@ -346,11 +346,11 @@ const HomePage = () => {
               <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none">
                 Why Choose Us
               </Badge>
-              <div className="grid grid-cols-2 gap-28 items-center">
-                <h2 className="text-5xl font-bold text-white text-left font-['Geist']">
+              <div className="flex flex-col md:grid md:grid-cols-2 gap-20 md:gap-28 items-center">
+                <h2 className="text-5xl font-bold text-white md:text-left font-['Geist'] text-center">
                   Discover Our Unmatched Success Rates
                 </h2>
-                <p className="text-2xl text-gray-400 leading-relaxed text-left font-['Geist']">
+                <p className="text-2xl text-gray-400 leading-relaxed font-['Geist'] text-justify">
                   At Feelize, we pride ourselves on delivering exceptional
                   results for our clients. With a proven track record and a
                   commitment to customer satisfaction, we ensure that your
@@ -360,7 +360,7 @@ const HomePage = () => {
               </div>
             </div>
 
-            <div className="flex justify-center items-center gap-32">
+            <div className="grid md:flex justify-center items-center gap-14 md:gap-32">
               <div className="text-center px-6">
                 <h3 className="text-7xl font-bold text-white mb-1 font-['Geist']">
                   95%

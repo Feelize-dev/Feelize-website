@@ -4,6 +4,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent } from '@/components/ui/card';
 import { Upload, FileText, Image as ImageIcon, File, Sparkles, Loader2, ChevronRight, Check } from 'lucide-react';
 import axios from 'axios';
+import { useUser } from '@/hooks/useUser';
+import { useNavigate } from 'react-router-dom';
 
 const API_BASE_URL = import.meta.env.VITE_SERVER_API_ENDPOINT || 'http://localhost:3000';
 
@@ -20,6 +22,9 @@ export const ProjectAnalyzer = () => {
   const [reportHtml, setReportHtml] = useState(null);
   const [showReportModal, setShowReportModal] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
+
+  const { data: user, isLoading, refetch } = useUser();
+  const navigate = useNavigate();
 
   const handleAnswer = (questionId, value, isMultiple = false) => {
     setAnswers(prev => {
@@ -39,6 +44,11 @@ export const ProjectAnalyzer = () => {
     if (!projectDescription.trim() && uploadedFiles.length === 0) {
       alert('Please provide a project description or upload files');
       return;
+    }
+
+    if (!user) {
+      alert('Please log in to use the AI project analyzer.');
+      navigate('/StartProject');
     }
 
     setIsGeneratingQuestions(true);
@@ -74,7 +84,7 @@ export const ProjectAnalyzer = () => {
       const words = projectDescription.toLowerCase().split(/\s+/);
       const techKeywords = ['website', 'app', 'mobile', 'ecommerce', 'saas', 'platform', 'api', 'database', 'ai', 'payment'];
       const foundKeywords = techKeywords.filter(keyword => words.some(word => word.includes(keyword)));
-      
+
       if (foundKeywords.length > 0) {
         addProgress(`💡 Identified key areas: ${foundKeywords.join(', ')}`, 'highlight');
         await new Promise(resolve => setTimeout(resolve, 500));
@@ -95,12 +105,12 @@ export const ProjectAnalyzer = () => {
       if (response.data.success && response.data.questions) {
         addProgress('✅ Analysis complete! Generating personalized questions...', 'success');
         await new Promise(resolve => setTimeout(resolve, 500));
-        
+
         addProgress(`📋 Generated ${response.data.questions.length} custom questions for you`, 'success');
         await new Promise(resolve => setTimeout(resolve, 500));
 
         setAiGeneratedQuestions(response.data.questions);
-        
+
         // Small delay before transitioning
         await new Promise(resolve => setTimeout(resolve, 800));
         setStep(2); // Move to questions step
@@ -108,8 +118,8 @@ export const ProjectAnalyzer = () => {
       }
     } catch (error) {
       console.error('Failed to generate questions:', error);
-      setAnalysisProgress(prev => [...prev, { 
-        message: '❌ Failed to generate questions. Please try again.', 
+      setAnalysisProgress(prev => [...prev, {
+        message: '❌ Failed to generate questions. Please try again.',
         type: 'error',
         timestamp: Date.now()
       }]);
@@ -137,7 +147,7 @@ export const ProjectAnalyzer = () => {
     const filePromises = files.map(file => {
       return new Promise((resolve) => {
         const reader = new FileReader();
-        
+
         reader.onload = (e) => {
           resolve({
             name: file.name,
@@ -247,8 +257,8 @@ ${projectDescription}
       }
     } catch (error) {
       console.error('Analysis failed:', error);
-      setAnalysisProgress(prev => [...prev, { 
-        message: '❌ Failed to generate report. Please try again.', 
+      setAnalysisProgress(prev => [...prev, {
+        message: '❌ Failed to generate report. Please try again.',
         type: 'error',
         timestamp: Date.now()
       }]);
@@ -296,7 +306,7 @@ ${projectDescription}
               <p className="text-gray-400 text-sm mb-4">
                 Upload images, mockups, documents, or any reference materials
               </p>
-              
+
               <div className="border-2 border-dashed border-gray-700 rounded-lg p-8 text-center hover:border-purple-500 transition-colors cursor-pointer">
                 <input
                   type="file"
@@ -357,7 +367,7 @@ ${projectDescription}
             <Button
               onClick={generateAIQuestions}
               disabled={isGeneratingQuestions}
-              className="w-full bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white py-6 text-lg"
+              className="w-full bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white py-6 text-md md:text-lg"
             >
               {isGeneratingQuestions ? (
                 <>
@@ -381,15 +391,14 @@ ${projectDescription}
                 </h4>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {analysisProgress.map((progress, index) => (
-                    <div 
+                    <div
                       key={index}
-                      className={`text-sm animate-fadeIn ${
-                        progress.type === 'error' ? 'text-red-400' :
+                      className={`text-sm animate-fadeIn ${progress.type === 'error' ? 'text-red-400' :
                         progress.type === 'success' ? 'text-green-400' :
-                        progress.type === 'highlight' ? 'text-purple-400 font-semibold' :
-                        progress.type === 'file' ? 'text-gray-400 pl-4' :
-                        'text-gray-300'
-                      }`}
+                          progress.type === 'highlight' ? 'text-purple-400 font-semibold' :
+                            progress.type === 'file' ? 'text-gray-400 pl-4' :
+                              'text-gray-300'
+                        }`}
                     >
                       {progress.message}
                     </div>
@@ -420,15 +429,14 @@ ${projectDescription}
                     <button
                       key={option.value}
                       onClick={() => handleAnswer(q.id, option.value, q.multiple)}
-                      className={`p-4 rounded-lg border-2 text-left transition-all ${
-                        q.multiple
-                          ? (answers[q.id] || []).includes(option.value)
-                            ? 'border-purple-500 bg-purple-900/20 text-white'
-                            : 'border-gray-700 bg-[#0A0E14] text-gray-300 hover:border-gray-600'
-                          : answers[q.id] === option.value
+                      className={`p-4 rounded-lg border-2 text-left transition-all ${q.multiple
+                        ? (answers[q.id] || []).includes(option.value)
                           ? 'border-purple-500 bg-purple-900/20 text-white'
                           : 'border-gray-700 bg-[#0A0E14] text-gray-300 hover:border-gray-600'
-                      }`}
+                        : answers[q.id] === option.value
+                          ? 'border-purple-500 bg-purple-900/20 text-white'
+                          : 'border-gray-700 bg-[#0A0E14] text-gray-300 hover:border-gray-600'
+                        }`}
                     >
                       <div className="flex items-center justify-between">
                         <span>{option.label}</span>
@@ -481,15 +489,14 @@ ${projectDescription}
                 </div>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {analysisProgress.map((progress, index) => (
-                    <div 
+                    <div
                       key={index}
-                      className={`text-sm animate-fadeIn ${
-                        progress.type === 'error' ? 'text-red-400' :
+                      className={`text-sm animate-fadeIn ${progress.type === 'error' ? 'text-red-400' :
                         progress.type === 'success' ? 'text-green-400' :
-                        progress.type === 'highlight' ? 'text-purple-400 font-semibold' :
-                        progress.type === 'file' ? 'text-gray-400 ml-4' :
-                        'text-gray-300'
-                      }`}
+                          progress.type === 'highlight' ? 'text-purple-400 font-semibold' :
+                            progress.type === 'file' ? 'text-gray-400 ml-4' :
+                              'text-gray-300'
+                        }`}
                     >
                       {progress.message}
                     </div>
@@ -530,9 +537,9 @@ ${projectDescription}
 
       {/* Report Modal Overlay */}
       {showReportModal && reportHtml && (
-        <div 
+        <div
           className="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center p-4"
-          style={{ 
+          style={{
             display: isMinimized ? 'none' : 'flex'
           }}
         >
@@ -546,7 +553,7 @@ ${projectDescription}
                     // Extract title from report for filename
                     const titleMatch = reportHtml.match(/<title>(.*?)<\/title>/i);
                     const filename = titleMatch ? `${titleMatch[1].replace(/[^a-z0-9]/gi, '_')}.html` : 'Feelize_Project_Report.html';
-                    
+
                     // Create blob and download
                     const blob = new Blob([reportHtml], { type: 'text/html' });
                     const url = window.URL.createObjectURL(blob);
