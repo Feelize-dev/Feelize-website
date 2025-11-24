@@ -275,7 +275,7 @@ export default function StartProjectPage() {
             <CardHeader className="text-center pb-6">
               <div className="flex justify-center gap-2 mb-4">
                 {[1, 2, 3].map((step) => (
-                  <div key={step} className={`w-8 h-2 rounded-full ${step === 1 ? 'bg-indigo-600' : 'bg-slate-200'}`} />
+                  <div key={step} className={` w-8   h-2 round e d-full  ${step === 1 ? 'bg-indigo-600' : 'bg-slate-200'}`} />
                 ))}
               </div>
               <CardTitle className="text-xl text-slate-900">Project Details</CardTitle>

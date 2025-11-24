@@ -35,7 +35,24 @@ app.get("/", (req, res) => {
   res.send("API is running...");
 });
 
+import engineerRoutes from "./routes/engineerRoutes.js";
+import affiliateRoutes from "./routes/affiliateRoutes.js";
+import referralRoutes from "./routes/referralRoutes.js";
+import taskRoutes from "./routes/taskRoutes.js";
+import activityRoutes from "./routes/activityRoutes.js";
+import integrationRoutes from "./routes/integrationRoutes.js";
+import projectRoutes from "./routes/projectRoutes.js";
+
+// ... existing code ...
+
 app.use("/api/users", userRoutes);
+app.use("/api/projects", projectRoutes);
+app.use("/api/engineers", engineerRoutes);
+app.use("/api/affiliates", affiliateRoutes);
+app.use("/api/referrals", referralRoutes);
+app.use("/api/tasks", taskRoutes);
+app.use("/api/activity-logs", activityRoutes);
+app.use("/api", integrationRoutes); // Mounts at /api/llm, /api/email, etc.
 
 // Start Server
 const PORT = process.env.PORT || 3000;

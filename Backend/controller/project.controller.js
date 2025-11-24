@@ -119,8 +119,8 @@ export const listProjects = async (req, res) => {
       updated_date: p.updatedAt.toISOString()
     }));
 
-    return res.status(200).json({ 
-      success: true, 
+    return res.status(200).json({
+      success: true,
       data: mapped,
       meta: {
         total: mapped.length,
@@ -129,9 +129,9 @@ export const listProjects = async (req, res) => {
     });
   } catch (error) {
     console.error("Failed to list projects:", error);
-    return res.status(500).json({ 
-      success: false, 
-      error: error.message || error 
+    return res.status(500).json({
+      success: false,
+      error: error.message || error
     });
   }
 };
@@ -152,18 +152,18 @@ export const getProject = async (req, res) => {
     }).lean().exec();
 
     if (!project) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "Project not found or access denied" 
+      return res.status(404).json({
+        success: false,
+        message: "Project not found or access denied"
       });
     }
 
     // Get associated tasks
-    const tasks = await Task.find({ 
-      project_id: id 
-    }).sort({ 
-      status: 1, 
-      due_date: 1 
+    const tasks = await Task.find({
+      project_id: id
+    }).sort({
+      status: 1,
+      due_date: 1
     }).lean().exec();
 
     // Format response
@@ -179,15 +179,15 @@ export const getProject = async (req, res) => {
       }))
     };
 
-    return res.status(200).json({ 
-      success: true, 
+    return res.status(200).json({
+      success: true,
       data: response
     });
   } catch (error) {
     console.error("Failed to get project:", error);
-    return res.status(500).json({ 
-      success: false, 
-      error: error.message || error 
+    return res.status(500).json({
+      success: false,
+      error: error.message || error
     });
   }
 };

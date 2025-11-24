@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { base44 } from "@/api/base44Client";
+import { Project } from "@/api/entities";
+import { InvokeLLM } from "@/api/integrations";
 import { useLocation } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -90,7 +91,7 @@ const ProjectChatbot = ({ project }) => {
         Provide a helpful response:
       `;
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await InvokeLLM({
         prompt: projectContext,
       });
 
@@ -159,11 +160,10 @@ const ProjectChatbot = ({ project }) => {
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-2xl ${
-                      message.role === 'user'
+                    className={`max-w-[80%] p-3 rounded-2xl ${message.role === 'user'
                         ? 'bg-indigo-600 text-white'
                         : 'bg-white text-slate-900 border border-slate-200'
-                    }`}
+                      }`}
                   >
                     <p className="text-sm leading-relaxed whitespace-pre-line">{message.content}</p>
                   </div>
@@ -223,8 +223,8 @@ export default function ProjectReportPage() {
     }
 
     try {
-      const projectData = await base44.entities.ProjectBrief.get(projectId);
-      setProject(projectData);
+      const projectRes = await Project.get(projectId);
+      setProject(projectRes.data || projectRes);
     } catch (error) {
       console.error("Failed to load project:", error);
     } finally {
@@ -395,16 +395,14 @@ export default function ProjectReportPage() {
                     <span className="text-sm text-slate-700">Project analysis completed</span>
                   </div>
 
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${
-                    project.status === "contacted" || project.status === "in_progress" || project.status === "delivered"
+                  <div className={`flex items-center gap-3 p-3 rounded-lg ${project.status === "contacted" || project.status === "in_progress" || project.status === "delivered"
                       ? "bg-green-50"
                       : "bg-yellow-50"
-                  }`}>
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                      project.status === "contacted" || project.status === "in_progress" || project.status === "delivered"
+                    }`}>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${project.status === "contacted" || project.status === "in_progress" || project.status === "delivered"
                         ? "bg-green-500"
                         : "bg-yellow-500"
-                    }`}>
+                      }`}>
                       {project.status === "contacted" || project.status === "in_progress" || project.status === "delivered" ? (
                         <CheckCircle className="w-3 h-3 text-white" />
                       ) : (
@@ -416,27 +414,24 @@ export default function ProjectReportPage() {
                     </span>
                   </div>
 
-                  <div className={`flex items-center gap-3 p-3 rounded-lg ${
-                    project.status === "in_progress" || project.status === "delivered"
+                  <div className={`flex items-center gap-3 p-3 rounded-lg ${project.status === "in_progress" || project.status === "delivered"
                       ? "bg-green-50"
                       : "bg-slate-50"
-                  }`}>
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                      project.status === "in_progress" || project.status === "delivered"
+                    }`}>
+                    <div className={`w-6 h-6 rounded-full flex items-center justify-center ${project.status === "in_progress" || project.status === "delivered"
                         ? "bg-green-500"
                         : "bg-slate-300"
-                    }`}>
+                      }`}>
                       {project.status === "in_progress" || project.status === "delivered" ? (
                         <CheckCircle className="w-3 h-3 text-white" />
                       ) : (
                         <span className="text-white text-xs font-bold">3</span>
                       )}
                     </div>
-                    <span className={`text-sm ${
-                      project.status === "in_progress" || project.status === "delivered"
+                    <span className={`text-sm ${project.status === "in_progress" || project.status === "delivered"
                         ? "text-slate-700"
                         : "text-slate-500"
-                    }`}>
+                      }`}>
                       Development in progress
                     </span>
                   </div>
