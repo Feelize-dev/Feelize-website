@@ -20,7 +20,7 @@ import {
   Gift,
   Target,
   Zap,
-  CheckCircle
+  CheckCircle,
 } from "lucide-react";
 
 export default function AffiliateSignup() {
@@ -32,7 +32,7 @@ export default function AffiliateSignup() {
   const [formData, setFormData] = useState({
     payment_method: "",
     payment_details: "",
-    why_join: ""
+    why_join: "",
   });
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function AffiliateSignup() {
   };
 
   const generateReferralCode = (email) => {
-    const prefix = email.split('@')[0].toUpperCase().slice(0, 4);
+    const prefix = email.split("@")[0].toUpperCase().slice(0, 4);
     const random = Math.random().toString(36).substring(2, 6).toUpperCase();
     return `${prefix}${random}`;
   };
@@ -84,7 +84,7 @@ export default function AffiliateSignup() {
       const referralCode = generateReferralCode(currentUser.email);
 
       await Affiliate.create({
-        name: currentUser.displayName || currentUser.email.split('@')[0], // Add name
+        name: currentUser.displayName || currentUser.email.split("@")[0], // Add name
         email: currentUser.email, // Change user_email to email
         referral_code: referralCode,
         status: "active",
@@ -92,16 +92,22 @@ export default function AffiliateSignup() {
         payment_details: formData.payment_details,
         total_referrals: 0,
         total_earnings: 0,
-        pending_earnings: 0
+        pending_earnings: 0,
       });
 
       // Reload to show new affiliate
       await checkUser();
     } catch (error) {
       console.error("Error creating affiliate:", error);
-      const errorMessage = error.response?.data?.error || error.message || "Failed to create affiliate account.";
-      
-      if (errorMessage.includes("E11000") || errorMessage.includes("duplicate key")) {
+      const errorMessage =
+        error.response?.data?.error ||
+        error.message ||
+        "Failed to create affiliate account.";
+
+      if (
+        errorMessage.includes("E11000") ||
+        errorMessage.includes("duplicate key")
+      ) {
         alert("You are already an affiliate! Refreshing...");
         await checkUser();
       } else {
@@ -112,9 +118,10 @@ export default function AffiliateSignup() {
     }
   };
 
-
   const copyReferralLink = () => {
-    const link = `${window.location.origin}${createPageUrl("StartProject")}?ref=${existingAffiliate.referral_code}`;
+    const link = `${window.location.origin}${createPageUrl(
+      "StartProject"
+    )}?ref=${existingAffiliate.referral_code}`;
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -132,7 +139,9 @@ export default function AffiliateSignup() {
   // DASHBOARD VIEW (For Existing Affiliates)
   // ----------------------------------------------------------------------
   if (existingAffiliate) {
-    const referralLink = `${window.location.origin}${createPageUrl("StartProject")}?ref=${existingAffiliate.referral_code}`;
+    const referralLink = `${window.location.origin}${createPageUrl(
+      "StartProject"
+    )}?ref=${existingAffiliate.referral_code}`;
 
     return (
       <div className="min-h-screen bg-slate-50">
@@ -145,8 +154,12 @@ export default function AffiliateSignup() {
                   <CheckCircle className="w-3 h-3 mr-1" />
                   Active Affiliate
                 </Badge>
-                <h1 className="text-2xl font-bold text-slate-900">Affiliate Dashboard</h1>
-                <p className="text-slate-600">Welcome back, {existingAffiliate.name || 'Partner'}</p>
+                <h1 className="text-2xl font-bold text-slate-900">
+                  Affiliate Dashboard
+                </h1>
+                <p className="text-slate-600">
+                  Welcome back, {existingAffiliate.name || "Partner"}
+                </p>
               </div>
               <Link to={createPageUrl("UserDashboard")}>
                 <Button variant="outline" size="sm">
@@ -164,9 +177,12 @@ export default function AffiliateSignup() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-slate-500 text-sm font-medium mb-1">Total Earnings</p>
+                    <p className="text-slate-500 text-sm font-medium mb-1">
+                      Total Earnings
+                    </p>
                     <p className="text-3xl font-bold text-slate-900">
-                      ${(existingAffiliate.total_earnings || 0).toLocaleString()}
+                      $
+                      {(existingAffiliate.total_earnings || 0).toLocaleString()}
                     </p>
                   </div>
                   <div className="w-12 h-12 bg-green-50 rounded-full flex items-center justify-center">
@@ -180,9 +196,14 @@ export default function AffiliateSignup() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-slate-500 text-sm font-medium mb-1">Pending Payout</p>
+                    <p className="text-slate-500 text-sm font-medium mb-1">
+                      Pending Payout
+                    </p>
                     <p className="text-3xl font-bold text-slate-900">
-                      ${(existingAffiliate.pending_earnings || 0).toLocaleString()}
+                      $
+                      {(
+                        existingAffiliate.pending_earnings || 0
+                      ).toLocaleString()}
                     </p>
                   </div>
                   <div className="w-12 h-12 bg-yellow-50 rounded-full flex items-center justify-center">
@@ -196,7 +217,9 @@ export default function AffiliateSignup() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-slate-500 text-sm font-medium mb-1">Total Referrals</p>
+                    <p className="text-slate-500 text-sm font-medium mb-1">
+                      Total Referrals
+                    </p>
                     <p className="text-3xl font-bold text-slate-900">
                       {existingAffiliate.total_referrals || 0}
                     </p>
@@ -223,21 +246,31 @@ export default function AffiliateSignup() {
                       readOnly
                       className="font-mono text-sm bg-slate-50"
                     />
-                    <Button onClick={copyReferralLink} className="flex-shrink-0">
-                      {copied ? <Check className="w-4 h-4 mr-2" /> : <Copy className="w-4 h-4 mr-2" />}
+                    <Button
+                      onClick={copyReferralLink}
+                      className="flex-shrink-0"
+                    >
+                      {copied ? (
+                        <Check className="w-4 h-4 mr-2" />
+                      ) : (
+                        <Copy className="w-4 h-4 mr-2" />
+                      )}
                       {copied ? "Copied!" : "Copy"}
                     </Button>
                   </div>
                   <div className="bg-indigo-50 text-indigo-900 p-4 rounded-lg text-sm">
                     <p className="font-medium mb-1">💡 Pro Tip:</p>
-                    Share this link on social media, your blog, or directly with clients. You'll earn commission when they start a project.
+                    Share this link on social media, your blog, or directly with
+                    clients. You'll earn commission when they start a project.
                   </div>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">Performance Overview</CardTitle>
+                  <CardTitle className="text-lg">
+                    Performance Overview
+                  </CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="h-64 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50">
@@ -256,31 +289,49 @@ export default function AffiliateSignup() {
                 <CardContent className="p-6">
                   <h3 className="font-bold text-lg mb-2">Commission Rate</h3>
                   <div className="text-4xl font-bold mb-1">10%</div>
-                  <p className="text-indigo-100 text-sm">On every completed project</p>
+                  <p className="text-indigo-100 text-sm">
+                    On every completed project
+                  </p>
                 </CardContent>
               </Card>
 
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-sm font-medium uppercase tracking-wider text-slate-500">Resources</CardTitle>
+                  <CardTitle className="text-sm font-medium uppercase tracking-wider text-slate-500">
+                    Resources
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-2">
-                  <Button variant="ghost" className="w-full justify-start h-auto py-3">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start h-auto py-3"
+                  >
                     <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center mr-3">
                       <Gift className="w-4 h-4 text-slate-600" />
                     </div>
                     <div className="text-left">
-                      <div className="font-medium text-slate-900">Marketing Assets</div>
-                      <div className="text-xs text-slate-500">Logos, banners, and copy</div>
+                      <div className="font-medium text-slate-900">
+                        Marketing Assets
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        Logos, banners, and copy
+                      </div>
                     </div>
                   </Button>
-                  <Button variant="ghost" className="w-full justify-start h-auto py-3">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start h-auto py-3"
+                  >
                     <div className="w-8 h-8 bg-slate-100 rounded-lg flex items-center justify-center mr-3">
                       <Target className="w-4 h-4 text-slate-600" />
                     </div>
                     <div className="text-left">
-                      <div className="font-medium text-slate-900">Guide to Promoting</div>
-                      <div className="text-xs text-slate-500">Tips to earn more</div>
+                      <div className="font-medium text-slate-900">
+                        Guide to Promoting
+                      </div>
+                      <div className="text-xs text-slate-500">
+                        Tips to earn more
+                      </div>
                     </div>
                   </Button>
                 </CardContent>
@@ -301,47 +352,58 @@ export default function AffiliateSignup() {
       <div className="relative overflow-hidden bg-slate-900 text-white">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-10"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 to-slate-900"></div>
-        
+
         <div className="relative max-w-6xl mx-auto px-4 py-24 md:py-32 text-center">
           <Badge className="bg-indigo-500/20 text-indigo-300 border-indigo-500/30 mb-6 hover:bg-indigo-500/30 px-4 py-1.5 text-sm">
             🚀 Join the Feelize Partner Program
           </Badge>
           <h1 className="text-5xl md:text-7xl font-bold mb-6 tracking-tight">
-            Earn <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">10% Commission</span>
-            <br />On Every Project.
+            Earn{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">
+              10% Commission
+            </span>
+            <br />
+            On Every Project.
           </h1>
           <p className="text-xl text-slate-300 max-w-2xl mx-auto mb-10 leading-relaxed">
-            Partner with Feelize AI and turn your network into revenue. 
-            Help creators and businesses build amazing AI projects while you earn passive income.
+            Partner with Feelize AI and turn your network into revenue. Help
+            creators and businesses build amazing AI projects while you earn
+            passive income.
           </p>
-          
+
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Button 
-              size="lg" 
+            <Button
+              size="lg"
               className="h-14 px-8 text-lg bg-white text-slate-900 hover:bg-slate-100"
-              onClick={() => document.getElementById('join-form').scrollIntoView({ behavior: 'smooth' })}
+              onClick={() =>
+                document
+                  .getElementById("join-form")
+                  .scrollIntoView({ behavior: "smooth" })
+              }
             >
               Start Earning Now
             </Button>
-            <Button 
-              size="lg" 
-              variant="outline" 
+            <Button
+              size="lg"
+              variant="outline"
               className="h-14 px-8 text-lg border-slate-700 text-white hover:bg-slate-800 hover:text-white"
-              onClick={() => window.open('https://feelize.ai', '_blank')}
+              onClick={() => window.open("https://feelize.ai", "_blank")}
             >
               Learn about Feelize
             </Button>
           </div>
-          
+
           <div className="mt-12 flex items-center justify-center gap-8 text-slate-400 text-sm font-medium">
             <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-400" /> No Cap on Earnings
+              <CheckCircle className="w-4 h-4 text-green-400" /> No Cap on
+              Earnings
             </div>
             <div className="flex items-center gap-2">
               <CheckCircle className="w-4 h-4 text-green-400" /> Monthly Payouts
             </div>
             <div className="flex items-center gap-2">
-              <CheckCircle className="w-4 h-4 text-green-400" /> Real-time Tracking
+              <CheckCircle className="w-4 h-4 text-green-400" /> Real-time
+              Tracking
             </div>
           </div>
         </div>
@@ -367,9 +429,12 @@ export default function AffiliateSignup() {
       <div className="py-24 bg-slate-50">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center max-w-3xl mx-auto mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">Why Partner with Feelize?</h2>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              Why Partner with Feelize?
+            </h2>
             <p className="text-lg text-slate-600">
-              We provide the tools, you bring the network. It's a partnership designed for your success.
+              We provide the tools, you bring the network. It's a partnership
+              designed for your success.
             </p>
           </div>
 
@@ -379,9 +444,12 @@ export default function AffiliateSignup() {
                 <div className="w-14 h-14 bg-indigo-100 rounded-2xl flex items-center justify-center mb-6">
                   <DollarSign className="w-7 h-7 text-indigo-600" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">Generous Commissions</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">
+                  Generous Commissions
+                </h3>
                 <p className="text-slate-600 leading-relaxed">
-                  Earn a flat 10% commission on every project started through your link. High ticket projects mean high payouts for you.
+                  Earn a flat 10% commission on every project started through
+                  your link. High ticket projects mean high payouts for you.
                 </p>
               </CardContent>
             </Card>
@@ -391,9 +459,12 @@ export default function AffiliateSignup() {
                 <div className="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center mb-6">
                   <Zap className="w-7 h-7 text-purple-600" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">High Conversion Rate</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">
+                  High Conversion Rate
+                </h3>
                 <p className="text-slate-600 leading-relaxed">
-                  Our AI-powered platform solves real problems, making it an easy sell for agencies, developers, and businesses.
+                  Our AI-powered platform solves real problems, making it an
+                  easy sell for agencies, developers, and businesses.
                 </p>
               </CardContent>
             </Card>
@@ -403,9 +474,12 @@ export default function AffiliateSignup() {
                 <div className="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center mb-6">
                   <Target className="w-7 h-7 text-blue-600" />
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">30-Day Cookie Life</h3>
+                <h3 className="text-xl font-bold text-slate-900 mb-3">
+                  30-Day Cookie Life
+                </h3>
                 <p className="text-slate-600 leading-relaxed">
-                  We track visitors for 30 days. If they convert anytime within that window, you get the credit.
+                  We track visitors for 30 days. If they convert anytime within
+                  that window, you get the credit.
                 </p>
               </CardContent>
             </Card>
@@ -417,8 +491,12 @@ export default function AffiliateSignup() {
       <div className="py-24 bg-white">
         <div className="max-w-6xl mx-auto px-4">
           <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">How It Works</h2>
-            <p className="text-lg text-slate-600">Three simple steps to start earning.</p>
+            <h2 className="text-3xl md:text-4xl font-bold text-slate-900 mb-4">
+              How It Works
+            </h2>
+            <p className="text-lg text-slate-600">
+              Three simple steps to start earning.
+            </p>
           </div>
 
           <div className="grid md:grid-cols-3 gap-12 relative">
@@ -429,24 +507,37 @@ export default function AffiliateSignup() {
               <div className="w-24 h-24 bg-white border-4 border-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
                 <span className="text-3xl font-bold text-indigo-600">1</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Join the Program</h3>
-              <p className="text-slate-600">Sign up in seconds. It's free and easy to get started.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
+                Join the Program
+              </h3>
+              <p className="text-slate-600">
+                Sign up in seconds. It's free and easy to get started.
+              </p>
             </div>
 
             <div className="text-center">
               <div className="w-24 h-24 bg-white border-4 border-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
                 <span className="text-3xl font-bold text-indigo-600">2</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Share Your Link</h3>
-              <p className="text-slate-600">Promote Feelize to your audience using your unique referral link.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
+                Share Your Link
+              </h3>
+              <p className="text-slate-600">
+                Promote Feelize to your audience using your unique referral
+                link.
+              </p>
             </div>
 
             <div className="text-center">
               <div className="w-24 h-24 bg-white border-4 border-indigo-50 rounded-full flex items-center justify-center mx-auto mb-6 shadow-sm">
                 <span className="text-3xl font-bold text-indigo-600">3</span>
               </div>
-              <h3 className="text-xl font-bold text-slate-900 mb-3">Get Paid</h3>
-              <p className="text-slate-600">Earn 10% commission for every successful project referral.</p>
+              <h3 className="text-xl font-bold text-slate-900 mb-3">
+                Get Paid
+              </h3>
+              <p className="text-slate-600">
+                Earn 10% commission for every successful project referral.
+              </p>
             </div>
           </div>
         </div>
@@ -457,9 +548,12 @@ export default function AffiliateSignup() {
         <div className="max-w-4xl mx-auto px-4">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to start earning?</h2>
+              <h2 className="text-3xl md:text-4xl font-bold mb-6">
+                Ready to start earning?
+              </h2>
               <p className="text-slate-300 text-lg mb-8">
-                Join hundreds of other affiliates who are monetizing their network with Feelize AI.
+                Join hundreds of other affiliates who are monetizing their
+                network with Feelize AI.
               </p>
               <ul className="space-y-4 mb-8">
                 <li className="flex items-center gap-3">
@@ -487,28 +581,48 @@ export default function AffiliateSignup() {
               {!currentUser ? (
                 <div className="text-center py-8">
                   <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <User className="w-8 h-8 text-indigo-600" />
+                    <img
+                      src="../../favicon.svg"
+                      alt="Feelize Logo"
+                      className="w-8 h-8"
+                    />
                   </div>
                   <h3 className="text-2xl font-bold mb-2">Sign In Required</h3>
-                  <p className="text-slate-600 mb-8">Please sign in or create an account to join the affiliate program.</p>
-                  <Button onClick={handleLogin} size="lg" className="w-full text-lg h-12">
-                    Sign In / Sign Up
+                  <p className="text-slate-600 mb-8">
+                    Please sign in or create an account to join the affiliate
+                    program.
+                  </p>
+                  <Button
+                    onClick={handleLogin}
+                    size="lg"
+                    className="w-full text-lg h-12"
+                  >
+                    Sign In / Sign
                   </Button>
                 </div>
               ) : (
                 <form onSubmit={handleSignup} className="space-y-6">
                   <div className="text-center mb-6">
-                    <h3 className="text-2xl font-bold">Complete Your Profile</h3>
-                    <p className="text-slate-500 text-sm">Tell us how you'd like to be paid</p>
+                    <h3 className="text-2xl font-bold">
+                      Complete Your Profile
+                    </h3>
+                    <p className="text-slate-500 text-sm">
+                      Tell us how you'd like to be paid
+                    </p>
                   </div>
-                  
+
                   <div>
                     <label className="block text-sm font-medium text-slate-700 mb-2">
                       Payment Method
                     </label>
                     <Input
                       value={formData.payment_method}
-                      onChange={(e) => setFormData({ ...formData, payment_method: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          payment_method: e.target.value,
+                        })
+                      }
                       placeholder="e.g., PayPal, Bank Transfer"
                       required
                       className="bg-slate-50"
@@ -521,7 +635,12 @@ export default function AffiliateSignup() {
                     </label>
                     <Input
                       value={formData.payment_details}
-                      onChange={(e) => setFormData({ ...formData, payment_details: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          payment_details: e.target.value,
+                        })
+                      }
                       placeholder="email@example.com"
                       required
                       className="bg-slate-50"
@@ -534,7 +653,9 @@ export default function AffiliateSignup() {
                     </label>
                     <Textarea
                       value={formData.why_join}
-                      onChange={(e) => setFormData({ ...formData, why_join: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, why_join: e.target.value })
+                      }
                       placeholder="I have a blog about AI tools..."
                       className="h-24 bg-slate-50"
                     />
@@ -554,7 +675,7 @@ export default function AffiliateSignup() {
                       "Join Program"
                     )}
                   </Button>
-                  
+
                   <p className="text-xs text-center text-slate-400 mt-4">
                     By joining, you agree to our Affiliate Terms & Conditions.
                   </p>
