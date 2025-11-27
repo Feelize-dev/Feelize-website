@@ -1,3 +1,5 @@
+
+
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -11,10 +13,10 @@ import axios from "axios";
 
 const navigationItems = [
   { name: "Home", url: createPageUrl("Home") },
-  { name: "Process", url: createPageUrl("Process") },
+  { name: "Our Process", url: createPageUrl("Process") },
+  { name: "Our Work", url: createPageUrl("Work") },
   { name: "Pricing", url: createPageUrl("Pricing") },
-  { name: "Portfolio", url: createPageUrl("Work") },
-  { name: "About", url: createPageUrl("About") },
+  { name: "Our Team", url: createPageUrl("About") },
   { name: "Testimonials", url: createPageUrl("Testimonials") },
 ];
 
@@ -61,10 +63,7 @@ export default function Layout({ children, currentPageName }) {
     }
   };
 
-  const isDashboardPage =
-    currentPageName === "AdminDashboard" ||
-    currentPageName === "UserDashboard" ||
-    currentPageName === "DeveloperDashboard";
+  const isDashboardPage = currentPageName === "AdminDashboard" || currentPageName === "UserDashboard" || currentPageName === "DeveloperDashboard";
 
   return (
     <div className="min-h-screen bg-slate-950 relative overflow-hidden">
@@ -145,7 +144,7 @@ export default function Layout({ children, currentPageName }) {
         .glass-morphism {
           background: rgba(255, 255, 255, 0.05);
           backdrop-filter: blur(20px);
-          border: 2px solid #534EDC;
+          border: 1px solid rgba(255, 255, 255, 0.1);
           box-shadow: 0 25px 45px rgba(0, 0, 0, 0.1);
         }
 
@@ -185,32 +184,14 @@ export default function Layout({ children, currentPageName }) {
       />
 
       {/* Navigation */}
-      <nav className="fixed top-0 w-full z-50 py-6">
-        <div className="max-w-7xl mx-auto px-4 md:px-6">
-          <div className="glass-morphism rounded-2xl md:rounded-full px-7 py-3">
+      <nav className="fixed top-0 w-full z-50 py-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="glass-morphism rounded-2xl px-6 py-4">
             <div className="flex justify-between items-center">
               {/* Logo */}
-              <Link
-                to={createPageUrl("Home")}
-                className="flex items-center space-x-3 group"
-              >
-                <svg
-                  width="35"
-                  height="35"
-                  viewBox="0 0 48 48"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M16.8598 12.8718C22.7336 8.77621 29.2185 8.02145 35.5533 6.59971C41.6549 5.26572 42.6908 4.79766 48 0C47.596 2.5685 47.5338 4.58118 46.9641 6.33057C45.3739 11.2569 42.1625 14.1414 38.4539 16.2769C33.2742 19.2843 27.675 19.9922 22.1276 20.8932C18.0511 21.5719 14.0421 22.2331 11.9443 27.8206C11.507 23.0909 9.63489 18.6776 6.64552 15.3291C4.75791 13.2801 2.48678 11.7365 0 10.8123C4.22143 5.51731 10.2039 6.21355 16.8598 12.8718Z"
-                    fill="white"
-                  />
-                  <path
-                    d="M26.5563 35.6139C28.1102 40.2945 30.5653 44.2087 33.5592 48C32.0985 47.7777 30.6171 47.6665 29.1772 47.3213C24.5174 46.2388 20.2574 43.587 16.9583 39.7153C13.1927 35.3857 14.8865 29.9386 17.5644 27.2121C21.1901 23.5203 25.6757 23.1166 30.0888 22.0985C34.6624 21.0571 38.7026 19.7582 43.0742 16.1073C43.0173 19.3896 42.6495 20.2672 41.5928 22.9527C39.6867 27.7855 35.1234 28.9089 31.1247 30.0732C30.3219 30.3131 29.5087 30.5061 28.6851 30.6875C26.8878 31.0854 25.8467 33.49 26.5563 35.6139Z"
-                    fill="white"
-                  />
-                </svg>
-                <span className="text-xl tracking-wide font-medium text-white">
+              <Link to={createPageUrl("Home")} className="flex items-center space-x-3 group">
+                <img src="../favicon.svg" alt="Feelize Logo" className="w-10 h-10 rounded-xl group-hover:scale-110 transition-transform duration-300" />
+                <span className="text-2xl font-bold text-white">
                   Feelize
                 </span>
               </Link>
@@ -310,7 +291,7 @@ export default function Layout({ children, currentPageName }) {
 
                       navigate('/StartProject');
                     }}
-                    className="bg-gradient-to-r from-blue-500 via-blue-700 to-purple-700 hover:from-blue-600 hover:via-blue-800 hover:to-purple-800 tracking-wide px-14 py-3 rounded-full shadow-lg shadow-cyan-500/10 hover:shadow-cyan-500/20 transition-all ease-in-out duration-300 hover:scale-105"
+                    className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:from-cyan-300 hover:to-blue-400 text-black font-bold px-6 py-3 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-105 neon-glow"
                   >
                     Start with AI Assistant
                   </Button>
@@ -331,11 +312,7 @@ export default function Layout({ children, currentPageName }) {
                 className="md:hidden text-white hover:bg-white/10"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
-                {isMobileMenuOpen ? (
-                  <X className="h-5 w-5" />
-                ) : (
-                  <Menu className="h-5 w-5" />
-                )}
+                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
               </Button>
             </div>
           </div>
@@ -395,17 +372,17 @@ export default function Layout({ children, currentPageName }) {
                     </Link>
                   )}
 
-                  <button
-                    onClick={() => {
-                      handleLogout();
-                      setIsMobileMenuOpen(false);
-                    }}
-                    className="block w-full text-left px-3 py-2 text-base font-medium text-slate-300 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors"
-                  >
-                    Logout
-                  </button>
-                </>
-              )}
+                    <button
+                      onClick={() => {
+                        handleLogout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="block w-full text-left px-3 py-2 text-base font-medium text-slate-300 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors"
+                    >
+                      Logout
+                    </button>
+                  </>
+                )}
 
               {!isLoading && !user && (
                 <div className="px-3 pt-2">
@@ -416,11 +393,11 @@ export default function Layout({ children, currentPageName }) {
                       }}>
                       Start with AI Assistant
                     </Button>
-                  </Link>
-                </div>
-              )}
-            </div>
-          )}
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </nav>
 
@@ -536,3 +513,4 @@ export default function Layout({ children, currentPageName }) {
     </div>
   );
 }
+
