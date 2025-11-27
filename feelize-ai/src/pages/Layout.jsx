@@ -1,5 +1,3 @@
-
-
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -51,19 +49,21 @@ export default function Layout({ children, currentPageName }) {
     console.log("hi");
 
     try {
-
       await axios.post(
         `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/logout`,
         {},
         { withCredentials: true }
       );
-      await refetch()
+      await refetch();
     } catch (error) {
       console.error("Logout error:", error);
     }
   };
 
-  const isDashboardPage = currentPageName === "AdminDashboard" || currentPageName === "UserDashboard" || currentPageName === "DeveloperDashboard";
+  const isDashboardPage =
+    currentPageName === "AdminDashboard" ||
+    currentPageName === "UserDashboard" ||
+    currentPageName === "DeveloperDashboard";
 
   return (
     <div className="min-h-screen bg-slate-950 relative overflow-hidden">
@@ -183,17 +183,25 @@ export default function Layout({ children, currentPageName }) {
         }}
       />
 
+      {/* Grid Background */}
+      <div className="fixed inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
+
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 py-4">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="glass-morphism rounded-2xl px-6 py-4">
             <div className="flex justify-between items-center">
               {/* Logo */}
-              <Link to={createPageUrl("Home")} className="flex items-center space-x-3 group">
-                <img src="../favicon.svg" alt="Feelize Logo" className="w-10 h-10 rounded-xl group-hover:scale-110 transition-transform duration-300" />
-                <span className="text-2xl font-bold text-white">
-                  Feelize
-                </span>
+              <Link
+                to={createPageUrl("Home")}
+                className="flex items-center space-x-3 group"
+              >
+                <img
+                  src="../favicon.svg"
+                  alt="Feelize Logo"
+                  className="w-10 h-10 rounded-xl group-hover:scale-110 transition-transform duration-300"
+                />
+                <span className="text-2xl font-bold text-white">Feelize</span>
               </Link>
 
               {/* Desktop Navigation */}
@@ -202,17 +210,19 @@ export default function Layout({ children, currentPageName }) {
                   <Link
                     key={item.name}
                     to={item.url}
-                    className={`text-md font-light tracking-wide transition-all duration-300 hover:text-cyan-400 relative group ${location.pathname === item.url
-                      ? "text-cyan-400"
-                      : "text-slate-300"
-                      }`}
+                    className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${
+                      location.pathname === item.url
+                        ? "text-cyan-400"
+                        : "text-slate-300"
+                    }`}
                   >
                     {item.name}
                     <div
-                      className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${location.pathname === item.url
-                        ? "w-full"
-                        : "w-0 group-hover:w-full"
-                        }`}
+                      className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${
+                        location.pathname === item.url
+                          ? "w-full"
+                          : "w-0 group-hover:w-full"
+                      }`}
                     />
                   </Link>
                 ))}
@@ -221,34 +231,38 @@ export default function Layout({ children, currentPageName }) {
                   <>
                     <Link
                       to={createPageUrl("UserDashboard")}
-                      className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${currentPageName === "UserDashboard"
-                        ? "text-cyan-400"
-                        : "text-slate-300"
-                        }`}
+                      className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${
+                        currentPageName === "UserDashboard"
+                          ? "text-cyan-400"
+                          : "text-slate-300"
+                      }`}
                     >
                       My Projects
                       <div
-                        className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${currentPageName === "UserDashboard"
-                          ? "w-full"
-                          : "w-0 group-hover:w-full"
-                          }`}
+                        className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${
+                          currentPageName === "UserDashboard"
+                            ? "w-full"
+                            : "w-0 group-hover:w-full"
+                        }`}
                       />
                     </Link>
 
                     {user?.role === "admin" && (
                       <Link
                         to={createPageUrl("AdminDashboard")}
-                        className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${currentPageName === "AdminDashboard"
-                          ? "text-cyan-400"
-                          : "text-slate-300"
-                          }`}
+                        className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${
+                          currentPageName === "AdminDashboard"
+                            ? "text-cyan-400"
+                            : "text-slate-300"
+                        }`}
                       >
                         Admin
                         <div
-                          className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${currentPageName === "AdminDashboard"
-                            ? "w-full"
-                            : "w-0 group-hover:w-full"
-                            }`}
+                          className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${
+                            currentPageName === "AdminDashboard"
+                              ? "w-full"
+                              : "w-0 group-hover:w-full"
+                          }`}
                         />
                       </Link>
                     )}
@@ -256,17 +270,19 @@ export default function Layout({ children, currentPageName }) {
                     {user?.role === "engineer" && (
                       <Link
                         to={createPageUrl("DeveloperDashboard")}
-                        className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${currentPageName === "DeveloperDashboard"
-                          ? "text-cyan-400"
-                          : "text-slate-300"
-                          }`}
+                        className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${
+                          currentPageName === "DeveloperDashboard"
+                            ? "text-cyan-400"
+                            : "text-slate-300"
+                        }`}
                       >
                         Dev Dashboard
                         <div
-                          className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${currentPageName === "DeveloperDashboard"
-                            ? "w-full"
-                            : "w-0 group-hover:w-full"
-                            }`}
+                          className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${
+                            currentPageName === "DeveloperDashboard"
+                              ? "w-full"
+                              : "w-0 group-hover:w-full"
+                          }`}
                         />
                       </Link>
                     )}
@@ -288,8 +304,7 @@ export default function Layout({ children, currentPageName }) {
                 ) : !user ? (
                   <Button
                     onClick={() => {
-
-                      navigate('/StartProject');
+                      navigate("/StartProject");
                     }}
                     className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:from-cyan-300 hover:to-blue-400 text-black font-bold px-6 py-3 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-105 neon-glow"
                   >
@@ -312,10 +327,15 @@ export default function Layout({ children, currentPageName }) {
                 className="md:hidden text-white hover:bg-white/10"
                 onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               >
-                {isMobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+                {isMobileMenuOpen ? (
+                  <X className="h-5 w-5" />
+                ) : (
+                  <Menu className="h-5 w-5" />
+                )}
               </Button>
             </div>
           </div>
+
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
             <div className="md:hidden mt-3 glass-morphism rounded-2xl p-4 border border-white/10">
@@ -323,10 +343,11 @@ export default function Layout({ children, currentPageName }) {
                 <Link
                   key={item.name}
                   to={item.url}
-                  className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${location.pathname === item.url
-                    ? "bg-cyan-500/20 text-cyan-400"
-                    : "text-slate-300 hover:bg-white/10"
-                    }`}
+                  className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${
+                    location.pathname === item.url
+                      ? "bg-cyan-500/20 text-cyan-400"
+                      : "text-slate-300 hover:bg-white/10"
+                  }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.name}
@@ -337,78 +358,82 @@ export default function Layout({ children, currentPageName }) {
                 <>
                   <Link
                     to={createPageUrl("UserDashboard")}
-                    className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${currentPageName === "UserDashboard"
-                      ? "bg-cyan-500/20 text-cyan-400"
-                      : "text-slate-300 hover:bg-white/10"
-                      }`}
+                    className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${
+                      currentPageName === "UserDashboard"
+                        ? "bg-cyan-500/20 text-cyan-400"
+                        : "text-slate-300 hover:bg-white/10"
+                    }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     My Projects
                   </Link>
+                </>
+              )}
 
-                  {user?.role === "admin" && (
-                    <Link
-                      to={createPageUrl("AdminDashboard")}
-                      className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${currentPageName === "AdminDashboard"
-                        ? "bg-cyan-500/20 text-cyan-400"
-                        : "text-slate-300 hover:bg-white/10"
-                        }`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Admin Dashboard
-                    </Link>
-                  )}
+              {user?.role === "admin" && (
+                <Link
+                  to={createPageUrl("AdminDashboard")}
+                  className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${
+                    currentPageName === "AdminDashboard"
+                      ? "bg-cyan-500/20 text-cyan-400"
+                      : "text-slate-300 hover:bg-white/10"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  My Projects
+                </Link>
+              )}
 
-                  {user?.role === "engineer" && (
-                    <Link
-                      to={createPageUrl("DeveloperDashboard")}
-                      className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${currentPageName === "DeveloperDashboard"
-                        ? "bg-cyan-500/20 text-cyan-400"
-                        : "text-slate-300 hover:bg-white/10"
-                        }`}
-                      onClick={() => setIsMobileMenuOpen(false)}
-                    >
-                      Dev Dashboard
-                    </Link>
-                  )}
+              {user?.role === "engineer" && (
+                <Link
+                  to={createPageUrl("DeveloperDashboard")}
+                  className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${
+                    currentPageName === "DeveloperDashboard"
+                      ? "bg-cyan-500/20 text-cyan-400"
+                      : "text-slate-300 hover:bg-white/10"
+                  }`}
+                  onClick={() => setIsMobileMenuOpen(false)}
+                >
+                  Logout
+                </Link>
+              )}
 
-                    <button
-                      onClick={() => {
-                        handleLogout();
-                        setIsMobileMenuOpen(false);
-                      }}
-                      className="block w-full text-left px-3 py-2 text-base font-medium text-slate-300 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors"
-                    >
-                      Logout
-                    </button>
-                  </>
-                )}
+              <button
+                onClick={() => {
+                  handleLogout();
+                  setIsMobileMenuOpen(false);
+                }}
+                className="block w-full text-left px-3 py-2 text-base font-medium text-slate-300 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors"
+              >
+                Logout
+              </button>
+            </div>
+          )}
 
-              {!isLoading && !user && (
-                <div className="px-3 pt-2">
-                  <Link to={createPageUrl("StartProject")} >
-                    <Button className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold"
-                      onClick={() => {
-                        setIsMobileMenuOpen(false);
-                      }}>
-                      Start with AI Assistant
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
+          {/* {!isLoading && !user && (
+            <div className="px-3 pt-2">
+              <Link to={createPageUrl("StartProject")}>
+                <Button
+                  className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold"
+                  onClick={() => {
+                    setIsMobileMenuOpen(false);
+                  }}
+                >
+                  Start with AI Assistant
+                </Button>
+              </Link>
+            </div>
+          )} */}
         </div>
       </nav>
 
       {/* Main Content */}
-      <main className="relative z-10">{children}</main>
+      <main className="relative z-10 pt-32 sm:pt-40">{children}</main>
 
       {/* Footer */}
       <footer className="relative z-10 bg-slate-900/50 backdrop-blur-xl border-t border-white/10 mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
           <div className="grid md:grid-cols-4 gap-8">
-
             {/* Column 1: Brand & Social */}
             <div>
               <div className="flex items-center space-x-3 mb-6">
@@ -438,13 +463,22 @@ export default function Layout({ children, currentPageName }) {
 
               {/* Social Icons */}
               <div className="flex space-x-4">
-                <a href="#" className="text-slate-400 hover:text-cyan-400 transition-colors">
+                <a
+                  href="#"
+                  className="text-slate-400 hover:text-cyan-400 transition-colors"
+                >
                   <i className="fab fa-linkedin text-lg"></i>
                 </a>
-                <a href="#" className="text-slate-400 hover:text-cyan-400 transition-colors">
+                <a
+                  href="#"
+                  className="text-slate-400 hover:text-cyan-400 transition-colors"
+                >
                   <i className="fab fa-twitter text-lg"></i>
                 </a>
-                <a href="#" className="text-slate-400 hover:text-cyan-400 transition-colors">
+                <a
+                  href="#"
+                  className="text-slate-400 hover:text-cyan-400 transition-colors"
+                >
                   <i className="fab fa-github text-lg"></i>
                 </a>
               </div>
@@ -454,27 +488,87 @@ export default function Layout({ children, currentPageName }) {
             <div>
               <h3 className="text-lg font-semibold mb-4 text-white">Company</h3>
               <ul className="space-y-3 text-slate-400 text-sm">
-                <li><Link to={createPageUrl("About")} className="hover:text-cyan-400">About</Link></li>
-                <li><Link to={createPageUrl("Portfolio")} className="hover:text-cyan-400">Portfolio</Link></li>
-                <li><Link to={createPageUrl("Testimonials")} className="hover:text-cyan-400">Testimonials</Link></li>
-                <li><Link to={createPageUrl("Careers")} className="hover:text-cyan-400">Careers</Link></li>
+                <li>
+                  <Link
+                    to={createPageUrl("About")}
+                    className="hover:text-cyan-400"
+                  >
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to={createPageUrl("Portfolio")}
+                    className="hover:text-cyan-400"
+                  >
+                    Portfolio
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to={createPageUrl("Testimonials")}
+                    className="hover:text-cyan-400"
+                  >
+                    Testimonials
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to={createPageUrl("Careers")}
+                    className="hover:text-cyan-400"
+                  >
+                    Careers
+                  </Link>
+                </li>
               </ul>
             </div>
 
             {/* Column 3: Services */}
             <div>
-              <h3 className="text-lg font-semibold mb-4 text-white">Services</h3>
+              <h3 className="text-lg font-semibold mb-4 text-white">
+                Services
+              </h3>
               <ul className="space-y-3 text-slate-400 text-sm">
-                <li><Link to={createPageUrl("Process")} className="hover:text-cyan-400">Process</Link></li>
-                <li><Link to={createPageUrl("Pricing")} className="hover:text-cyan-400">Pricing</Link></li>
-                <li><Link to={createPageUrl("AffiliateSignup")} className="hover:text-cyan-400">Affiliate Program</Link></li>
-                <li><Link to={createPageUrl("StartProject")} className="hover:text-cyan-400">Start Your Project</Link></li>
+                <li>
+                  <Link
+                    to={createPageUrl("Process")}
+                    className="hover:text-cyan-400"
+                  >
+                    Process
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to={createPageUrl("Pricing")}
+                    className="hover:text-cyan-400"
+                  >
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to={createPageUrl("AffiliateSignup")}
+                    className="hover:text-cyan-400"
+                  >
+                    Affiliate Program
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to={createPageUrl("StartProject")}
+                    className="hover:text-cyan-400"
+                  >
+                    Start Your Project
+                  </Link>
+                </li>
               </ul>
             </div>
 
             {/* Column 4: Get in Touch */}
             <div>
-              <h3 className="text-lg font-semibold mb-4 text-white">Get in Touch</h3>
+              <h3 className="text-lg font-semibold mb-4 text-white">
+                Get in Touch
+              </h3>
               <div className="space-y-3 text-slate-400 text-sm">
                 <div className="flex items-center space-x-2">
                   <Mail className="w-4 h-4 text-cyan-400" />
@@ -498,19 +592,23 @@ export default function Layout({ children, currentPageName }) {
               &copy; 2025 Feelize. Crafting the future, one project at a time.
             </p>
             <div className="mt-2 space-x-4">
-              <Link to={createPageUrl("PrivacyPolicy")} className="hover:text-cyan-400">
+              <Link
+                to={createPageUrl("PrivacyPolicy")}
+                className="hover:text-cyan-400"
+              >
                 Privacy Policy
               </Link>
               <span>|</span>
-              <Link to={createPageUrl("TermsOfService")} className="hover:text-cyan-400">
+              <Link
+                to={createPageUrl("TermsOfService")}
+                className="hover:text-cyan-400"
+              >
                 Terms of Service
               </Link>
             </div>
           </div>
         </div>
       </footer>
-
     </div>
   );
 }
-
