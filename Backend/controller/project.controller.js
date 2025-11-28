@@ -58,14 +58,22 @@ export const createProject = async (req, res) => {
       estimated_hours,
       recommended_price,
       complexity_score,
+      referral_code, // Save the referral code directly on the project
     });
 
     // Handle Referral
     if (referral_code) {
+      console.log(`🔍 Processing referral code: "${referral_code}"`);
       try {
-        const affiliate = await Affiliate.findOne({ referral_code });
+        // Case-insensitive lookup
+        const affiliate = await Affiliate.findOne({
+          referral_code: { $regex: new RegExp(`^${referral_code}$`, "i") }
+        });
+
         if (affiliate) {
-          await Referral.create({
+          console.log(`✅ Affiliate found: ${affiliate.name} (${affiliate._id})`);
+
+          const newReferral = await Referral.create({
             affiliate_id: affiliate._id,
             referred_user_email: client_email,
             project_id: newProject._id,
@@ -73,18 +81,23 @@ export const createProject = async (req, res) => {
             commission_amount: 0, // Will be calculated later based on project value
             conversion_date: new Date(),
           });
+          console.log(`✅ Referral created: ${newReferral._id}`);
 
           // Update affiliate stats
-          await Affiliate.findByIdAndUpdate(affiliate._id, {
+          const updatedAffiliate = await Affiliate.findByIdAndUpdate(affiliate._id, {
             $inc: { total_referrals: 1 }
-          });
+          }, { new: true });
+          console.log(`📈 Affiliate stats updated. New total referrals: ${updatedAffiliate.total_referrals}`);
 
-          console.log(`Referral recorded for affiliate: ${affiliate.name}`);
+        } else {
+          console.warn(`⚠️  Referral code "${referral_code}" provided but no matching affiliate found.`);
         }
       } catch (referralError) {
-        console.error("Error processing referral:", referralError);
+        console.error("❌ Error processing referral:", referralError);
         // Don't fail the project creation if referral fails
       }
+    } else {
+      console.log("ℹ️  No referral code provided for this project.");
     }
 
     // Optionally create tasks if provided in body.tasks

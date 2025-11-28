@@ -210,19 +210,17 @@ export default function Layout({ children, currentPageName }) {
                   <Link
                     key={item.name}
                     to={item.url}
-                    className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${
-                      location.pathname === item.url
-                        ? "text-cyan-400"
-                        : "text-slate-300"
-                    }`}
+                    className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${location.pathname === item.url
+                      ? "text-cyan-400"
+                      : "text-slate-300"
+                      }`}
                   >
                     {item.name}
                     <div
-                      className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${
-                        location.pathname === item.url
-                          ? "w-full"
-                          : "w-0 group-hover:w-full"
-                      }`}
+                      className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${location.pathname === item.url
+                        ? "w-full"
+                        : "w-0 group-hover:w-full"
+                        }`}
                     />
                   </Link>
                 ))}
@@ -231,38 +229,34 @@ export default function Layout({ children, currentPageName }) {
                   <>
                     <Link
                       to={createPageUrl("UserDashboard")}
-                      className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${
-                        currentPageName === "UserDashboard"
-                          ? "text-cyan-400"
-                          : "text-slate-300"
-                      }`}
+                      className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${currentPageName === "UserDashboard"
+                        ? "text-cyan-400"
+                        : "text-slate-300"
+                        }`}
                     >
                       My Projects
                       <div
-                        className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${
-                          currentPageName === "UserDashboard"
-                            ? "w-full"
-                            : "w-0 group-hover:w-full"
-                        }`}
+                        className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${currentPageName === "UserDashboard"
+                          ? "w-full"
+                          : "w-0 group-hover:w-full"
+                          }`}
                       />
                     </Link>
 
-                    {user?.role === "admin" && (
+                    {(user?.access_level === "lead" || user?.role === "admin") && (
                       <Link
-                        to={createPageUrl("AdminDashboard")}
-                        className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${
-                          currentPageName === "AdminDashboard"
-                            ? "text-cyan-400"
-                            : "text-slate-300"
-                        }`}
-                      >
-                        Admin
-                        <div
-                          className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${
-                            currentPageName === "AdminDashboard"
-                              ? "w-full"
-                              : "w-0 group-hover:w-full"
+                        to={createPageUrl("AdminPanel")}
+                        className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${currentPageName === "AdminPanel"
+                          ? "text-cyan-400"
+                          : "text-slate-300"
                           }`}
+                      >
+                        Admin Panel
+                        <div
+                          className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${currentPageName === "AdminPanel"
+                            ? "w-full"
+                            : "w-0 group-hover:w-full"
+                            }`}
                         />
                       </Link>
                     )}
@@ -270,19 +264,17 @@ export default function Layout({ children, currentPageName }) {
                     {user?.role === "engineer" && (
                       <Link
                         to={createPageUrl("DeveloperDashboard")}
-                        className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${
-                          currentPageName === "DeveloperDashboard"
-                            ? "text-cyan-400"
-                            : "text-slate-300"
-                        }`}
+                        className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${currentPageName === "DeveloperDashboard"
+                          ? "text-cyan-400"
+                          : "text-slate-300"
+                          }`}
                       >
                         Dev Dashboard
                         <div
-                          className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${
-                            currentPageName === "DeveloperDashboard"
-                              ? "w-full"
-                              : "w-0 group-hover:w-full"
-                          }`}
+                          className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${currentPageName === "DeveloperDashboard"
+                            ? "w-full"
+                            : "w-0 group-hover:w-full"
+                            }`}
                         />
                       </Link>
                     )}
@@ -343,11 +335,10 @@ export default function Layout({ children, currentPageName }) {
                 <Link
                   key={item.name}
                   to={item.url}
-                  className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${
-                    location.pathname === item.url
-                      ? "bg-cyan-500/20 text-cyan-400"
-                      : "text-slate-300 hover:bg-white/10"
-                  }`}
+                  className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${location.pathname === item.url
+                    ? "bg-cyan-500/20 text-cyan-400"
+                    : "text-slate-300 hover:bg-white/10"
+                    }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {item.name}
@@ -358,11 +349,10 @@ export default function Layout({ children, currentPageName }) {
                 <>
                   <Link
                     to={createPageUrl("UserDashboard")}
-                    className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${
-                      currentPageName === "UserDashboard"
-                        ? "bg-cyan-500/20 text-cyan-400"
-                        : "text-slate-300 hover:bg-white/10"
-                    }`}
+                    className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${currentPageName === "UserDashboard"
+                      ? "bg-cyan-500/20 text-cyan-400"
+                      : "text-slate-300 hover:bg-white/10"
+                      }`}
                     onClick={() => setIsMobileMenuOpen(false)}
                   >
                     My Projects
@@ -373,11 +363,10 @@ export default function Layout({ children, currentPageName }) {
               {user?.role === "admin" && (
                 <Link
                   to={createPageUrl("AdminDashboard")}
-                  className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${
-                    currentPageName === "AdminDashboard"
-                      ? "bg-cyan-500/20 text-cyan-400"
-                      : "text-slate-300 hover:bg-white/10"
-                  }`}
+                  className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${currentPageName === "AdminDashboard"
+                    ? "bg-cyan-500/20 text-cyan-400"
+                    : "text-slate-300 hover:bg-white/10"
+                    }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   My Projects
@@ -387,11 +376,10 @@ export default function Layout({ children, currentPageName }) {
               {user?.role === "engineer" && (
                 <Link
                   to={createPageUrl("DeveloperDashboard")}
-                  className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${
-                    currentPageName === "DeveloperDashboard"
-                      ? "bg-cyan-500/20 text-cyan-400"
-                      : "text-slate-300 hover:bg-white/10"
-                  }`}
+                  className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${currentPageName === "DeveloperDashboard"
+                    ? "bg-cyan-500/20 text-cyan-400"
+                    : "text-slate-300 hover:bg-white/10"
+                    }`}
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   Logout

@@ -33,6 +33,7 @@ const projectSchema = new mongoose.Schema(
     complexity_score: { type: Number, min: 1, max: 10 },
     assigned_team: { type: [String], default: [] }, // list of emails
     project_notes: { type: String },
+    referral_code: { type: String }, // Store the code used to create this project
   },
   { timestamps: true }
 );
