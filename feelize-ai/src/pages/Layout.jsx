@@ -243,17 +243,17 @@ export default function Layout({ children, currentPageName }) {
                       />
                     </Link>
 
-                    {user?.role === "admin" && (
+                    {(user?.access_level === "lead" || user?.role === "admin") && (
                       <Link
-                        to={createPageUrl("AdminDashboard")}
-                        className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${currentPageName === "AdminDashboard"
+                        to={createPageUrl("AdminPanel")}
+                        className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${currentPageName === "AdminPanel"
                           ? "text-cyan-400"
                           : "text-slate-300"
                           }`}
                       >
-                        Admin
+                        Admin Panel
                         <div
-                          className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${currentPageName === "AdminDashboard"
+                          className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${currentPageName === "AdminPanel"
                             ? "w-full"
                             : "w-0 group-hover:w-full"
                             }`}

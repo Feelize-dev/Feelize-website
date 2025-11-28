@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Affiliate, User } from "@/api/entities";
+import axios from "axios";
+import { Affiliate, User, Referral } from "@/api/entities";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -35,6 +36,23 @@ export default function AffiliateSignup() {
     payment_details: "",
     why_join: "",
   });
+  const [referrals, setReferrals] = useState([]);
+
+  useEffect(() => {
+    if (existingAffiliate?._id) {
+      const fetchReferrals = async () => {
+        try {
+          const res = await Referral.filter({ affiliate_id: existingAffiliate._id });
+          if (res.success && res.data) {
+            setReferrals(res.data);
+          }
+        } catch (err) {
+          console.error("Failed to fetch referrals:", err);
+        }
+      };
+      fetchReferrals();
+    }
+  }, [existingAffiliate]);
   const { data: user, refetch } = useUser();
 
   useEffect(() => {
@@ -73,10 +91,42 @@ export default function AffiliateSignup() {
     }
   };
 
-  const generateReferralCode = (email) => {
-    const prefix = email.split("@")[0].toUpperCase().slice(0, 4);
-    const random = Math.random().toString(36).substring(2, 6).toUpperCase();
-    return `${prefix}${random}`;
+  const [customCode, setCustomCode] = useState("");
+  const [isCustomCodeAvailable, setIsCustomCodeAvailable] = useState(null);
+  const [isCheckingCode, setIsCheckingCode] = useState(false);
+  const [useCustomCode, setUseCustomCode] = useState(false);
+
+  // ... existing useEffect ...
+
+  const checkCodeAvailability = async (code) => {
+    if (!code || code.length < 4) {
+      setIsCustomCodeAvailable(null);
+      return;
+    }
+    setIsCheckingCode(true);
+    try {
+      const response = await axios.get(
+        `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/affiliates/check-code/${code}`
+      );
+      setIsCustomCodeAvailable(response.data.available);
+    } catch (error) {
+      console.error("Error checking code:", error);
+      setIsCustomCodeAvailable(false);
+    } finally {
+      setIsCheckingCode(false);
+    }
+  };
+
+  const handleCodeChange = (e) => {
+    const code = e.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+    setCustomCode(code);
+    if (code.length >= 4) {
+      // Debounce check could be added here, but for now we'll check on blur or after a delay
+      // Simple delay for now
+      setTimeout(() => checkCodeAvailability(code), 500);
+    } else {
+      setIsCustomCodeAvailable(null);
+    }
   };
 
   const handleSignup = async (e) => {
@@ -84,15 +134,20 @@ export default function AffiliateSignup() {
     setIsSubmitting(true);
 
     try {
-      const referralCode = generateReferralCode(currentUser.email);
+      // Use custom code if selected and available, otherwise generate one
+      let finalReferralCode = null;
+      if (useCustomCode && customCode && isCustomCodeAvailable) {
+        finalReferralCode = customCode;
+      }
 
       await Affiliate.create({
-        name: currentUser.displayName || currentUser.email.split("@")[0], // Add name
-        email: currentUser.email, // Change user_email to email
-        referral_code: referralCode,
-        status: "active",
+        name: currentUser.displayName || currentUser.email.split("@")[0],
+        email: currentUser.email,
+        referral_code: finalReferralCode, // Backend handles generation if null
+        status: "pending", // Changed to pending for approval workflow
         payment_method: formData.payment_method,
         payment_details: formData.payment_details,
+        why_join: formData.why_join,
         total_referrals: 0,
         total_earnings: 0,
         pending_earnings: 0,
@@ -103,7 +158,7 @@ export default function AffiliateSignup() {
     } catch (error) {
       console.error("Error creating affiliate:", error);
       const errorMessage =
-        error.response?.data?.error ||
+        error.response?.data?.message || // Changed to message to match backend
         error.message ||
         "Failed to create affiliate account.";
 
@@ -267,6 +322,43 @@ export default function AffiliateSignup() {
                     Share this link on social media, your blog, or directly with
                     clients. You'll earn commission when they start a project.
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Recent Referrals List */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Recent Referrals</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {referrals.length === 0 ? (
+                    <div className="h-32 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50">
+                      <div className="text-center text-slate-500">
+                        <Users className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p>No referrals yet. Share your link to get started!</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {referrals.map((ref) => (
+                        <div key={ref._id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
+                          <div>
+                            <p className="font-medium text-slate-900">{ref.referred_user_email}</p>
+                            <p className="text-xs text-slate-500">
+                              {new Date(ref.createdAt).toLocaleDateString()}
+                            </p>
+                          </div>
+                          <Badge className={
+                            ref.status === 'paid' ? 'bg-green-100 text-green-800' :
+                              ref.status === 'converted' ? 'bg-blue-100 text-blue-800' :
+                                'bg-yellow-100 text-yellow-800'
+                          }>
+                            {ref.status.toUpperCase()}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 
@@ -649,6 +741,54 @@ export default function AffiliateSignup() {
                       required
                       className="bg-slate-50"
                     />
+                  </div>
+
+                  {/* Custom Referral Code Section */}
+                  <div className="bg-slate-50 p-4 rounded-lg border border-slate-200">
+                    <div className="flex items-center gap-2 mb-3">
+                      <input
+                        type="checkbox"
+                        id="useCustomCode"
+                        checked={useCustomCode}
+                        onChange={(e) => setUseCustomCode(e.target.checked)}
+                        className="w-4 h-4 text-indigo-600 rounded border-slate-300 focus:ring-indigo-500"
+                      />
+                      <label htmlFor="useCustomCode" className="text-sm font-medium text-slate-700 select-none cursor-pointer">
+                        I want a custom referral code
+                      </label>
+                    </div>
+
+                    {useCustomCode && (
+                      <div className="space-y-2">
+                        <label className="block text-xs text-slate-500">
+                          Choose your code (4-12 characters, letters & numbers only)
+                        </label>
+                        <div className="relative">
+                          <Input
+                            value={customCode}
+                            onChange={handleCodeChange}
+                            placeholder="e.g. JOHNSMITH"
+                            maxLength={12}
+                            className={`uppercase font-mono ${isCustomCodeAvailable === true ? "border-green-500 focus:ring-green-500" :
+                              isCustomCodeAvailable === false ? "border-red-500 focus:ring-red-500" : ""
+                              }`}
+                          />
+                          <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                            {isCheckingCode ? (
+                              <Loader2 className="w-4 h-4 animate-spin text-slate-400" />
+                            ) : isCustomCodeAvailable === true ? (
+                              <span className="text-green-600 text-xs font-bold flex items-center">
+                                <Check className="w-3 h-3 mr-1" /> Available
+                              </span>
+                            ) : isCustomCodeAvailable === false ? (
+                              <span className="text-red-600 text-xs font-bold">
+                                Taken
+                              </span>
+                            ) : null}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div>
