@@ -14,17 +14,22 @@ export const generateWithLLM = async (prompt) => {
     throw new Error('GEMINI_API_KEY is not set. Set GEMINI_API_KEY in the environment to use Gemini.');
   }
 
-  const geminiModel = process.env.GEMINI_MODEL || 'text-bison-001';
-  const url = `https://generativelanguage.googleapis.com/v1/models/${geminiModel}:generate?key=${geminiKey}`;
+  // Use the current Gemini model (gemini-1.5-flash is recommended for speed and cost)
+  // const geminiModel = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+  // Updated to use the correct v1 endpoint with generateContent method
+  const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${geminiKey}`;
 
-  // Build request body for Gemini generate endpoint
+  // Build request body for Gemini generateContent endpoint
   const body = {
-    prompt: {
-      text: prompt,
-    },
-    temperature: 0.2,
-    // Keep maxOutputTokens conservative to avoid very large responses; adjust if needed.
-    maxOutputTokens: parseInt(process.env.GEMINI_MAX_OUTPUT_TOKENS || '2048', 10),
+    contents: [{
+      parts: [{
+        text: prompt
+      }]
+    }],
+    generationConfig: {
+      temperature: 0.2,
+      maxOutputTokens: parseInt(process.env.GEMINI_MAX_OUTPUT_TOKENS || '2048', 10),
+    }
   };
 
   const res = await fetch(url, {
@@ -39,11 +44,8 @@ export const generateWithLLM = async (prompt) => {
   }
 
   const data = await res.json();
-  // Gemini responses place content in `candidates` array. Try common shapes.
-  const reply =
-    data?.candidates?.[0]?.output ||
-    data?.candidates?.[0]?.content?.[0]?.text ||
-    data?.candidates?.[0]?.content?.find((c) => c?.type === 'output_text')?.text;
+  // Extract text from the current Gemini API response format
+  const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
   if (!reply) {
     throw new Error('Gemini returned empty reply');
