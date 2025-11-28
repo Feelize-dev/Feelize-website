@@ -57,7 +57,7 @@ export default function StartProjectPage() {
   const [createdProject, setCreatedProject] = useState(null);
   const fileInputRef = useRef(null);
 
-  const { data: user, isLoading, isError } = useUser();
+  const { data: user, isLoading, refetch } = useUser();
 
   useEffect(() => {
     if (user) {
@@ -84,6 +84,7 @@ export default function StartProjectPage() {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         })
+      await refetch();
     } catch (error) {
 
       console.error("Google Sign-in or verification failed:", error);
@@ -265,11 +266,48 @@ export default function StartProjectPage() {
   // Project Form
   if (currentStep === 'welcome' || currentStep === 'form') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 py-8">
-        <div className="max-w-4xl mx-auto px-4">
+      <div className="min-h-screen py-8">
+        <div
+          className="fixed inset-0 pointer-events-none overflow-hidden"
+          style={{ zIndex: 0 }}
+        >
+          {/* Multiple purple gradient blurs throughout the page */}
+          {[
+            { left: "10%", top: "-350px" },
+            { left: "70%", top: "-250px" },
+            { left: "-142px", top: "200px" },
+            { left: "864px", top: "500px" },
+            { left: "191px", top: "100px" },
+            { left: "1226px", top: "300px" },
+            { left: "-142px", top: "2664px" },
+            { left: "864px", top: "3040px" },
+            { left: "191px", top: "1992px" },
+            { left: "1226px", top: "2183px" },
+            { left: "-142px", top: "4774px" },
+            { left: "864px", top: "5150px" },
+            { left: "191px", top: "4102px" },
+            { left: "1226px", top: "4293px" },
+            { left: "-142px", top: "6644px" },
+            { left: "864px", top: "7020px" },
+            { left: "191px", top: "5972px" },
+            { left: "1226px", top: "6163px" },
+          ].map((pos, i) => (
+            <div
+              key={i}
+              className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
+              style={{
+                left: pos.left,
+                top: pos.top,
+                background: "rgba(80, 0, 181, 0.67)",
+                opacity: 0.25,
+              }}
+            />
+          ))}
+        </div>
+        <div className="max-w-4xl mx-auto px-4 pt-32">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Let's Build Your Project</h1>
-            <p className="text-slate-600">Tell us about your vision and we'll create the perfect plan</p>
+            <h1 className="text-4xl font-bold text-white mb-2">Let's Build Your Project</h1>
+            <p className="text-white">Tell us about your vision and we'll create the perfect plan</p>
           </div>
 
           <Card className="border-0 shadow-lg rounded-2xl">
@@ -414,10 +452,10 @@ export default function StartProjectPage() {
                   )}
                 </div>
 
-                <Button
+                <button
                   type="submit"
                   disabled={isProcessing || !projectData.project_description}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 text-lg rounded-xl"
+                  className="w-full flex items-center justify-center bg-gradient-to-r hover:from-indigo-700 hover:to-purple-900 from-indigo-700 to-purple-700 text-white font-bold py-3 text-lg rounded-xl"
                 >
                   {isProcessing ? (
                     <>
@@ -430,7 +468,7 @@ export default function StartProjectPage() {
                       Generate AI Analysis
                     </>
                   )}
-                </Button>
+                </button>
               </form>
             </CardContent>
           </Card>
@@ -442,7 +480,44 @@ export default function StartProjectPage() {
   // Processing Screen
   if (currentStep === 'processing') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 pointer-events-none overflow-hidden"
+          style={{ zIndex: 0 }}
+        >
+          {/* Multiple purple gradient blurs throughout the page */}
+          {[
+            { left: "10%", top: "-350px" },
+            { left: "70%", top: "-250px" },
+            { left: "-142px", top: "200px" },
+            { left: "864px", top: "500px" },
+            { left: "191px", top: "100px" },
+            { left: "1226px", top: "300px" },
+            { left: "-142px", top: "2664px" },
+            { left: "864px", top: "3040px" },
+            { left: "191px", top: "1992px" },
+            { left: "1226px", top: "2183px" },
+            { left: "-142px", top: "4774px" },
+            { left: "864px", top: "5150px" },
+            { left: "191px", top: "4102px" },
+            { left: "1226px", top: "4293px" },
+            { left: "-142px", top: "6644px" },
+            { left: "864px", top: "7020px" },
+            { left: "191px", top: "5972px" },
+            { left: "1226px", top: "6163px" },
+          ].map((pos, i) => (
+            <div
+              key={i}
+              className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
+              style={{
+                left: pos.left,
+                top: pos.top,
+                background: "rgba(80, 0, 181, 0.67)",
+                opacity: 0.25,
+              }}
+            />
+          ))}
+        </div>
         <Card className="max-w-md w-full glass-morphism border border-white/20 rounded-3xl">
           <CardContent className="p-8 text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse">
@@ -461,15 +536,52 @@ export default function StartProjectPage() {
   // Project Report
   if (currentStep === 'report' && createdProject) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 py-8">
-        <div className="max-w-6xl mx-auto px-4">
+      <div className="min-h-screen py-8">
+        <div
+          className="fixed inset-0 pointer-events-none overflow-hidden"
+          style={{ zIndex: 0 }}
+        >
+          {/* Multiple purple gradient blurs throughout the page */}
+          {[
+            { left: "10%", top: "-350px" },
+            { left: "70%", top: "-250px" },
+            { left: "-142px", top: "200px" },
+            { left: "864px", top: "500px" },
+            { left: "191px", top: "100px" },
+            { left: "1226px", top: "300px" },
+            { left: "-142px", top: "2664px" },
+            { left: "864px", top: "3040px" },
+            { left: "191px", top: "1992px" },
+            { left: "1226px", top: "2183px" },
+            { left: "-142px", top: "4774px" },
+            { left: "864px", top: "5150px" },
+            { left: "191px", top: "4102px" },
+            { left: "1226px", top: "4293px" },
+            { left: "-142px", top: "6644px" },
+            { left: "864px", top: "7020px" },
+            { left: "191px", top: "5972px" },
+            { left: "1226px", top: "6163px" },
+          ].map((pos, i) => (
+            <div
+              key={i}
+              className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
+              style={{
+                left: pos.left,
+                top: pos.top,
+                background: "rgba(80, 0, 181, 0.67)",
+                opacity: 0.25,
+              }}
+            />
+          ))}
+        </div>
+        <div className="max-w-6xl mx-auto px-4 pt-32">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="text-center gap-5 flex flex-col py-5">
+            <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto">
               <Check className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Your AI-Generated Project Report</h1>
-            <p className="text-slate-600">Our AI has analyzed your requirements and created a comprehensive project plan</p>
+            <h1 className="text-4xl font-bold text-white">Your AI-Generated Project Report</h1>
+            <p className="text-white px-6 md:max-w-lg mx-auto">Our AI has analyzed your requirements and created a comprehensive project plan</p>
           </div>
 
           {/* Report Content */}
