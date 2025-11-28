@@ -44,10 +44,16 @@ export const generateWithLLM = async (prompt) => {
   }
 
   const data = await res.json();
+
+  // Log the response for debugging
+  console.log('🔍 Gemini API Response:', JSON.stringify(data, null, 2));
+
   // Extract text from the current Gemini API response format
   const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
   if (!reply) {
+    console.error('❌ Gemini returned empty reply!');
+    console.error('Full response structure:', JSON.stringify(data, null, 2));
     throw new Error('Gemini returned empty reply');
   }
 

@@ -3,6 +3,7 @@ import Task from "../model/task.js";
 import Affiliate from "../model/affiliate.js";
 import Referral from "../model/referral.js";
 import { generateWithLLM } from "../services/llmService.js";
+import { sendProjectReport } from "../services/emailService.js";
 
 // Create a new project from StartProject form
 export const createProject = async (req, res) => {
@@ -72,12 +73,12 @@ export const createProject = async (req, res) => {
             commission_amount: 0, // Will be calculated later based on project value
             conversion_date: new Date(),
           });
-          
+
           // Update affiliate stats
           await Affiliate.findByIdAndUpdate(affiliate._id, {
             $inc: { total_referrals: 1 }
           });
-          
+
           console.log(`Referral recorded for affiliate: ${affiliate.name}`);
         }
       } catch (referralError) {
@@ -98,6 +99,79 @@ export const createProject = async (req, res) => {
       }));
 
       await Task.insertMany(taskDocs);
+    }
+
+    // Automatically generate professional report and send email if ai_analysis exists
+    if (newProject.ai_analysis && newProject.client_email) {
+      console.log('\n📊 Auto-generating professional report...');
+
+      try {
+        const reportPrompt = `
+          You are a top-tier project manager and technical consultant. Based on the following project data, create a comprehensive and professional project analysis report in **Markdown format**.
+
+          **Project Data:**
+          - Client: ${newProject.client_name}
+          - Company: ${newProject.company_name || 'N/A'}
+          - Project Type: ${newProject.project_type}
+          - Budget: ${newProject.budget_range}
+          - Timeline: ${newProject.timeline}
+          - Description: ${newProject.project_description}
+          - AI Analysis Summary: ${newProject.ai_analysis}
+
+          **Report Structure:**
+          The report must be well-structured, easy to read, and professional. Use clear headings, bullet points, and bold text to organize the information.
+
+          **Required Sections:**
+          1.  **Executive Summary:** A brief overview of the project and key recommendations.
+          2.  **Technical Requirements & Recommendations:** Platform, performance, features, security.
+          3.  **Design Direction & User Experience (UX) Strategy:** UX research, wireframes, UI design, and user testing.
+          4.  **Development Timeline & Milestones:** A proposed timeline with key deliverables for each phase.
+          5.  **Budget Allocation & Cost Optimization:** A breakdown of the budget and strategies to optimize costs.
+          6.  **Potential Challenges & Solutions:** Identify potential risks and propose mitigation strategies.
+          7.  **Success Metrics & KPIs:** How to measure the project's success post-launch.
+          8.  **Conclusion:** A summary of the plan and next steps.
+
+          **IMPORTANT:**
+          - The output **MUST** be only the Markdown report.
+          - Do **NOT** include any HTML, CSS, or any other code.
+          - Do **NOT** include the original AI Analysis content, only use it as a reference to write the report sections.
+        `;
+
+        console.log('🤖 Calling Gemini to generate report...');
+        const markdownReport = await generateWithLLM(reportPrompt);
+
+        console.log(`✅ Report generated (${markdownReport.length} characters)`);
+
+        // Save report to project
+        newProject.professional_report_html = markdownReport;
+        await newProject.save();
+        console.log('💾 Report saved to project');
+
+        // Send email with report
+        console.log(`📧 Sending report to ${newProject.client_email}...`);
+        console.log(`   - SMTP Host: ${process.env.SMTP_HOST || 'Not set'}`);
+        console.log(`   - Email User: ${process.env.EMAIL_USER ? 'Configured' : 'Not set'}`);
+
+        await sendProjectReport({
+          clientEmail: newProject.client_email,
+          clientName: newProject.client_name,
+          projectType: newProject.project_type,
+          reportContent: markdownReport,
+          projectId: newProject._id.toString(),
+        });
+
+        console.log(`✅ Report email sent successfully to ${newProject.client_email}\n`);
+      } catch (reportError) {
+        console.error('⚠️  Failed to generate/send report (project still created):', reportError.message);
+        // Don't fail project creation if report generation fails
+      }
+    } else {
+      if (!newProject.ai_analysis) {
+        console.log('⏭️  Skipping report generation: No AI analysis provided');
+      }
+      if (!newProject.client_email) {
+        console.log('⏭️  Skipping email: No client email provided');
+      }
     }
 
     return res.status(201).json({
@@ -238,10 +312,24 @@ export const updateProject = async (req, res) => {
 
 // Generate professional HTML report using LLM and save to project.professional_report_html
 export const generateReport = async (req, res) => {
+  console.log('\n' + '='.repeat(60));
+  console.log('🚀 GENERATE REPORT - STARTED');
+  console.log('='.repeat(60));
+
   try {
     const { id } = req.params;
+    console.log(`📋 Step 1: Fetching project with ID: ${id}`);
+
     const project = await Project.findById(id).exec();
-    if (!project) return res.status(404).json({ success: false, message: "Project not found" });
+    if (!project) {
+      console.log('❌ Project not found');
+      return res.status(404).json({ success: false, message: "Project not found" });
+    }
+
+    console.log(`✅ Step 1 Complete: Project found`);
+    console.log(`   - Client: ${project.client_name}`);
+    console.log(`   - Email: ${project.client_email}`);
+    console.log(`   - Type: ${project.project_type}`);
 
     // Updated prompt to generate a clean, professional Markdown report.
     const prompt = `
@@ -275,15 +363,59 @@ export const generateReport = async (req, res) => {
       - Do **NOT** include the original AI Analysis content, only use it as a reference to write the report sections.
     `;
 
+    console.log(`\n🤖 Step 2: Calling Gemini LLM to generate report...`);
+    console.log(`   - Prompt length: ${prompt.length} characters`);
+
     // Call LLM service
     const markdownReport = await generateWithLLM(prompt);
 
+    console.log(`✅ Step 2 Complete: Report generated by Gemini`);
+    console.log(`   - Report length: ${markdownReport.length} characters`);
+
+    console.log(`\n💾 Step 3: Saving report to database...`);
     project.professional_report_html = markdownReport; // Storing Markdown in this field
     await project.save();
+    console.log(`✅ Step 3 Complete: Report saved to project`);
+
+    // Send project report via email if client email is provided
+    if (project.client_email) {
+      console.log(`\n📧 Step 4: Sending email to ${project.client_email}...`);
+      console.log(`   - Email service configured: ${process.env.EMAIL_USER ? 'YES' : 'NO'}`);
+      console.log(`   - SMTP Host: ${process.env.SMTP_HOST || 'Not set'}`);
+      console.log(`   - SMTP Port: ${process.env.SMTP_PORT || 'Not set'}`);
+
+      try {
+        await sendProjectReport({
+          clientEmail: project.client_email,
+          clientName: project.client_name,
+          projectType: project.project_type,
+          reportContent: markdownReport,
+          projectId: project._id.toString(),
+        });
+        console.log(`✅ Step 4 Complete: Email sent successfully to ${project.client_email}`);
+      } catch (emailError) {
+        console.log(`⚠️  Step 4 Warning: Email sending failed (continuing anyway)`);
+        console.error(`   Error details: ${emailError.message}`);
+        console.error(`   Full error:`, emailError);
+        // Don't fail the request if email fails, just log the error
+      }
+    } else {
+      console.log(`\n⏭️  Step 4 Skipped: No client email provided`);
+    }
+
+    console.log('\n' + '='.repeat(60));
+    console.log('✅ GENERATE REPORT - COMPLETED SUCCESSFULLY');
+    console.log('='.repeat(60) + '\n');
 
     return res.status(200).json({ success: true, data: { id: project._id.toString(), professional_report_html: markdownReport } });
   } catch (error) {
-    console.error("Failed to generate report:", error);
+    console.log('\n' + '='.repeat(60));
+    console.log('❌ GENERATE REPORT - FAILED');
+    console.log('='.repeat(60));
+    console.error("Error details:", error.message);
+    console.error("Full error:", error);
+    console.log('='.repeat(60) + '\n');
+
     return res.status(500).json({ success: false, error: error.message || error });
   }
 };
