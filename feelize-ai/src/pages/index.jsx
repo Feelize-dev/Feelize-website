@@ -1,65 +1,49 @@
 import Layout from "./Layout.jsx";
-
 import Home from "./HomeComplete";
-
 import StartProject from "./StartProject";
-
 import Process from "./Process";
-
 import Pricing from "./Pricing";
-
 import About from "./About";
-
 import Work from "./Work";
-
 import Testimonials from "./Testimonials";
-
 import AdminDashboard from "./AdminDashboard";
-
 import UserDashboard from "./UserDashboard";
-
 import DeveloperDashboard from "./DeveloperDashboard";
-
 import ProjectReport from "./ProjectReport";
-
 import TeamReport from "./TeamReport";
-
 import ProjectDashboard from "./ProjectDashboard";
-
 import AffiliateSignup from "./AffiliateSignup";
+import ReferralRedirect from "./ReferralRedirect";
+
+// Admin Pages
+import AdminPanel from "./AdminPanel";
+import AdminAffiliates from "./AdminAffiliates";
+import AdminReferrals from "./AdminReferrals";
+import AdminProjects from "./AdminProjects";
+import AdminClients from "./AdminClients";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
 const PAGES = {
-    
     Home: Home,
-    
     StartProject: StartProject,
-    
     Process: Process,
-    
     Pricing: Pricing,
-    
     About: About,
-    
     Work: Work,
-    
     Testimonials: Testimonials,
-    
     AdminDashboard: AdminDashboard,
-    
     UserDashboard: UserDashboard,
-    
     DeveloperDashboard: DeveloperDashboard,
-    
     ProjectReport: ProjectReport,
-    
     TeamReport: TeamReport,
-    
     ProjectDashboard: ProjectDashboard,
-    
     AffiliateSignup: AffiliateSignup,
-    
+    AdminPanel: AdminPanel,
+    AdminAffiliates: AdminAffiliates,
+    AdminReferrals: AdminReferrals,
+    AdminProjects: AdminProjects,
+    AdminClients: AdminClients,
 }
 
 function _getCurrentPage(url) {
@@ -79,42 +63,35 @@ function _getCurrentPage(url) {
 function PagesContent() {
     const location = useLocation();
     const currentPage = _getCurrentPage(location.pathname);
-    
+
     return (
         <Layout currentPageName={currentPage}>
-            <Routes>            
-                
-                    <Route path="/" element={<Home />} />
-                
-                
+            <Routes>
+                <Route path="/" element={<Home />} />
                 <Route path="/Home" element={<Home />} />
-                
                 <Route path="/StartProject" element={<StartProject />} />
-                
                 <Route path="/Process" element={<Process />} />
-                
                 <Route path="/Pricing" element={<Pricing />} />
-                
                 <Route path="/About" element={<About />} />
-                
                 <Route path="/Work" element={<Work />} />
-                
                 <Route path="/Testimonials" element={<Testimonials />} />
-                
                 <Route path="/AdminDashboard" element={<AdminDashboard />} />
-                
                 <Route path="/UserDashboard" element={<UserDashboard />} />
-                
                 <Route path="/DeveloperDashboard" element={<DeveloperDashboard />} />
-                
                 <Route path="/ProjectReport" element={<ProjectReport />} />
-                
                 <Route path="/TeamReport" element={<TeamReport />} />
-                
                 <Route path="/ProjectDashboard" element={<ProjectDashboard />} />
-                
                 <Route path="/AffiliateSignup" element={<AffiliateSignup />} />
-                
+
+                {/* Admin Panel Routes */}
+                <Route path="/AdminPanel" element={<AdminPanel />} />
+                <Route path="/AdminAffiliates" element={<AdminAffiliates />} />
+                <Route path="/AdminReferrals" element={<AdminReferrals />} />
+                <Route path="/AdminProjects" element={<AdminProjects />} />
+                <Route path="/AdminClients" element={<AdminClients />} />
+
+                {/* Catch-all for custom referral codes - MUST BE LAST */}
+                <Route path="/:referralCode" element={<ReferralRedirect />} />
             </Routes>
         </Layout>
     );

@@ -70,7 +70,7 @@ const ALL_MEMBERS = {
       stats: { engineering: 9, product: 8, delivery: 7, strategy: 10 }
     },
     {
-      id: "aleef", name: "Aleef", role: "Backend Developer",
+      id: "aleef", name: "Aleef", role: "Full-Stack Developer",
       icon: Server, color: "text-slate-400",
       avatar: "https://ui-avatars.com/api/?name=Aleef&background=1a202c&color=fff&size=256",
       bio: "The architect of the unseen. Aleef constructs the powerful, resilient server architectures and APIs that form the backbone of every Feelize application, ensuring data flows with speed and reliability.",

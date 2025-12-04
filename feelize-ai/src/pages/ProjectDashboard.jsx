@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { Project, Task, ActivityLog, Engineer, User } from '@/api/entities';
+import { InvokeLLM } from '@/api/integrations';
 import { Loader2, ArrowLeft, MessageCircle, Send, X, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -80,7 +81,7 @@ const ProjectChatbot = ({ project, userRole }) => {
         Provide a helpful response:
       `;
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await InvokeLLM({
         prompt: projectContext,
       });
 
@@ -153,11 +154,10 @@ const ProjectChatbot = ({ project, userRole }) => {
                   className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[80%] p-3 rounded-2xl ${
-                      message.role === 'user'
+                    className={`max-w-[80%] p-3 rounded-2xl ${message.role === 'user'
                         ? 'bg-indigo-600 text-white'
                         : 'bg-white text-slate-900 border border-slate-200'
-                    }`}
+                      }`}
                   >
                     <p className="text-sm leading-relaxed whitespace-pre-line">{message.content}</p>
                   </div>
@@ -223,12 +223,16 @@ export default function ProjectDashboard() {
     }
 
     try {
-      const [proj, projTasks, projActivities, user] = await Promise.all([
-        base44.entities.ProjectBrief.get(projectId),
-        base44.entities.Task.filter({ project_id: projectId }, '-created_date'),
-        base44.entities.ActivityLog.filter({ project_id: projectId }, '-created_date', 50),
-        base44.auth.me(),
+      const [projRes, projTasksRes, projActivitiesRes, user] = await Promise.all([
+        Project.get(projectId),
+        Task.filter({ project_id: projectId, sort: '-created_date' }),
+        ActivityLog.filter({ project_id: projectId, sort: '-created_date', limit: 50 }),
+        User.me(),
       ]);
+
+      const proj = projRes.data || projRes;
+      const projTasks = projTasksRes.data || [];
+      const projActivities = projActivitiesRes.data || [];
 
       setProject(proj);
       setTasks(projTasks);
@@ -236,18 +240,18 @@ export default function ProjectDashboard() {
       setCurrentUser(user);
 
       // Determine user role for this project
-      if (user.role === 'admin') {
+      if (user && user.email === 'admin@feelize.ai') {
         setUserRole('admin');
-      } else if (proj.assigned_team?.includes(user.email)) {
+      } else if (user && proj.assigned_team?.includes(user.email)) {
         setUserRole('engineer');
       } else {
         setUserRole('client');
       }
-      
+
       // Load full team details
       if (proj.assigned_team && proj.assigned_team.length > 0) {
-        const engineerDetails = await base44.entities.Engineer.filter({ user_email: { '$in': proj.assigned_team }});
-        setTeam(engineerDetails);
+        const engineerDetailsRes = await Engineer.filter({ email: { '$in': proj.assigned_team } });
+        setTeam(engineerDetailsRes.data || []);
       }
 
     } catch (error) {
@@ -263,13 +267,14 @@ export default function ProjectDashboard() {
 
   const handleCreateActivity = async (activityData) => {
     try {
-      const newActivity = await base44.entities.ActivityLog.create({
+      const newActivityRes = await ActivityLog.create({
         ...activityData,
-        project_id: project.id,
+        project_id: project.id || project._id,
         user_email: currentUser.email,
-        user_name: currentUser.full_name,
+        user_name: currentUser.displayName || currentUser.email,
         user_role: userRole,
       });
+      const newActivity = newActivityRes.data || newActivityRes;
       setActivities(prev => [newActivity, ...prev]);
     } catch (error) {
       console.error("Error creating activity:", error);
