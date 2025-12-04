@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { Project } from "@/api/entities";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -78,6 +78,26 @@ export default function UserDashboard() {
   // are now handled on a dedicated ProjectDashboard page, accessed via navigation.
   const [newMessage, setNewMessage] = useState(""); // This state is not used in the final implementation, but was in original file, keeping to preserve structure.
   const { data: user, isLoading } = useUser();
+
+  useEffect(() => {
+    if (user) {
+      setCurrentUser(user);
+
+      // Fetch projects
+      const fetchProjects = async () => {
+        try {
+          const response = await Project.filter({ sort: '-created_date' });
+          if (response.success) {
+            setProjects(response.data);
+          }
+        } catch (error) {
+          console.error("Failed to fetch projects:", error);
+        }
+      };
+
+      fetchProjects();
+    }
+  }, [user]);
 
   if (!user) {
 

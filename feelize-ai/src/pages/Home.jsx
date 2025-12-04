@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
-import { base44 } from "@/api/base44Client";
+import { InvokeLLM } from "@/api/integrations";
 import { Input } from "@/components/ui/input";
 import {
   Sparkles,
@@ -46,10 +46,10 @@ const CustomRocketIcon = () => (
         <stop offset="100%" stopColor="#3b82f6" />
       </linearGradient>
     </defs>
-    <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8L12 2Z" fill="url(#rocketGradient)" opacity="0.3"/>
-    <path d="M12 2C12 2 16 6 16 12C16 14 14 16 12 16C10 16 8 14 8 12C8 6 12 2 12 2Z" stroke="url(#rocketGradient)" strokeWidth="2" fill="none"/>
-    <circle cx="12" cy="10" r="2" fill="url(#rocketGradient)"/>
-    <path d="M8 16L6 22M16 16L18 22" stroke="url(#rocketGradient)" strokeWidth="2" strokeLinecap="round"/>
+    <path d="M12 2L14 8L20 10L14 12L12 18L10 12L4 10L10 8L12 2Z" fill="url(#rocketGradient)" opacity="0.3" />
+    <path d="M12 2C12 2 16 6 16 12C16 14 14 16 12 16C10 16 8 14 8 12C8 6 12 2 12 2Z" stroke="url(#rocketGradient)" strokeWidth="2" fill="none" />
+    <circle cx="12" cy="10" r="2" fill="url(#rocketGradient)" />
+    <path d="M8 16L6 22M16 16L18 22" stroke="url(#rocketGradient)" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 
@@ -61,10 +61,10 @@ const CustomTargetIcon = () => (
         <stop offset="100%" stopColor="#ec4899" />
       </linearGradient>
     </defs>
-    <circle cx="12" cy="12" r="10" stroke="url(#targetGradient)" strokeWidth="2" fill="none" opacity="0.3"/>
-    <circle cx="12" cy="12" r="6" stroke="url(#targetGradient)" strokeWidth="2" fill="none" opacity="0.5"/>
-    <circle cx="12" cy="12" r="2" fill="url(#targetGradient)"/>
-    <path d="M12 2V6M12 18V22M2 12H6M18 12H22" stroke="url(#targetGradient)" strokeWidth="2" strokeLinecap="round"/>
+    <circle cx="12" cy="12" r="10" stroke="url(#targetGradient)" strokeWidth="2" fill="none" opacity="0.3" />
+    <circle cx="12" cy="12" r="6" stroke="url(#targetGradient)" strokeWidth="2" fill="none" opacity="0.5" />
+    <circle cx="12" cy="12" r="2" fill="url(#targetGradient)" />
+    <path d="M12 2V6M12 18V22M2 12H6M18 12H22" stroke="url(#targetGradient)" strokeWidth="2" strokeLinecap="round" />
   </svg>
 );
 
@@ -76,7 +76,7 @@ const CustomZapIcon = () => (
         <stop offset="100%" stopColor="#f59e0b" />
       </linearGradient>
     </defs>
-    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="url(#zapGradient)" stroke="url(#zapGradient)" strokeWidth="2" strokeLinejoin="round"/>
+    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" fill="url(#zapGradient)" stroke="url(#zapGradient)" strokeWidth="2" strokeLinejoin="round" />
   </svg>
 );
 
@@ -93,8 +93,8 @@ const ShatterPiece = ({ x, y, rotation, delay, animate }) => (
       transition: { duration: 1.2, ease: [0.4, 0.0, 0.6, 1], delay: delay }
     } : {}}
     className="absolute w-4 h-4 bg-gradient-to-br from-red-500/90 to-yellow-500/90"
-    style={{ 
-      left: '50%', 
+    style={{
+      left: '50%',
       top: '50%',
       clipPath: 'polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%)',
       boxShadow: '0 0 15px rgba(239, 68, 68, 0.6), inset 0 0 5px rgba(255, 255, 255, 0.3)'
@@ -126,8 +126,8 @@ const ShatterableCard = ({ children, shouldShatter }) => {
 
   return (
     <div ref={cardRef} className="relative">
-      <motion.div 
-        animate={{ opacity: isShattered ? 0 : 1 }} 
+      <motion.div
+        animate={{ opacity: isShattered ? 0 : 1 }}
         transition={{ duration: 0.2 }}
       >
         {children}
@@ -167,7 +167,7 @@ const AiDemo = () => {
 
     try {
       await new Promise(resolve => setTimeout(resolve, 1500));
-      const result = await base44.integrations.Core.InvokeLLM({
+      const result = await InvokeLLM({
         prompt,
         response_json_schema: {
           type: "object",
@@ -200,10 +200,10 @@ const AiDemo = () => {
   return (
     <div className="relative">
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/20 via-blue-500/20 to-purple-500/20 rounded-3xl blur-3xl" />
-      
+
       <Card className="relative glass-morphism border border-white/20 rounded-3xl overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-transparent to-purple-500/5" />
-        
+
         <CardContent className="relative p-6 sm:p-8">
           <div className="flex items-center gap-3 mb-6">
             <div className="p-3 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-2xl shadow-lg shadow-cyan-500/25">
@@ -238,18 +238,18 @@ const AiDemo = () => {
                 onChange={(e) => e.target.files?.[0] && setDemoFile(e.target.files[0])}
                 accept="image/*,.pdf,.txt,.docx"
               />
-              
+
               {demoFile ? (
                 <div className="flex items-center justify-center gap-3">
                   <div className="p-2 bg-green-500/20 rounded-xl">
                     <Check className="w-5 h-5 text-green-400" />
                   </div>
                   <span className="text-white font-medium text-sm">{demoFile.name}</span>
-                  <button 
+                  <button
                     onClick={(e) => { e.stopPropagation(); setDemoFile(null); }}
                     className="p-1 hover:bg-red-500/20 rounded-lg transition-colors"
                   >
-                    <X className="w-4 h-4 text-slate-400 hover:text-red-400"/>
+                    <X className="w-4 h-4 text-slate-400 hover:text-red-400" />
                   </button>
                 </div>
               ) : (
@@ -262,8 +262,8 @@ const AiDemo = () => {
               )}
             </div>
 
-            <Button 
-              onClick={handleAnalysis} 
+            <Button
+              onClick={handleAnalysis}
               disabled={isAnalyzing || (!demoText && !demoFile)}
               className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold py-4 rounded-2xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
             >
@@ -287,7 +287,7 @@ const AiDemo = () => {
                 <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                 <h4 className="text-lg font-bold text-white">AI Insights Extracted</h4>
               </div>
-              
+
               <div className="grid grid-cols-2 gap-3">
                 {analysisResult.map((tag, i) => (
                   <motion.div
@@ -298,8 +298,8 @@ const AiDemo = () => {
                     className="flex items-center gap-3 p-3 bg-slate-800/50 rounded-xl border border-slate-600/30"
                   >
                     <div className="p-1.5 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg">
-                      {tag.toLowerCase().includes('design') ? 
-                        <Palette className="w-3 h-3 text-white" /> : 
+                      {tag.toLowerCase().includes('design') ?
+                        <Palette className="w-3 h-3 text-white" /> :
                         <Code2 className="w-3 h-3 text-white" />
                       }
                     </div>
@@ -318,7 +318,7 @@ const AiDemo = () => {
 // Floating Card Component
 const FloatingCard = ({ children, delay = 0 }) => {
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: delay / 1000, duration: 0.6 }}
@@ -334,7 +334,7 @@ const FloatingCard = ({ children, delay = 0 }) => {
 const SectionHeader = ({ icon: Icon, badgeText, title, subtitle, badgeColor = "purple" }) => {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, amount: 0.5 });
-  
+
   const colorClasses = {
     purple: "border-purple-500/30 bg-slate-800/50",
     cyan: "border-cyan-500/30 bg-slate-800/50",
@@ -348,7 +348,7 @@ const SectionHeader = ({ icon: Icon, badgeText, title, subtitle, badgeColor = "p
     yellow: "text-yellow-400",
     green: "text-green-400"
   };
-  
+
   return (
     <div ref={ref} className="text-center">
       <motion.div
@@ -360,7 +360,7 @@ const SectionHeader = ({ icon: Icon, badgeText, title, subtitle, badgeColor = "p
         <Icon className={`w-4 h-4 ${textColorClasses[badgeColor]}`} />
         <span className={`text-sm font-medium ${textColorClasses[badgeColor]}`}>{badgeText}</span>
       </motion.div>
-      
+
       <h2 className="text-5xl font-bold text-white mb-4">
         {title}
       </h2>
@@ -446,16 +446,16 @@ const TestimonialChat = ({ testimonial }) => {
         Respond as ${testimonial.name} would, staying completely in character:
       `;
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await InvokeLLM({
         prompt: context,
       });
 
       setMessages(prev => [...prev, { role: "assistant", content: response }]);
     } catch (error) {
       console.error("Chat error:", error);
-      setMessages(prev => [...prev, { 
-        role: "assistant", 
-        content: `You know, working with Feelize was truly transformative for ${testimonial.company}. The combination of their expert team and AI-powered tools delivered results faster than I thought possible. What specific aspect of my experience would you like to know more about?` 
+      setMessages(prev => [...prev, {
+        role: "assistant",
+        content: `You know, working with Feelize was truly transformative for ${testimonial.company}. The combination of their expert team and AI-powered tools delivered results faster than I thought possible. What specific aspect of my experience would you like to know more about?`
       }]);
     } finally {
       setIsLoading(false);
@@ -466,8 +466,8 @@ const TestimonialChat = ({ testimonial }) => {
     <Card className="glass-morphism border border-white/20 rounded-3xl overflow-hidden h-[500px] flex flex-col">
       <div className="bg-gradient-to-r from-slate-800 to-slate-700 p-4 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <img 
-            src={testimonial.avatar} 
+          <img
+            src={testimonial.avatar}
             alt={testimonial.name}
             className="w-12 h-12 rounded-full object-cover border-2 border-cyan-400"
           />
@@ -490,11 +490,10 @@ const TestimonialChat = ({ testimonial }) => {
             animate={{ opacity: 1, y: 0 }}
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
-            <div className={`max-w-[80%] p-3 rounded-2xl ${
-              message.role === 'user' 
-                ? 'bg-cyan-500 text-white' 
+            <div className={`max-w-[80%] p-3 rounded-2xl ${message.role === 'user'
+                ? 'bg-cyan-500 text-white'
                 : 'bg-slate-700/50 text-slate-200'
-            }`}>
+              }`}>
               <p className="text-sm leading-relaxed whitespace-pre-line">{message.content}</p>
             </div>
           </motion.div>
@@ -519,7 +518,7 @@ const TestimonialChat = ({ testimonial }) => {
             className="bg-slate-800/50 border-slate-600/50 text-white placeholder-slate-400"
             maxLength={150} // Also enforce visual character limit
           />
-          <Button 
+          <Button
             onClick={handleSend}
             disabled={!input.trim() || isLoading}
             className="bg-cyan-500 hover:bg-cyan-400"
@@ -552,7 +551,7 @@ const JukeboxCarousel = ({ projects }) => {
       {/* Jukebox Frame */}
       <div className="absolute w-full max-w-4xl h-[550px] rounded-[40px] bg-gradient-to-br from-red-800 via-rose-900 to-red-900 shadow-2xl shadow-black/50 border-8 border-yellow-800/50 p-4">
         {/* Inner wood grain */}
-        <div className="w-full h-full rounded-[32px] bg-yellow-900/50 p-4 border-4 border-black/30" style={{ backgroundImage: 'url(https://www.transparenttextures.com/patterns/wood-pattern.png)'}}>
+        <div className="w-full h-full rounded-[32px] bg-yellow-900/50 p-4 border-4 border-black/30" style={{ backgroundImage: 'url(https://www.transparenttextures.com/patterns/wood-pattern.png)' }}>
           {/* Chrome top */}
           <div className="absolute top-8 left-1/2 -translate-x-1/2 w-[80%] h-24 bg-gradient-to-b from-slate-200 via-slate-400 to-slate-500 rounded-t-3xl border-4 border-slate-600">
             <h3 className="text-center text-3xl font-black text-slate-800 drop-shadow-lg mt-6" style={{ fontFamily: "'Bungee', cursive" }}>
@@ -561,14 +560,14 @@ const JukeboxCarousel = ({ projects }) => {
           </div>
           {/* Speaker Grilles */}
           <div className="absolute bottom-6 left-6 w-28 h-28 bg-black/50 rounded-2xl border-4 border-slate-600 p-2">
-            <div className="w-full h-full bg-repeat bg-[length:10px_10px] rounded-lg" style={{backgroundImage: 'radial-gradient(#555 1px, transparent 1px)'}}/>
+            <div className="w-full h-full bg-repeat bg-[length:10px_10px] rounded-lg" style={{ backgroundImage: 'radial-gradient(#555 1px, transparent 1px)' }} />
           </div>
           <div className="absolute bottom-6 right-6 w-28 h-28 bg-black/50 rounded-2xl border-4 border-slate-600 p-2">
-             <div className="w-full h-full bg-repeat bg-[length:10px_10px] rounded-lg" style={{backgroundImage: 'radial-gradient(#555 1px, transparent 1px)'}}/>
+            <div className="w-full h-full bg-repeat bg-[length:10px_10px] rounded-lg" style={{ backgroundImage: 'radial-gradient(#555 1px, transparent 1px)' }} />
           </div>
         </div>
       </div>
-      
+
       {/* Flipping Mechanism */}
       <div className="relative w-full h-96" style={{ perspective: "1000px" }}>
         <motion.div
@@ -604,15 +603,15 @@ const JukeboxCarousel = ({ projects }) => {
           ))}
         </motion.div>
       </div>
-      
+
       {/* Controls */}
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-20">
-          <Button onClick={prevProject} className="w-20 h-20 rounded-full bg-gradient-to-br from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white border-4 border-slate-500 shadow-lg">
-            <ChevronLeft className="w-10 h-10" />
-          </Button>
-          <Button onClick={nextProject} className="w-20 h-20 rounded-full bg-gradient-to-br from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white border-4 border-slate-500 shadow-lg">
-            <ChevronRight className="w-10 h-10" />
-          </Button>
+        <Button onClick={prevProject} className="w-20 h-20 rounded-full bg-gradient-to-br from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white border-4 border-slate-500 shadow-lg">
+          <ChevronLeft className="w-10 h-10" />
+        </Button>
+        <Button onClick={nextProject} className="w-20 h-20 rounded-full bg-gradient-to-br from-slate-600 to-slate-800 hover:from-slate-500 hover:to-slate-700 text-white border-4 border-slate-500 shadow-lg">
+          <ChevronRight className="w-10 h-10" />
+        </Button>
       </div>
     </div>
   );
@@ -626,7 +625,7 @@ export default function HomePage() {
 
   // Hero section ref for scroll tracking
   const heroRef = useRef(null);
-  
+
   // Track mouse movement
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -646,7 +645,7 @@ export default function HomePage() {
     target: heroRef,
     offset: ["start start", "end start"]
   });
-  
+
   const heroOpacity = useTransform(heroScroll, [0, 0.3, 0.6], [1, 0.7, 0]);
   const heroBlur = useTransform(heroScroll, [0, 0.3, 0.6], [0, 5, 15]);
   const heroFilter = useTransform(heroBlur, (v) => `blur(${v}px)`);
@@ -672,28 +671,28 @@ export default function HomePage() {
     const normalizedDistance = Math.min(distance / maxDistance, 1);
     // Lower max brightness (0.5 instead of 0.9), smoother falloff
     const opacity = Math.max(0.1, Math.min(0.5, Math.pow(1 - normalizedDistance, 3)));
-    
+
     return opacity;
   }, [mousePosition]);
 
   const features = [
-    { 
-      icon: Zap, 
-      title: "Lightning Fast", 
+    {
+      icon: Zap,
+      title: "Lightning Fast",
       description: "AI acceleration reduces project time by 60%",
       gradient: "from-yellow-400 via-orange-500 to-red-500",
       shadowColor: "shadow-orange-500/50"
     },
-    { 
-      icon: Target, 
-      title: "Precision Perfect", 
+    {
+      icon: Target,
+      title: "Precision Perfect",
       description: "AI analysis ensures 99% requirement accuracy",
       gradient: "from-purple-400 via-pink-500 to-red-500",
       shadowColor: "shadow-pink-500/50"
     },
-    { 
-      icon: Rocket, 
-      title: "Cost Effective", 
+    {
+      icon: Rocket,
+      title: "Cost Effective",
       description: "Save 40% compared to traditional agencies",
       gradient: "from-cyan-400 via-blue-500 to-purple-500",
       shadowColor: "shadow-cyan-500/50"
@@ -807,9 +806,9 @@ export default function HomePage() {
       {/* IMPROVED: Universal lighting with slower drift and better responsiveness */}
       <div className="fixed inset-0 pointer-events-none z-0">
         {/* Hero Section Lights */}
-        <motion.div 
-          id="orb1" 
-          className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-cyan-400/30 to-blue-600/30 rounded-full blur-3xl" 
+        <motion.div
+          id="orb1"
+          className="absolute top-20 left-10 w-96 h-96 bg-gradient-to-br from-cyan-400/30 to-blue-600/30 rounded-full blur-3xl"
           style={{ opacity: calculateOpacity("orb1") }}
           animate={{
             x: [0, 30, 0],
@@ -821,9 +820,9 @@ export default function HomePage() {
             ease: "easeInOut"
           }}
         />
-        <motion.div 
-          id="orb2" 
-          className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-gradient-to-br from-purple-600/30 to-pink-600/30 rounded-full blur-3xl" 
+        <motion.div
+          id="orb2"
+          className="absolute bottom-20 right-10 w-[500px] h-[500px] bg-gradient-to-br from-purple-600/30 to-pink-600/30 rounded-full blur-3xl"
           style={{ opacity: calculateOpacity("orb2") }}
           animate={{
             x: [0, -40, 0],
@@ -835,9 +834,9 @@ export default function HomePage() {
             ease: "easeInOut"
           }}
         />
-        <motion.div 
-          id="orb3" 
-          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-br from-blue-500/20 via-transparent to-purple-500/20 rounded-full blur-3xl" 
+        <motion.div
+          id="orb3"
+          className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-gradient-to-br from-blue-500/20 via-transparent to-purple-500/20 rounded-full blur-3xl"
           style={{ opacity: calculateOpacity("orb3") }}
           animate={{
             scale: [1, 1.1, 1],
@@ -849,11 +848,11 @@ export default function HomePage() {
             ease: "easeInOut"
           }}
         />
-        
+
         {/* Problem/Solution Section Lights */}
-        <motion.div 
-          id="orb4" 
-          className="absolute top-[120vh] left-20 w-[600px] h-[600px] bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-full blur-3xl" 
+        <motion.div
+          id="orb4"
+          className="absolute top-[120vh] left-20 w-[600px] h-[600px] bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-full blur-3xl"
           style={{ opacity: calculateOpacity("orb4") }}
           animate={{
             x: [0, 50, 0],
@@ -865,9 +864,9 @@ export default function HomePage() {
             ease: "easeInOut"
           }}
         />
-        <motion.div 
-          id="orb5" 
-          className="absolute top-[140vh] right-20 w-[500px] h-[500px] bg-gradient-to-br from-yellow-500/20 to-amber-500/20 rounded-full blur-3xl" 
+        <motion.div
+          id="orb5"
+          className="absolute top-[140vh] right-20 w-[500px] h-[500px] bg-gradient-to-br from-yellow-500/20 to-amber-500/20 rounded-full blur-3xl"
           style={{ opacity: calculateOpacity("orb5") }}
           animate={{
             x: [0, -30, 0],
@@ -879,11 +878,11 @@ export default function HomePage() {
             ease: "easeInOut"
           }}
         />
-        
+
         {/* Featured Work Section Lights */}
-        <motion.div 
-          id="orb6" 
-          className="absolute top-[220vh] left-1/4 w-96 h-96 bg-gradient-to-br from-purple-500/25 to-pink-500/25 rounded-full blur-3xl" 
+        <motion.div
+          id="orb6"
+          className="absolute top-[220vh] left-1/4 w-96 h-96 bg-gradient-to-br from-purple-500/25 to-pink-500/25 rounded-full blur-3xl"
           style={{ opacity: calculateOpacity("orb6") }}
           animate={{
             x: [0, 40, 0],
@@ -895,9 +894,9 @@ export default function HomePage() {
             ease: "easeInOut"
           }}
         />
-        <motion.div 
-          id="orb7" 
-          className="absolute top-[260vh] right-1/4 w-96 h-96 bg-gradient-to-br from-green-500/25 to-emerald-500/25 rounded-full blur-3xl" 
+        <motion.div
+          id="orb7"
+          className="absolute top-[260vh] right-1/4 w-96 h-96 bg-gradient-to-br from-green-500/25 to-emerald-500/25 rounded-full blur-3xl"
           style={{ opacity: calculateOpacity("orb7") }}
           animate={{
             x: [0, -35, 0],
@@ -909,11 +908,11 @@ export default function HomePage() {
             ease: "easeInOut"
           }}
         />
-        
+
         {/* Testimonials Section Lights */}
-        <motion.div 
-          id="orb8" 
-          className="absolute top-[320vh] left-10 w-[500px] h-[500px] bg-gradient-to-br from-yellow-500/25 to-orange-500/25 rounded-full blur-3xl" 
+        <motion.div
+          id="orb8"
+          className="absolute top-[320vh] left-10 w-[500px] h-[500px] bg-gradient-to-br from-yellow-500/25 to-orange-500/25 rounded-full blur-3xl"
           style={{ opacity: calculateOpacity("orb8") }}
           animate={{
             x: [0, 45, 0],
@@ -925,9 +924,9 @@ export default function HomePage() {
             ease: "easeInOut"
           }}
         />
-        <motion.div 
-          id="orb9" 
-          className="absolute top-[360vh] right-10 w-[500px] h-[500px] bg-gradient-to-br from-cyan-500/25 to-blue-500/25 rounded-full blur-3xl" 
+        <motion.div
+          id="orb9"
+          className="absolute top-[360vh] right-10 w-[500px] h-[500px] bg-gradient-to-br from-cyan-500/25 to-blue-500/25 rounded-full blur-3xl"
           style={{ opacity: calculateOpacity("orb9") }}
           animate={{
             x: [0, -40, 0],
@@ -939,11 +938,11 @@ export default function HomePage() {
             ease: "easeInOut"
           }}
         />
-        
+
         {/* Final CTA Section Lights */}
-        <motion.div 
-          id="orb10" 
-          className="absolute top-[420vh] left-1/2 transform -translate-x-1/2 w-[800px] h-[800px] bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-full blur-3xl" 
+        <motion.div
+          id="orb10"
+          className="absolute top-[420vh] left-1/2 transform -translate-x-1/2 w-[800px] h-[800px] bg-gradient-to-br from-purple-500/30 to-pink-500/30 rounded-full blur-3xl"
           style={{ opacity: calculateOpacity("orb10") }}
           animate={{
             scale: [1, 1.15, 1],
@@ -958,11 +957,11 @@ export default function HomePage() {
       </div>
 
       {/* Hero Section with Scroll Dissolve */}
-      <motion.section 
+      <motion.section
         ref={heroRef}
         className="relative min-h-screen flex items-center justify-center overflow-hidden px-4 z-10"
-        style={{ 
-          opacity: heroOpacity, 
+        style={{
+          opacity: heroOpacity,
           filter: heroFilter,
           y: heroY
         }}
@@ -981,7 +980,7 @@ export default function HomePage() {
             </motion.div>
 
             {/* Main Headline */}
-            <motion.h1 
+            <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
@@ -990,20 +989,20 @@ export default function HomePage() {
               <span className="block text-white">Expert Quality,</span>
               <span className="block gradient-text mt-2">AI Speed.</span>
             </motion.h1>
-            
-            <motion.p 
+
+            <motion.p
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.4 }}
               className="text-xl lg:text-2xl text-slate-300 mb-12 leading-relaxed max-w-4xl mx-auto"
             >
-              Our <span className="text-cyan-400 font-semibold">professional team</span>, trained to leverage the maximum potential of AI, delivers your project 
-              <span className="text-purple-400 font-semibold"> faster</span> and more 
+              Our <span className="text-cyan-400 font-semibold">professional team</span>, trained to leverage the maximum potential of AI, delivers your project
+              <span className="text-purple-400 font-semibold"> faster</span> and more
               <span className="text-pink-400 font-semibold"> cost-effectively</span>. Get the best of both worlds.
             </motion.p>
-            
+
             {/* CTA Buttons */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
@@ -1015,7 +1014,7 @@ export default function HomePage() {
                   Start with AI Assistant
                 </Button>
               </Link>
-              
+
               <Link to={createPageUrl("About")} className="flex items-center text-slate-300 hover:text-cyan-400 font-medium group transition-all duration-300">
                 <span>Meet Our AI-Powered Team</span>
                 <ChevronRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
@@ -1031,13 +1030,13 @@ export default function HomePage() {
                     <div className="relative w-20 h-20 mx-auto mb-6">
                       {/* Neon glow background */}
                       <div className={`absolute inset-0 bg-gradient-to-br ${feature.gradient} rounded-3xl blur-2xl opacity-40 group-hover:opacity-60 transition-opacity duration-300`} />
-                      
+
                       {/* Icon container with gradient background */}
                       <div className={`relative w-full h-full rounded-3xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center ${feature.shadowColor} shadow-lg group-hover:shadow-2xl transition-all duration-300 group-hover:scale-110`}>
                         <feature.icon className="w-10 h-10 text-white drop-shadow-lg" />
                       </div>
                     </div>
-                    
+
                     <h3 className="text-white font-bold text-xl mb-2">{feature.title}</h3>
                     <p className="text-slate-400">{feature.description}</p>
                   </Card>
@@ -1049,7 +1048,7 @@ export default function HomePage() {
       </motion.section>
 
       {/* Problem/Solution Section with FIXED animations */}
-      <motion.section 
+      <motion.section
         ref={sectionRef}
         className="py-32 relative overflow-hidden z-10"
         variants={revealVariants}
@@ -1058,10 +1057,10 @@ export default function HomePage() {
         viewport={{ once: true, amount: 0.1 }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader 
+          <SectionHeader
             icon={XCircle}
             badgeText="The Problem with Traditional Approaches"
-            title={<>The Old Way is Broken.<br/><span className="gradient-text">We Built a Better Way.</span></>}
+            title={<>The Old Way is Broken.<br /><span className="gradient-text">We Built a Better Way.</span></>}
             subtitle="Stop choosing between speed, quality, and cost. Get all three."
             badgeColor="purple"
           />
@@ -1079,14 +1078,14 @@ export default function HomePage() {
                 <Card className="glass-morphism border-2 border-red-500/40 rounded-3xl p-8 relative overflow-hidden backdrop-blur-xl bg-slate-900/60">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-red-500/20 rounded-full blur-3xl" />
                   <div className="absolute bottom-0 left-0 w-24 h-24 bg-red-500/10 rounded-full blur-2xl" />
-                  
+
                   {/* Rejected stamp */}
                   <div className="absolute top-4 right-4 opacity-30">
                     <div className="border-4 border-red-500 rounded-2xl px-4 py-2 rotate-12">
                       <XCircle className="w-16 h-16 text-red-500" />
                     </div>
                   </div>
-                  
+
                   {/* Content with glitch */}
                   <motion.div
                     animate={{
@@ -1119,14 +1118,14 @@ export default function HomePage() {
                 <Card className="glass-morphism border-2 border-yellow-500/40 rounded-3xl p-8 relative overflow-hidden backdrop-blur-xl bg-slate-900/60">
                   <div className="absolute top-0 left-0 w-32 h-32 bg-yellow-500/20 rounded-full blur-3xl" />
                   <div className="absolute bottom-0 right-0 w-24 h-24 bg-yellow-500/10 rounded-full blur-2xl" />
-                  
+
                   {/* Rejected stamp */}
                   <div className="absolute top-4 right-4 opacity-30">
                     <div className="border-4 border-yellow-500 rounded-2xl px-4 py-2 -rotate-12">
                       <XCircle className="w-16 h-16 text-yellow-500" />
                     </div>
                   </div>
-                  
+
                   {/* Content with glitch */}
                   <motion.div
                     animate={{
@@ -1155,7 +1154,7 @@ export default function HomePage() {
                 </Card>
               </ShatterableCard>
             </motion.div>
-            
+
             {/* ENHANCED Feelize Model Card with better contrast and uniqueness */}
             <motion.div
               className="w-full lg:w-2/3 absolute top-0"
@@ -1169,9 +1168,9 @@ export default function HomePage() {
                 <div className="absolute inset-0 bg-gradient-to-br from-slate-950 via-blue-950 to-purple-950" />
                 <div className="absolute -top-40 -right-40 w-96 h-96 bg-cyan-500/30 rounded-full blur-3xl animate-pulse" />
                 <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-purple-500/30 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
-                
+
                 {/* Animated border glow */}
-                <motion.div 
+                <motion.div
                   className="absolute inset-0 rounded-3xl"
                   animate={{
                     boxShadow: [
@@ -1186,7 +1185,7 @@ export default function HomePage() {
                     ease: "easeInOut"
                   }}
                 />
-                
+
                 <CardContent className="relative p-10 z-10">
                   {/* Icon with glow */}
                   <div className="relative mb-8 inline-block">
@@ -1195,14 +1194,14 @@ export default function HomePage() {
                       <Rocket className="w-14 h-14 text-white" />
                     </div>
                   </div>
-                  
+
                   <h3 className="text-5xl font-black text-white mb-4 drop-shadow-lg">
                     The Feelize Model
                   </h3>
                   <p className="text-xl text-white/90 mb-8 leading-relaxed font-medium drop-shadow">
                     We deliver the impossible: premium quality, lightning speed, and affordable pricing. All powered by our AI-augmented team.
                   </p>
-                  
+
                   <div className="space-y-4 mb-8">
                     {[
                       "Premium Agency Quality",
@@ -1223,7 +1222,7 @@ export default function HomePage() {
                       </motion.div>
                     ))}
                   </div>
-                  
+
                   <Link to={createPageUrl("StartProject")}>
                     <Button className="w-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-500 hover:from-cyan-300 hover:via-blue-400 hover:to-purple-400 text-white font-bold py-5 text-xl rounded-2xl shadow-2xl hover:shadow-cyan-500/50 transition-all duration-300 hover:scale-105 border-2 border-white/20">
                       Experience the Difference
@@ -1234,16 +1233,16 @@ export default function HomePage() {
               </Card>
             </motion.div>
           </div>
-          
+
           {/* AI Demo */}
-          <motion.div 
+          <motion.div
             className="max-w-5xl mx-auto mt-32"
             variants={revealVariants}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, amount: 0.2 }}
           >
-            <SectionHeader 
+            <SectionHeader
               icon={BrainCircuit}
               badgeText="AI Vision Analyzer • Live Demo"
               title="See Our AI in Action"
@@ -1258,7 +1257,7 @@ export default function HomePage() {
       </motion.section>
 
       {/* Featured Work Section - NOW WITH JUKEBOX */}
-      <motion.section 
+      <motion.section
         className="py-32 relative z-10"
         variants={revealVariants}
         initial="hidden"
@@ -1269,7 +1268,7 @@ export default function HomePage() {
           @import url('https://fonts.googleapis.com/css2?family=Bungee&display=swap');
         `}</style>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader 
+          <SectionHeader
             icon={Award}
             badgeText="Real Results • Real Projects"
             title="Projects That Speak for Themselves"
@@ -1293,7 +1292,7 @@ export default function HomePage() {
       </motion.section>
 
       {/* Client Testimonials - WITH CHAT INTERFACE */}
-      <motion.section 
+      <motion.section
         className="py-32 relative z-10"
         variants={revealVariants}
         initial="hidden"
@@ -1301,7 +1300,7 @@ export default function HomePage() {
         viewport={{ once: true, amount: 0.1 }}
       >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SectionHeader 
+          <SectionHeader
             icon={MessageCircle}
             badgeText="Chat With Our Clients • Live Now"
             title="Talk to Our Satisfied Clients"
@@ -1316,14 +1315,13 @@ export default function HomePage() {
                 <button
                   key={index}
                   onClick={() => setActiveTestimonial(index)}
-                  className={`p-2 rounded-xl transition-all ${
-                    activeTestimonial === index 
-                      ? 'ring-2 ring-cyan-400 scale-110' 
+                  className={`p-2 rounded-xl transition-all ${activeTestimonial === index
+                      ? 'ring-2 ring-cyan-400 scale-110'
                       : 'opacity-50 hover:opacity-100'
-                  }`}
+                    }`}
                 >
-                  <img 
-                    src={testimonial.avatar} 
+                  <img
+                    src={testimonial.avatar}
                     alt={testimonial.name}
                     className="w-16 h-16 rounded-full object-cover"
                   />
@@ -1348,7 +1346,7 @@ export default function HomePage() {
       </motion.section>
 
       {/* Final CTA */}
-      <motion.section 
+      <motion.section
         className="py-32 relative overflow-hidden z-10"
         variants={revealVariants}
         initial="hidden"
@@ -1358,13 +1356,13 @@ export default function HomePage() {
         <div className="absolute inset-0 bg-gradient-to-r from-slate-900 via-blue-900/20 to-purple-900/20" />
         <div className="max-w-4xl mx-auto text-center px-4 sm:px-6 lg:px-8 relative">
           <h2 className="text-6xl font-black text-white mb-8">
-            Ready to feel the 
+            Ready to feel the
             <span className="block gradient-text mt-2">difference?</span>
           </h2>
           <p className="text-xl text-slate-300 mb-12 max-w-2xl mx-auto">
             Start a conversation with our AI assistant. It's the first step to a better, more intelligent development journey.
           </p>
-          
+
           <Link to={createPageUrl("StartProject")}>
             <Button size="lg" className="bg-gradient-to-r from-purple-500 via-pink-500 to-cyan-400 hover:from-purple-400 hover:via-pink-400 hover:to-cyan-300 text-white px-16 py-8 text-xl font-bold rounded-3xl shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/50 transition-all duration-500 hover:scale-110">
               <Sparkles className="w-6 h-6 mr-3 animate-pulse" />

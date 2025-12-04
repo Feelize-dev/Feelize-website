@@ -1,6 +1,6 @@
-
 import React, { useState, useRef, useEffect } from "react";
-import { base44 } from "@/api/base44Client"; // New import for base44 client
+// Using backend API for project creation instead of Base44
+import { InvokeLLM, UploadFile } from "@/api/integrations";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import {
   Send,
@@ -29,26 +29,16 @@ import {
   Calendar,
   DollarSign,
   Target,
-  Zap,
-  Download,
-  Gift
+  Zap
 } from "lucide-react";
-import { signInWithGooglePopup } from "@/config/firebaseConfig";
-import { useUser } from "@/hooks/useUser";
+import { auth, signInWithGooglePopup } from "@/config/firebaseConfig";
 import axios from "axios";
+import { onAuthStateChanged, signOut } from "firebase/auth";
+import { useUser } from "@/hooks/useUser";
 
-const processingSteps = [
-  "Connecting to AI assistant...",
-  "Analyzing project requirements...",
-  "Identifying key technologies...",
-  "Cross-referencing with market data...",
-  "Estimating project scope & timeline...",
-  "Compiling initial analysis...",
-  "Finalizing recommendations..."
-];
 
 export default function StartProjectPage() {
-
+  // const [currentUser, setCurrentUser] = useState(null);
   const [currentStep, setCurrentStep] = useState('welcome'); // welcome, form, processing, report
   const [projectData, setProjectData] = useState({
     client_name: "",
@@ -65,71 +55,49 @@ export default function StartProjectPage() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [createdProject, setCreatedProject] = useState(null);
-  const [processingStatus, setProcessingStatus] = useState(processingSteps[0]);
-  const [referralCode, setReferralCode] = useState(null); // NEW: Track referral code
   const fileInputRef = useRef(null);
+
   const { data: user, isLoading, refetch } = useUser();
-  const navigate = useNavigate();
 
   useEffect(() => {
-    // NEW: Check for referral code in URL
-    const params = new URLSearchParams(window.location.search);
-    const ref = params.get('ref');
-    if (ref) {
-      setReferralCode(ref);
-      // Store in session storage for persistence
-      sessionStorage.setItem('referralCode', ref);
-    } else {
-      // Check session storage
-      const storedRef = sessionStorage.getItem('referralCode');
-      if (storedRef) {
-        setReferralCode(storedRef);
-      }
+    if (user) {
+      setProjectData(prev => ({
+        ...prev,
+        client_name: user.displayName || "",
+        client_email: user.email || ""
+      }));
     }
-  }, []);
+  }, [user]);
 
-  useEffect(() => {
-    let interval;
-    if (isProcessing) {
-      let stepIndex = 0;
-      setProcessingStatus(processingSteps[stepIndex]);
-      interval = setInterval(() => {
-        stepIndex++;
-        if (stepIndex < processingSteps.length) {
-          setProcessingStatus(processingSteps[stepIndex]);
-        } else {
-          // Stay on the last message
-          setProcessingStatus("Just a few more seconds...");
-        }
-      }, 2500); // Change status every 2.5 seconds
-    }
-    return () => clearInterval(interval);
-  }, [isProcessing]);
 
   const handleLogin = async () => {
     try {
 
       const result = await signInWithGooglePopup();
       const token = await result.user.getIdToken();
-      await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/user/sessionLogin`,
+      console.log(token);
+
+
+      const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/sessionLogin`,
 
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
         })
       await refetch();
-
     } catch (error) {
-      console.error("Login error:", error);
+
+      console.error("Google Sign-in or verification failed:", error);
     }
   };
+
 
   const handleFileUpload = async (files) => {
     if (!files || files.length === 0) return;
 
     const uploadPromises = Array.from(files).map(async (file) => {
       try {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file }); // Updated API call
+        const { file_url } = await UploadFile({ file });
         return {
           name: file.name,
           type: file.type,
@@ -152,81 +120,60 @@ export default function StartProjectPage() {
     setCurrentStep('processing');
 
     try {
-      // Step 1: Generate initial AI analysis for internal use
-      const aiAnalysis = await base44.integrations.Core.InvokeLLM({ // Updated API call
+      // Generate AI analysis
+      const aiAnalysis = await InvokeLLM({
         prompt: `
-          Analyze this project brief and provide comprehensive insights for an internal development team:
-          Project Type: ${projectData.project_type}, Description: ${projectData.project_description}, Budget: ${projectData.budget_range}
-          Provide analysis on: Technical Requirements, Design Direction, Timeline & Milestones, Potential Challenges, and Success Metrics.
+          Analyze this project brief and provide comprehensive insights:
+          
+          Project Type: ${projectData.project_type}
+          Description: ${projectData.project_description}
+          Target Audience: ${projectData.target_audience}
+          Budget: ${projectData.budget_range}
+          Timeline: ${projectData.timeline}
+          
+          Provide detailed analysis covering:
+          1. Technical Requirements & Recommendations
+          2. Design Direction & User Experience Strategy  
+          3. Development Timeline & Milestones
+          4. Budget Allocation & Cost Optimization
+          5. Potential Challenges & Solutions
+          6. Success Metrics & KPIs
+          
+          Format as a comprehensive project analysis report.
         `
       });
 
-      // Step 2: Create the project brief record
       const briefData = {
         ...projectData,
         uploaded_files: uploadedFiles.map(f => f.url),
         ai_analysis: aiAnalysis,
-        status: "completed"
+        status: "completed",
+        referral_code: sessionStorage.getItem("referral_code") || null // Include referral code
       };
-      const project = await base44.entities.ProjectBrief.create(briefData); // Updated API call
 
-      // NEW: Step 2.5: Track referral if code exists
-      if (referralCode) {
-        try {
-          // Find the affiliate by referral code
-          const affiliates = await base44.entities.Affiliate.filter({ referral_code: referralCode }); // Updated API call
-          if (affiliates.length > 0) {
-            const affiliate = affiliates[0];
+      // Send to backend API to persist in MongoDB (session cookie required)
+      try {
+        const apiRes = await axios.post(
+          `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/projects`,
+          briefData,
+          { withCredentials: true }
+        );
 
-            // Create referral record
-            await base44.entities.Referral.create({ // Updated API call
-              referrer_email: affiliate.user_email,
-              referral_code: referralCode,
-              referred_email: projectData.client_email,
-              project_id: project.id,
-              status: "pending",
-              conversion_date: new Date().toISOString()
-            });
-
-            // Clear referral code from session
-            sessionStorage.removeItem('referralCode');
-            setReferralCode(null); // Also clear from state
-          }
-        } catch (error) {
-          console.error("Error tracking referral:", error);
-          // Don't fail the project creation if referral tracking fails
+        if (apiRes?.data?.success) {
+          setCreatedProject(apiRes.data.data);
+        } else {
+          // fallback: use AI analysis locally in UI
+          setCreatedProject({ ...briefData });
+          console.warn('Backend did not return success for project creation', apiRes?.data);
         }
+
+        setCurrentStep('report');
+      } catch (apiErr) {
+        console.error('Failed to save project to backend:', apiErr);
+        // still show report to user with local data
+        setCreatedProject({ ...briefData });
+        setCurrentStep('report');
       }
-
-      // Step 3: Generate the client-facing HTML proposal
-      const proposalHTML = await base44.integrations.Core.InvokeLLM({ // Updated API call
-        prompt: `
-          You are a world-class business consultant. Transform the following project analysis into a beautiful, client-facing proposal as a single, self-contained HTML file with embedded CSS.
-
-          **Project Information:**
-          - Client: ${projectData.client_name}
-          - Project Type: ${projectData.project_type}
-          - Goal: ${projectData.project_description}
-
-          **Internal AI Analysis (for your reference):**
-          ---
-          ${aiAnalysis}
-          ---
-
-          **Instructions for the HTML Proposal:**
-          - Create a professional document with sections for Introduction, Proposed Solution, Project Phases, Investment (use budget range as a placeholder), and Next Steps.
-          - Use a modern, clean design with a professional font and a color palette of blues and grays.
-          - Ensure the HTML is responsive and all styles are in a <style> tag.
-          - Translate technical details into client-friendly benefits.
-          - Your final output should be only the complete HTML code.
-        `,
-      });
-
-      // Step 4: Update the project with the generated HTML
-      const updatedProject = await base44.entities.ProjectBrief.update(project.id, { professional_report_html: proposalHTML }); // Updated API call
-
-      setCreatedProject(updatedProject);
-      setCurrentStep('report');
 
     } catch (error) {
       console.error("Processing error:", error);
@@ -236,22 +183,9 @@ export default function StartProjectPage() {
     }
   };
 
-  const handleDownloadReport = (htmlContent, projectName) => {
-    if (!htmlContent) return;
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${(projectName || 'Project').replace(/\s+/g, '-')}-Proposal.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  };
-
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4">
         <Loader2 className="w-8 h-8 animate-spin text-cyan-400" />
       </div>
     );
@@ -260,7 +194,44 @@ export default function StartProjectPage() {
   // Login Required Screen
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 pointer-events-none overflow-hidden"
+          style={{ zIndex: 0 }}
+        >
+          {/* Multiple purple gradient blurs throughout the page */}
+          {[
+            { left: "10%", top: "-350px" },
+            { left: "70%", top: "-250px" },
+            { left: "-142px", top: "200px" },
+            { left: "864px", top: "500px" },
+            { left: "191px", top: "100px" },
+            { left: "1226px", top: "300px" },
+            { left: "-142px", top: "2664px" },
+            { left: "864px", top: "3040px" },
+            { left: "191px", top: "1992px" },
+            { left: "1226px", top: "2183px" },
+            { left: "-142px", top: "4774px" },
+            { left: "864px", top: "5150px" },
+            { left: "191px", top: "4102px" },
+            { left: "1226px", top: "4293px" },
+            { left: "-142px", top: "6644px" },
+            { left: "864px", top: "7020px" },
+            { left: "191px", top: "5972px" },
+            { left: "1226px", top: "6163px" },
+          ].map((pos, i) => (
+            <div
+              key={i}
+              className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
+              style={{
+                left: pos.left,
+                top: pos.top,
+                background: "rgba(80, 0, 181, 0.67)",
+                opacity: 0.25,
+              }}
+            />
+          ))}
+        </div>
         <div className="max-w-md w-full">
           <Card className="glass-morphism border border-white/20 rounded-3xl overflow-hidden">
             <CardContent className="p-8">
@@ -282,7 +253,7 @@ export default function StartProjectPage() {
 
               <div className="mt-6 pt-6 border-t border-slate-600/30 text-center">
                 <p className="text-slate-400 text-xs">
-                  Secure authentication powered by base44
+
                 </p>
               </div>
             </CardContent>
@@ -295,27 +266,55 @@ export default function StartProjectPage() {
   // Project Form
   if (currentStep === 'welcome' || currentStep === 'form') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 py-8">
-        <div className="max-w-4xl mx-auto px-4">
-          {referralCode && (
-            <div className="mb-6 text-center">
-              <Badge className="bg-green-100 text-green-800 py-1.5 px-3 rounded-full text-sm">
-                <Gift className="w-3.5 h-3.5 mr-1.5 inline-block -mt-0.5" />
-                You were referred by: <span className="font-semibold">{referralCode}</span>
-              </Badge>
-            </div>
-          )}
-
+      <div className="min-h-screen py-8">
+        <div
+          className="fixed inset-0 pointer-events-none overflow-hidden"
+          style={{ zIndex: 0 }}
+        >
+          {/* Multiple purple gradient blurs throughout the page */}
+          {[
+            { left: "10%", top: "-350px" },
+            { left: "70%", top: "-250px" },
+            { left: "-142px", top: "200px" },
+            { left: "864px", top: "500px" },
+            { left: "191px", top: "100px" },
+            { left: "1226px", top: "300px" },
+            { left: "-142px", top: "2664px" },
+            { left: "864px", top: "3040px" },
+            { left: "191px", top: "1992px" },
+            { left: "1226px", top: "2183px" },
+            { left: "-142px", top: "4774px" },
+            { left: "864px", top: "5150px" },
+            { left: "191px", top: "4102px" },
+            { left: "1226px", top: "4293px" },
+            { left: "-142px", top: "6644px" },
+            { left: "864px", top: "7020px" },
+            { left: "191px", top: "5972px" },
+            { left: "1226px", top: "6163px" },
+          ].map((pos, i) => (
+            <div
+              key={i}
+              className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
+              style={{
+                left: pos.left,
+                top: pos.top,
+                background: "rgba(80, 0, 181, 0.67)",
+                opacity: 0.25,
+              }}
+            />
+          ))}
+        </div>
+        <div className="max-w-4xl mx-auto px-4 pt-32">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Let's Build Your Project</h1>
-            <p className="text-slate-600">Tell us about your vision and we'll create the perfect plan</p>
+            <h1 className="text-4xl font-bold text-white mb-2">Let's Build Your Project</h1>
+            <p className="text-white">Tell us about your vision and we'll create the perfect plan</p>
           </div>
 
           <Card className="border-0 shadow-lg rounded-2xl">
             <CardHeader className="text-center pb-6">
               <div className="flex justify-center gap-2 mb-4">
                 {[1, 2, 3].map((step) => (
-                  <div key={step} className={`w-8 h-2 rounded-full ${step === 1 ? 'bg-indigo-600' : 'bg-slate-200'}`} />
+                  <div key={step} className={` w-8   h-2 round e d-full  ${step === 1 ? 'bg-indigo-600' : 'bg-slate-200'}`} />
                 ))}
               </div>
               <CardTitle className="text-xl text-slate-900">Project Details</CardTitle>
@@ -453,10 +452,10 @@ export default function StartProjectPage() {
                   )}
                 </div>
 
-                <Button
+                <button
                   type="submit"
                   disabled={isProcessing || !projectData.project_description}
-                  className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-bold py-4 text-lg rounded-xl"
+                  className="w-full flex items-center justify-center bg-gradient-to-r hover:from-indigo-700 hover:to-purple-900 from-indigo-700 to-purple-700 text-white font-bold py-3 text-lg rounded-xl"
                 >
                   {isProcessing ? (
                     <>
@@ -469,7 +468,7 @@ export default function StartProjectPage() {
                       Generate AI Analysis
                     </>
                   )}
-                </Button>
+                </button>
               </form>
             </CardContent>
           </Card>
@@ -481,7 +480,44 @@ export default function StartProjectPage() {
   // Processing Screen
   if (currentStep === 'processing') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-900 via-purple-900 to-pink-900 flex items-center justify-center p-4">
+      <div className="min-h-screen flex items-center justify-center p-4">
+        <div
+          className="fixed inset-0 pointer-events-none overflow-hidden"
+          style={{ zIndex: 0 }}
+        >
+          {/* Multiple purple gradient blurs throughout the page */}
+          {[
+            { left: "10%", top: "-350px" },
+            { left: "70%", top: "-250px" },
+            { left: "-142px", top: "200px" },
+            { left: "864px", top: "500px" },
+            { left: "191px", top: "100px" },
+            { left: "1226px", top: "300px" },
+            { left: "-142px", top: "2664px" },
+            { left: "864px", top: "3040px" },
+            { left: "191px", top: "1992px" },
+            { left: "1226px", top: "2183px" },
+            { left: "-142px", top: "4774px" },
+            { left: "864px", top: "5150px" },
+            { left: "191px", top: "4102px" },
+            { left: "1226px", top: "4293px" },
+            { left: "-142px", top: "6644px" },
+            { left: "864px", top: "7020px" },
+            { left: "191px", top: "5972px" },
+            { left: "1226px", top: "6163px" },
+          ].map((pos, i) => (
+            <div
+              key={i}
+              className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
+              style={{
+                left: pos.left,
+                top: pos.top,
+                background: "rgba(80, 0, 181, 0.67)",
+                opacity: 0.25,
+              }}
+            />
+          ))}
+        </div>
         <Card className="max-w-md w-full glass-morphism border border-white/20 rounded-3xl">
           <CardContent className="p-8 text-center">
             <div className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse">
@@ -489,8 +525,8 @@ export default function StartProjectPage() {
             </div>
             <h2 className="text-2xl font-bold text-white mb-4">AI is Analyzing Your Project</h2>
             <p className="text-slate-300 mb-6">Our advanced AI is creating a comprehensive project analysis and proposal tailored specifically for you.</p>
-            <Progress value={75} className="mb-4 bg-slate-700/50" />
-            <p className="text-cyan-400 text-sm h-5 transition-opacity duration-500">{processingStatus}</p>
+            <Progress value={75} className="mb-4" />
+            <p className="text-slate-400 text-sm">This usually takes 30-60 seconds...</p>
           </CardContent>
         </Card>
       </div>
@@ -500,15 +536,52 @@ export default function StartProjectPage() {
   // Project Report
   if (currentStep === 'report' && createdProject) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 py-8">
-        <div className="max-w-6xl mx-auto px-4">
+      <div className="min-h-screen py-8">
+        <div
+          className="fixed inset-0 pointer-events-none overflow-hidden"
+          style={{ zIndex: 0 }}
+        >
+          {/* Multiple purple gradient blurs throughout the page */}
+          {[
+            { left: "10%", top: "-350px" },
+            { left: "70%", top: "-250px" },
+            { left: "-142px", top: "200px" },
+            { left: "864px", top: "500px" },
+            { left: "191px", top: "100px" },
+            { left: "1226px", top: "300px" },
+            { left: "-142px", top: "2664px" },
+            { left: "864px", top: "3040px" },
+            { left: "191px", top: "1992px" },
+            { left: "1226px", top: "2183px" },
+            { left: "-142px", top: "4774px" },
+            { left: "864px", top: "5150px" },
+            { left: "191px", top: "4102px" },
+            { left: "1226px", top: "4293px" },
+            { left: "-142px", top: "6644px" },
+            { left: "864px", top: "7020px" },
+            { left: "191px", top: "5972px" },
+            { left: "1226px", top: "6163px" },
+          ].map((pos, i) => (
+            <div
+              key={i}
+              className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
+              style={{
+                left: pos.left,
+                top: pos.top,
+                background: "rgba(80, 0, 181, 0.67)",
+                opacity: 0.25,
+              }}
+            />
+          ))}
+        </div>
+        <div className="max-w-6xl mx-auto px-4 pt-32">
           {/* Header */}
-          <div className="text-center mb-8">
-            <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto mb-4">
+          <div className="text-center gap-5 flex flex-col py-5">
+            <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto">
               <Check className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-slate-900 mb-2">Your AI-Generated Project Report</h1>
-            <p className="text-slate-600">Our AI has analyzed your requirements and created a comprehensive project plan</p>
+            <h1 className="text-4xl font-bold text-white">Your AI-Generated Project Report</h1>
+            <p className="text-white px-6 md:max-w-lg mx-auto">Our AI has analyzed your requirements and created a comprehensive project plan</p>
           </div>
 
           {/* Report Content */}
@@ -517,33 +590,25 @@ export default function StartProjectPage() {
             {/* Main Report */}
             <div className="lg:col-span-2 space-y-6">
               <Card className="border-0 shadow-lg rounded-2xl">
-                <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-2xl flex justify-between items-center">
+                <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-2xl">
                   <CardTitle className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5" />
                     AI Analysis & Recommendations
                   </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-white hover:bg-white/20"
-                    onClick={() => handleDownloadReport(createdProject.professional_report_html, createdProject.company_name)}
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    Download
-                  </Button>
                 </CardHeader>
                 <CardContent className="p-6">
-                  {createdProject.professional_report_html ? (
-                    <div
-                      className="prose prose-slate max-w-none border rounded-lg p-4 bg-white"
-                      dangerouslySetInnerHTML={{ __html: createdProject.professional_report_html }}
-                    />
-                  ) : (
-                    <div className="text-center py-8 text-slate-500">
-                      <Bot className="w-12 h-12 mx-auto mb-4" />
-                      <p>Report is being generated...</p>
-                    </div>
-                  )}
+                  <div className="prose prose-slate max-w-none">
+                    {createdProject.ai_analysis ? (
+                      <div className="whitespace-pre-wrap text-slate-700 leading-relaxed">
+                        {createdProject.ai_analysis}
+                      </div>
+                    ) : (
+                      <div className="text-center py-8 text-slate-500">
+                        <Bot className="w-12 h-12 mx-auto mb-4" />
+                        <p>AI analysis is being generated...</p>
+                      </div>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
             </div>
@@ -618,9 +683,7 @@ export default function StartProjectPage() {
 
                   <div className="pt-4 space-y-3">
                     <Link to={createPageUrl("UserDashboard")}>
-                      <Button 
-                      // onClick={navigate('/UserDashboard')}
-                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+                      <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
                         View My Dashboard
                         <ArrowRight className="w-4 h-4 ml-2" />
                       </Button>
