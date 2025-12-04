@@ -243,7 +243,7 @@ const HomePage = () => {
         {/* Hero Section */}
         <section className="w-full px-4 sm:px-6 md:px-10 pt-20 sm:pt-24 pb-16 sm:pb-24 md:pb-32 min-h-screen flex items-center justify-center">
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             className="flex flex-col items-center text-center gap-6 sm:gap-8 md:gap-10 max-w-6xl w-full"
@@ -315,7 +315,7 @@ const HomePage = () => {
 
         {/* Process Section */}
         <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-28">
-          <div className="flex flex-col items-center gap-8 sm:gap-10 md:gap-12 mb-12 sm:mb-16">
+          <div className="flex flex-col items-center gap-8 sm:gap-10 md:gap-12 mb-12 sm:mb-16 px-5">
             <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
               ✨ AI-Optimized Workflow
             </Badge>
@@ -325,7 +325,7 @@ const HomePage = () => {
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-semibold text-white font-['Geist']">
                   Our Process
                 </h2>
-                <p className="text-base sm:text-lg md:text-xl text-gray-400 font-['Istok_Web'] leading-relaxed">
+                <p className="text-base sm:text-lg md:text-xl text-gray-400 font-['Istok_Web'] leading-relaxed text-justify">
                   At Feelize, our process is built on one core principle:
                   AI-Supercharged Engineering Teams. We unite our professional
                   engineers, designers, and marketers with advanced AI tools,
@@ -373,7 +373,7 @@ const HomePage = () => {
 
         {/* Success Metrics Section */}
         <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-8 sm:py-12 md:py-16">
-          <div className="flex flex-col items-center gap-8 sm:gap-12 md:gap-16">
+          <div className="flex flex-col items-center gap-8 sm:gap-12 md:gap-16 px-5">
             <div className="text-center space-y-4 sm:space-y-6 max-w-6xl">
               <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
                 Why Choose Us
@@ -382,7 +382,7 @@ const HomePage = () => {
                 <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white text-center lg:text-left font-['Geist']">
                   Discover Our Unmatched Success Rates
                 </h2>
-                <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-gray-400 leading-relaxed text-center lg:text-left font-['Geist']">
+                <p className="text-justify text-base sm:text-lg md:text-xl lg:text-2xl text-gray-400 leading-relaxed lg:text-left font-['Geist']">
                   At Feelize, we pride ourselves on delivering exceptional
                   results for our clients. With a proven track record and a
                   commitment to customer satisfaction, we ensure that your
@@ -426,7 +426,7 @@ const HomePage = () => {
           id="ai-analyzer"
           className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-24 scroll-mt-24"
         >
-          <div className="max-w-6xl mx-auto">
+          <div className="max-w-6xl mx-auto px-5">
             <div className="text-center space-y-4 sm:space-y-6 mb-8 sm:mb-10 md:mb-12">
               <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
                 <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
@@ -447,7 +447,7 @@ const HomePage = () => {
 
         {/* Testimonials Section */}
         <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-24">
-          <div className="text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12 md:mb-16">
+          <div className="text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12 md:mb-16 px-5">
             <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
               Success Stories
             </Badge>
@@ -456,7 +456,7 @@ const HomePage = () => {
             </h2>
           </div>
 
-          <div className="space-y-4 sm:space-y-6 md:space-y-8">
+          <div className="space-y-4 sm:space-y-6 md:space-y-8 px-5">
             {/* First Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
               {testimonials.map((testimonial, index) => (
@@ -531,7 +531,7 @@ const HomePage = () => {
 
         {/* Pricing Section */}
         <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-24">
-          <div className="text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12 md:mb-16">
+          <div className="text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12 md:mb-16 px-5">
             <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
               Transparent Pricing
             </Badge>
@@ -543,7 +543,7 @@ const HomePage = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8 max-w-7xl mx-auto px-5">
             {pricingPlans.map((plan, index) => (
               <Card
                 key={index}
@@ -594,7 +594,7 @@ const HomePage = () => {
         {/* FAQ Section */}
         <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-24">
           <div className="max-w-4xl mx-auto">
-            <div className="text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12 md:mb-16">
+            <div className="text-center space-y-4 sm:space-y-6 mb-8 sm:mb-12 md:mb-16 px-5">
               <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
                 Got Questions?
               </Badge>
@@ -607,7 +607,7 @@ const HomePage = () => {
               </p>
             </div>
 
-            <div className="space-y-3 sm:space-y-4">
+            <div className="space-y-3 sm:space-y-4 px-5">
               {faqs.map((faq, index) => (
                 <Card key={index} className="bg-[#141324] border-gray-700">
                   <CardContent className="p-0">

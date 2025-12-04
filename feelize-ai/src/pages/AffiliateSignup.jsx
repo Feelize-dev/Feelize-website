@@ -23,6 +23,7 @@ import {
   Zap,
   CheckCircle,
 } from "lucide-react";
+import { useUser } from "@/hooks/useUser";
 
 export default function AffiliateSignup() {
   const [currentUser, setCurrentUser] = useState(null);
@@ -52,6 +53,7 @@ export default function AffiliateSignup() {
       fetchReferrals();
     }
   }, [existingAffiliate]);
+  const { data: user, refetch } = useUser();
 
   useEffect(() => {
     checkUser();
@@ -83,6 +85,7 @@ export default function AffiliateSignup() {
         setCurrentUser(user);
         checkUser();
       }
+      await refetch();
     } catch (error) {
       console.error("Login failed:", error);
     }
@@ -196,8 +199,9 @@ export default function AffiliateSignup() {
 
     return (
       <div className="min-h-screen bg-slate-50">
+        
         {/* Dashboard Header */}
-        <div className="bg-white border-b border-slate-200">
+        <div className="bg-white border-b border-slate-200 pt-32">
           <div className="max-w-6xl mx-auto px-4 py-8">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
@@ -437,7 +441,7 @@ export default function AffiliateSignup() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-slate-900 text-white">
+      <div className="relative overflow-hidden bg-slate-900 text-white pt-10">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1551434678-e076c223a692?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-10"></div>
         <div className="absolute inset-0 bg-gradient-to-b from-slate-900/50 to-slate-900"></div>
 
@@ -474,7 +478,7 @@ export default function AffiliateSignup() {
             <Button
               size="lg"
               variant="outline"
-              className="h-14 px-8 text-lg border-slate-700 text-white hover:bg-slate-800 hover:text-white"
+              className="h-14 px-8 text-lg border-slate-700 text-white bg-slate-800"
               onClick={() => window.open("https://feelize.ai", "_blank")}
             >
               Learn about Feelize
@@ -498,20 +502,20 @@ export default function AffiliateSignup() {
       </div>
 
       {/* Stats / Social Proof */}
-      <div className="border-b border-slate-100 bg-white">
+      {/* <div className="border-b border-slate-100 bg-white">
         <div className="max-w-6xl mx-auto px-4 py-12">
           <p className="text-center text-slate-500 text-sm font-semibold uppercase tracking-wider mb-8">
             Trusted by creators and agencies worldwide
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 items-center justify-items-center opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
             {/* Placeholders for logos */}
-            <div className="text-xl font-bold text-slate-400">TechStart</div>
+      {/* <div className="text-xl font-bold text-slate-400">TechStart</div>
             <div className="text-xl font-bold text-slate-400">CreativeFlow</div>
             <div className="text-xl font-bold text-slate-400">AgencyOne</div>
-            <div className="text-xl font-bold text-slate-400">DevStudio</div>
-          </div>
-        </div>
-      </div>
+            <div className="text-xl font-bold text-slate-400">DevStudio</div> */}
+      {/* </div> */}
+      {/* </div> */}
+      {/* </div> */}
 
       {/* Benefits Section */}
       <div className="py-24 bg-slate-50">

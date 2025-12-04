@@ -46,8 +46,7 @@ export default function Layout({ children, currentPageName }) {
   }, [location]);
 
   const handleLogout = async () => {
-    console.log("hi");
-
+ 
     try {
       await axios.post(
         `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/logout`,
@@ -55,6 +54,7 @@ export default function Layout({ children, currentPageName }) {
         { withCredentials: true }
       );
       await refetch();
+      window.location.reload();
     } catch (error) {
       console.error("Logout error:", error);
     }
@@ -184,7 +184,7 @@ export default function Layout({ children, currentPageName }) {
       />
 
       {/* Grid Background */}
-      <div className="fixed inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" />
+      {/* <div className="fixed inset-0 bg-[linear-gradient(rgba(0,212,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(0,212,255,0.03)_1px,transparent_1px)] bg-[size:50px_50px] pointer-events-none" /> */}
 
       {/* Navigation */}
       <nav className="fixed top-0 w-full z-50 py-4">
@@ -386,37 +386,43 @@ export default function Layout({ children, currentPageName }) {
                 </Link>
               )}
 
-              <button
-                onClick={() => {
-                  handleLogout();
-                  setIsMobileMenuOpen(false);
-                }}
-                className="block w-full text-left px-3 py-2 text-base font-medium text-slate-300 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors"
-              >
-                Logout
-              </button>
+              {
+                user && (
+                  <button
+                    onClick={() => {
+                      handleLogout();
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="block w-full text-left px-3 py-2 text-base font-medium text-slate-300 hover:text-red-400 hover:bg-white/10 rounded-lg transition-colors"
+                  >
+                    Logout
+                  </button>
+                )
+              }
+
+              {!isLoading && !user && (
+                <div className="px-3 pt-2">
+                  <Link to={createPageUrl("StartProject")}>
+                    <Button
+                      className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold"
+                      onClick={() => {
+                        setIsMobileMenuOpen(false);
+                      }}
+                    >
+                      Start with AI Assistant
+                    </Button>
+                  </Link>
+                </div>
+              )}
+
             </div>
           )}
 
-          {/* {!isLoading && !user && (
-            <div className="px-3 pt-2">
-              <Link to={createPageUrl("StartProject")}>
-                <Button
-                  className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 text-black font-bold"
-                  onClick={() => {
-                    setIsMobileMenuOpen(false);
-                  }}
-                >
-                  Start with AI Assistant
-                </Button>
-              </Link>
-            </div>
-          )} */}
         </div>
       </nav>
 
       {/* Main Content */}
-      <main className="relative z-10 pt-32 sm:pt-40">{children}</main>
+      <main className="relative z-10">{children}</main>
 
       {/* Footer */}
       <footer className="relative z-10 bg-slate-900/50 backdrop-blur-xl border-t border-white/10 mt-20">
