@@ -8,6 +8,7 @@ import { auth, signInWithGooglePopup } from "@/config/firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
 import { useUser } from "@/hooks/useUser";
 import axios from "axios";
+import logoImage from "@/assets/favicon.svg";
 
 const navigationItems = [
   { name: "Home", url: createPageUrl("Home") },
@@ -197,7 +198,7 @@ export default function Layout({ children, currentPageName }) {
                 className="flex items-center space-x-3 group"
               >
                 <img
-                  src="../../favicon.svg"
+                  src={logoImage}
                   alt="Feelize Logo"
                   className="w-10 h-10 rounded-xl group-hover:scale-110 transition-transform duration-300"
                 />
