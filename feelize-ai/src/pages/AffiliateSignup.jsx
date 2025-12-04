@@ -174,9 +174,7 @@ export default function AffiliateSignup() {
   };
 
   const copyReferralLink = () => {
-    const link = `${window.location.origin}${createPageUrl(
-      "StartProject"
-    )}?ref=${existingAffiliate.referral_code}`;
+    const link = `${window.location.origin}/${existingAffiliate.referral_code}`;
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -194,9 +192,7 @@ export default function AffiliateSignup() {
   // DASHBOARD VIEW (For Existing Affiliates)
   // ----------------------------------------------------------------------
   if (existingAffiliate) {
-    const referralLink = `${window.location.origin}${createPageUrl(
-      "StartProject"
-    )}?ref=${existingAffiliate.referral_code}`;
+    const referralLink = `${window.location.origin}/${existingAffiliate.referral_code}`;
 
     return (
       <div className="min-h-screen bg-slate-50">

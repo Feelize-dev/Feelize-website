@@ -17,7 +17,7 @@ export const generateWithLLM = async (prompt) => {
   // Use the current Gemini model (gemini-1.5-flash is recommended for speed and cost)
   // const geminiModel = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
   // Updated to use the correct v1 endpoint with generateContent method
-  const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${geminiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key=${geminiKey}`;
 
   // Build request body for Gemini generateContent endpoint
   const body = {
@@ -28,7 +28,6 @@ export const generateWithLLM = async (prompt) => {
     }],
     generationConfig: {
       temperature: 0.2,
-      maxOutputTokens: parseInt(process.env.GEMINI_MAX_OUTPUT_TOKENS || '2048', 10),
     }
   };
 
