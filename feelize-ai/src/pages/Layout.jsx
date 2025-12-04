@@ -46,7 +46,7 @@ export default function Layout({ children, currentPageName }) {
   }, [location]);
 
   const handleLogout = async () => {
- 
+
     try {
       await axios.post(
         `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/logout`,
@@ -197,7 +197,7 @@ export default function Layout({ children, currentPageName }) {
                 className="flex items-center space-x-3 group"
               >
                 <img
-                  src="../favicon.svg"
+                  src="../../favicon.svg"
                   alt="Feelize Logo"
                   className="w-10 h-10 rounded-xl group-hover:scale-110 transition-transform duration-300"
                 />
