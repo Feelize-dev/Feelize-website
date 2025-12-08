@@ -7,11 +7,12 @@ const fetchUser = async () => {
             `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/verify`,
             { withCredentials: true }
         );
-        return res.data.data;
+        // Ensure we always return a value, even if data is undefined
+        return res.data?.data ?? null;
     } catch (error) {
-
-        console.log(error);
-        return null; // no user session
+        console.log("Error fetching user:", error);
+        // Explicitly return null for no user session
+        return null;
     }
 };
 

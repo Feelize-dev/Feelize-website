@@ -29,12 +29,16 @@ import {
   Calendar,
   DollarSign,
   Target,
-  Zap
+  Zap,
+  Download
 } from "lucide-react";
 import { auth, signInWithGooglePopup } from "@/config/firebaseConfig";
 import axios from "axios";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useUser } from "@/hooks/useUser";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import html2pdf from 'html2pdf.js';
 
 
 export default function StartProjectPage() {
@@ -89,6 +93,30 @@ export default function StartProjectPage() {
 
       console.error("Google Sign-in or verification failed:", error);
     }
+  };
+
+  const handleDownloadReport = (markdownContent, projectName) => {
+    if (!markdownContent) return;
+
+    // Create a temporary container with the rendered markdown
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto;">
+        <div class="markdown-content">${markdownContent.replace(/\n/g, '<br>')}</div>
+      </div>
+    `;
+
+    // PDF options
+    const opt = {
+      margin: 1,
+      filename: `${(projectName || "Project").replace(/\s+/g, "-")}-Report.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    // Generate PDF
+    html2pdf().set(opt).from(tempDiv).save();
   };
 
 
@@ -590,25 +618,36 @@ export default function StartProjectPage() {
             {/* Main Report */}
             <div className="lg:col-span-2 space-y-6">
               <Card className="border-0 shadow-lg rounded-2xl">
-                <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-2xl">
+                <CardHeader className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-t-2xl flex flex-row justify-between items-center">
                   <CardTitle className="flex items-center gap-2">
                     <Sparkles className="w-5 h-5" />
                     AI Analysis & Recommendations
                   </CardTitle>
+                  {createdProject.ai_analysis && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-white hover:bg-white/20"
+                      onClick={() => handleDownloadReport(createdProject.ai_analysis, createdProject.company_name)}
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      Download PDF
+                    </Button>
+                  )}
                 </CardHeader>
                 <CardContent className="p-6">
-                  <div className="prose prose-slate max-w-none">
-                    {createdProject.ai_analysis ? (
-                      <div className="whitespace-pre-wrap text-slate-700 leading-relaxed">
+                  {createdProject.ai_analysis ? (
+                    <div className="prose prose-slate max-w-none border rounded-lg p-8 bg-white markdown-report">
+                      <ReactMarkdown remarkPlugins={[remarkGfm]}>
                         {createdProject.ai_analysis}
-                      </div>
-                    ) : (
-                      <div className="text-center py-8 text-slate-500">
-                        <Bot className="w-12 h-12 mx-auto mb-4" />
-                        <p>AI analysis is being generated...</p>
-                      </div>
-                    )}
-                  </div>
+                      </ReactMarkdown>
+                    </div>
+                  ) : (
+                    <div className="text-center py-8 text-slate-500">
+                      <Bot className="w-12 h-12 mx-auto mb-4" />
+                      <p>AI analysis is being generated...</p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
