@@ -15,6 +15,19 @@ import ProjectDashboard from "./ProjectDashboard";
 import AffiliateSignup from "./AffiliateSignup";
 import ReferralRedirect from "./ReferralRedirect";
 
+// Service Pages
+import WebDevelopment from "./WebDevelopment";
+import MobileAppDevelopment from "./MobileAppDevelopment";
+import UIUXDesign from "./UIUXDesign";
+import Branding from "./Branding";
+import AIAutomation from "./AIAutomation";
+
+// About Pages
+import Careers from "./Careers";
+import Contact from "./Contact";
+
+
+
 // Admin Pages
 import AdminPanel from "./AdminPanel";
 import AdminAffiliates from "./AdminAffiliates";
@@ -31,6 +44,7 @@ const PAGES = {
     Pricing: Pricing,
     About: About,
     Work: Work,
+    Portfolio: Work, // Alias for Work page
     Testimonials: Testimonials,
     AdminDashboard: AdminDashboard,
     UserDashboard: UserDashboard,
@@ -44,6 +58,15 @@ const PAGES = {
     AdminReferrals: AdminReferrals,
     AdminProjects: AdminProjects,
     AdminClients: AdminClients,
+    // Service Pages
+    WebDevelopment: WebDevelopment,
+    MobileAppDevelopment: MobileAppDevelopment,
+    UIUXDesign: UIUXDesign,
+    Branding: Branding,
+    AIAutomation: AIAutomation,
+    // About Pages
+    Careers: Careers,
+    Contact: Contact,
 }
 
 function _getCurrentPage(url) {
@@ -74,6 +97,7 @@ function PagesContent() {
                 <Route path="/Pricing" element={<Pricing />} />
                 <Route path="/About" element={<About />} />
                 <Route path="/Work" element={<Work />} />
+                <Route path="/Portfolio" element={<Work />} />
                 <Route path="/Testimonials" element={<Testimonials />} />
                 <Route path="/AdminDashboard" element={<AdminDashboard />} />
                 <Route path="/UserDashboard" element={<UserDashboard />} />
@@ -82,6 +106,18 @@ function PagesContent() {
                 <Route path="/TeamReport" element={<TeamReport />} />
                 <Route path="/ProjectDashboard" element={<ProjectDashboard />} />
                 <Route path="/AffiliateSignup" element={<AffiliateSignup />} />
+
+                {/* Service Pages */}
+                <Route path="/WebDevelopment" element={<WebDevelopment />} />
+                <Route path="/MobileAppDevelopment" element={<MobileAppDevelopment />} />
+                <Route path="/UIUXDesign" element={<UIUXDesign />} />
+                <Route path="/Branding" element={<Branding />} />
+                <Route path="/AIAutomation" element={<AIAutomation />} />
+
+                {/* About Pages */}
+                <Route path="/Careers" element={<Careers />} />
+                <Route path="/Contact" element={<Contact />} />
+
 
                 {/* Admin Panel Routes */}
                 <Route path="/AdminPanel" element={<AdminPanel />} />

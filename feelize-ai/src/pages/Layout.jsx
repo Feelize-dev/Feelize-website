@@ -1,7 +1,7 @@
 import React from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { Menu, X, Gift, Mail, Phone, MapPin } from "lucide-react";
+import { Menu, X, Gift, Mail, Phone, MapPin, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { auth, signInWithGooglePopup } from "@/config/firebaseConfig";
@@ -11,17 +11,38 @@ import axios from "axios";
 import logoImage from "@/assets/favicon.svg";
 
 const navigationItems = [
-  { name: "Home", url: createPageUrl("Home") },
-  { name: "Our Process", url: createPageUrl("Process") },
-  { name: "Our Work", url: createPageUrl("Work") },
-  { name: "Pricing", url: createPageUrl("Pricing") },
-  { name: "Our Team", url: createPageUrl("About") },
-  { name: "Testimonials", url: createPageUrl("Testimonials") },
+  { name: "Home", url: createPageUrl("Home"), type: "link" },
+  {
+    name: "About Us",
+    type: "dropdown",
+    items: [
+      { name: "Our Process", url: createPageUrl("Process") },
+      { name: "Meet the Team", url: createPageUrl("About") },
+      { name: "Testimonials", url: createPageUrl("Testimonials") },
+      { name: "Careers", url: createPageUrl("Careers") },
+    ],
+  },
+  {
+    name: "Services",
+    type: "dropdown",
+    items: [
+      { name: "Web Development", url: createPageUrl("WebDevelopment") },
+      { name: "Mobile App Development", url: createPageUrl("MobileAppDevelopment") },
+      { name: "UI/UX Design", url: createPageUrl("UIUXDesign") },
+      { name: "Branding", url: createPageUrl("Branding") },
+      { name: "AI & Automation", url: createPageUrl("AIAutomation") },
+    ],
+  },
+  { name: "Portfolio", url: createPageUrl("Portfolio"), type: "link" },
+  { name: "Pricing", url: createPageUrl("Pricing"), type: "link" },
+  { name: "Contact", url: createPageUrl("Contact"), type: "link" },
 ];
+
 
 export default function Layout({ children, currentPageName }) {
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [mobileOpenDropdown, setMobileOpenDropdown] = useState(null);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   const { data: user, isLoading, refetch } = useUser();
@@ -206,25 +227,63 @@ export default function Layout({ children, currentPageName }) {
               </Link>
 
               {/* Desktop Navigation */}
-              <div className="hidden md:flex space-x-8">
-                {navigationItems.map((item) => (
-                  <Link
-                    key={item.name}
-                    to={item.url}
-                    className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${location.pathname === item.url
-                      ? "text-cyan-400"
-                      : "text-slate-300"
-                      }`}
-                  >
-                    {item.name}
-                    <div
-                      className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${location.pathname === item.url
-                        ? "w-full"
-                        : "w-0 group-hover:w-full"
-                        }`}
-                    />
-                  </Link>
-                ))}
+              <div className="hidden md:flex items-center space-x-8">
+                {navigationItems.map((item) => {
+                  if (item.type === "dropdown") {
+                    // Check if any dropdown item is active
+                    const isActive = item.items.some(subItem => location.pathname === subItem.url);
+
+                    return (
+                      <div key={item.name} className="relative group">
+                        <button
+                          className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative flex items-center space-x-1 ${isActive ? "text-cyan-400" : "text-slate-300"
+                            }`}
+                        >
+                          <span>{item.name}</span>
+                          <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
+                          <div
+                            className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${isActive ? "w-full" : "w-0 group-hover:w-full"
+                              }`}
+                          />
+                        </button>
+
+                        {/* Dropdown Menu */}
+                        <div className="absolute top-full left-0 pt-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                          <div className="bg-slate-900/95 backdrop-blur-xl rounded-xl overflow-hidden min-w-[220px] border border-white/10 shadow-xl">
+                            {item.items.map((subItem) => (
+                              <Link
+                                key={subItem.name}
+                                to={subItem.url}
+                                className={`block px-4 py-3 text-sm font-medium transition-all duration-200 ${location.pathname === subItem.url
+                                  ? "bg-cyan-500/20 text-cyan-400"
+                                  : "text-slate-300 hover:bg-white/10 hover:text-cyan-400"
+                                  }`}
+                              >
+                                {subItem.name}
+                              </Link>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  } else {
+                    // Regular link
+                    return (
+                      <Link
+                        key={item.name}
+                        to={item.url}
+                        className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative group ${location.pathname === item.url ? "text-cyan-400" : "text-slate-300"
+                          }`}
+                      >
+                        {item.name}
+                        <div
+                          className={`absolute -bottom-1 left-0 h-0.5 bg-gradient-to-r from-cyan-400 to-blue-500 transition-all duration-300 ${location.pathname === item.url ? "w-full" : "w-0 group-hover:w-full"
+                            }`}
+                        />
+                      </Link>
+                    );
+                  }
+                })}
 
                 {!isLoading && user && (
                   <>
@@ -290,8 +349,8 @@ export default function Layout({ children, currentPageName }) {
                 )}
               </div>
 
-              {/* CTA Button - FIXED: Skeleton while loading */}
-              <div className="hidden md:flex min-w-[180px] justify-end">
+              {/* CTA Button - Start with AI Assistant */}
+              <div className="hidden md:flex min-w-[200px] justify-end">
                 {isLoading ? (
                   <div className="h-10 w-44 bg-slate-700/50 animate-pulse rounded-xl" />
                 ) : !user ? (
@@ -332,19 +391,64 @@ export default function Layout({ children, currentPageName }) {
           {/* Mobile Navigation */}
           {isMobileMenuOpen && (
             <div className="md:hidden mt-3 glass-morphism rounded-2xl p-4 border border-white/10">
-              {navigationItems.map((item) => (
-                <Link
-                  key={item.name}
-                  to={item.url}
-                  className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${location.pathname === item.url
-                    ? "bg-cyan-500/20 text-cyan-400"
-                    : "text-slate-300 hover:bg-white/10"
-                    }`}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                >
-                  {item.name}
-                </Link>
-              ))}
+              {navigationItems.map((item) => {
+                if (item.type === "dropdown") {
+                  const isOpen = mobileOpenDropdown === item.name;
+                  const isActive = item.items.some(subItem => location.pathname === subItem.url);
+
+                  return (
+                    <div key={item.name} className="mb-1">
+                      <button
+                        onClick={() => setMobileOpenDropdown(isOpen ? null : item.name)}
+                        className={`w-full flex items-center justify-between px-3 py-2 text-base font-medium rounded-lg transition-colors ${isActive ? "bg-cyan-500/20 text-cyan-400" : "text-slate-300 hover:bg-white/10"
+                          }`}
+                      >
+                        <span>{item.name}</span>
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+                            }`}
+                        />
+                      </button>
+
+                      {/* Dropdown Items */}
+                      {isOpen && (
+                        <div className="ml-4 mt-1 space-y-1">
+                          {item.items.map((subItem) => (
+                            <Link
+                              key={subItem.name}
+                              to={subItem.url}
+                              className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors ${location.pathname === subItem.url
+                                ? "bg-cyan-500/20 text-cyan-400"
+                                : "text-slate-300 hover:bg-white/10"
+                                }`}
+                              onClick={() => {
+                                setIsMobileMenuOpen(false);
+                                setMobileOpenDropdown(null);
+                              }}
+                            >
+                              {subItem.name}
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                } else {
+                  return (
+                    <Link
+                      key={item.name}
+                      to={item.url}
+                      className={`block px-3 py-2 text-base font-medium rounded-lg transition-colors ${location.pathname === item.url
+                        ? "bg-cyan-500/20 text-cyan-400"
+                        : "text-slate-300 hover:bg-white/10"
+                        }`}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      {item.name}
+                    </Link>
+                  );
+                }
+              })}
 
               {!isLoading && user && (
                 <>
