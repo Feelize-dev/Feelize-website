@@ -14,16 +14,22 @@ import {
   Zap,
   Code2,
   ShieldCheck,
+  Cpu,
+  Globe,
+  Smartphone,
+  Blocks,
+  ShoppingCart,
+  LayoutTemplate,
+  Palette,
+  Wrench,
+  MessageSquare,
+  Server,
+  LineChart,
 } from "lucide-react";
 import { motion } from "framer-motion";
-import axios from "axios";
 import ContactForm from "@/components/ContactForm";
 import { AIChatbot, ChatButton } from "@/components/AIChatbot";
 import { ProjectAnalyzer } from "@/components/ProjectAnalyzerNew";
-
-const API_BASE_URL =
-  import.meta.env.VITE_SERVER_API_ENDPOINT || "http://localhost:3000";
-const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
 const HomePage = () => {
   const [openFaqIndex, setOpenFaqIndex] = useState(0);
@@ -33,6 +39,100 @@ const HomePage = () => {
   const toggleFaq = (index) => {
     setOpenFaqIndex(openFaqIndex === index ? null : index);
   };
+
+  const services = [
+    {
+      title: "Vibe Code Polish & Security",
+      description:
+        "We turn rough AI-generated code into production-ready software. We debug, refactor, and secure your 'vibe coded' projects.",
+      icon: Wrench,
+      tags: ["Refactoring", "Security Audit", "Debugging", "Clean Code"],
+    },
+    {
+      title: "AI Workflow Consultation",
+      description:
+        "Strategic guidance for Vibe Coders. We help you establish best practices, fix workflow bottlenecks, and maintain code health.",
+      icon: MessageSquare,
+      tags: ["Consulting", "Best Practices", "Training", "Architecture"],
+    },
+    {
+      title: "AI-Powered Development",
+      description:
+        "Leveraging AI agents to accelerate coding, testing, and deployment workflows for maximum efficiency.",
+      icon: Cpu,
+      tags: ["Automation", "LLMs", "Predictive Models", "AI Agents"],
+    },
+    {
+      title: "AI & Machine Learning",
+      description:
+        "Custom AI agents, LLM integration, and predictive models that automate your business logic.",
+      icon: Cpu,
+      tags: ["OpenAI", "Python", "TensorFlow", "Automation"],
+    },
+    {
+      title: "Web App Development",
+      description:
+        "Scalable, high-performance web applications built with modern frameworks for enterprise needs.",
+      icon: Globe,
+      tags: ["React", "Next.js", "Node.js", "SaaS", "Laravel"],
+    },
+    {
+      title: "Mobile Development",
+      description:
+        "Native and cross-platform mobile apps that provide seamless user experiences on iOS and Android.",
+      icon: Smartphone,
+      tags: ["React Native", "Flutter", "iOS", "Android"],
+    },
+    {
+      title: "Performance & Security",
+      description:
+        "Advanced website maintenance, speed optimization, and rigorous security protocols to protect your data.",
+      icon: ShieldCheck,
+      tags: ["Security Audits", "Speed Opt", "Maintenance", "GDPR"],
+    },
+    {
+      title: "Digital Growth & SEO",
+      description:
+        "Data-driven digital strategy, On-Page/Off-Page SEO, and PR campaigns to grow your brand visibility.",
+      icon: LineChart,
+      tags: ["SEO", "Digital Strategy", "PR", "Analytics"],
+    },
+    {
+      title: "Blockchain & Web3",
+      description:
+        "Secure smart contracts, dApps, and tokenization solutions for the decentralized web.",
+      icon: Blocks,
+      tags: ["Solidity", "Smart Contracts", "NFTs", "DeFi"],
+    },
+    {
+      title: "E-Commerce Solutions",
+      description:
+        "High-conversion online stores ranging from custom builds to Shopify and WooCommerce scaling.",
+      icon: ShoppingCart,
+      tags: ["Shopify", "WooCommerce", "Stripe", "Inventory"],
+    },
+    {
+      title: "CMS & Platforms",
+      description:
+        "Custom themes and plugins for WordPress, Shopify, Webflow, Wix, and Squarespace to help marketing teams move fast.",
+      icon: LayoutTemplate,
+      tags: ["WordPress", "Webflow", "Shopify", "Wix"],
+    },
+    {
+      title: "UI/UX Design",
+      description:
+        "User-centric design systems, prototyping, and visual identities that convert visitors into users.",
+      icon: Palette,
+      tags: ["Figma", "Prototyping", "User Research"],
+    },
+    {
+      title: "Cloud, DevOps & Hosting",
+      description:
+        "Streamlined CI/CD, Cloud infra (AWS/GCP), and comprehensive hosting (Shared, VPS, Dedicated).",
+      icon: Server,
+      tags: ["AWS/GCP", "VPS Hosting", "Docker", "CI/CD"],
+    },
+  ];
 
   const testimonials = [
     {
@@ -371,6 +471,76 @@ const HomePage = () => {
           </div>
         </section>
 
+        <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-24 bg-[#0A0E14]/50">
+          <div className="text-center space-y-4 sm:space-y-6 mb-12 sm:mb-16">
+            <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
+              End-to-End Solutions
+            </Badge>
+            <h2 className="text-3xl sm:text-4xl md:text-5xl font-bold text-white font-['Geist']">
+              Our Expertise
+            </h2>
+            <p className="text-base sm:text-lg md:text-xl text-gray-400 font-['Geist'] max-w-3xl mx-auto">
+              From blockchain architecture to beautiful marketing sites, we
+              deliver comprehensive digital solutions.
+            </p>
+          </div>
+
+          <motion.div
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true }}
+            variants={{
+              hidden: { opacity: 0 },
+              show: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.1,
+                },
+              },
+            }}
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6"
+          >
+            {services.map((service, index) => (
+              <motion.div
+                key={index}
+                variants={{
+                  hidden: { opacity: 0, y: 20 },
+                  show: { opacity: 1, y: 0 },
+                }}
+              >
+                <Card className="h-full bg-[#141324] border-gray-700 hover:border-purple-500 hover:shadow-[0_0_20px_rgba(112,0,255,0.2)] transition-all duration-300 group">
+                  <CardContent className="p-6 flex flex-col h-full">
+                    <div className="mb-6 w-14 h-14 rounded-2xl bg-gradient-to-br from-[#0580E8] to-[#7000FF] p-0.5 transform group-hover:scale-110 transition-transform duration-300">
+                      <div className="w-full h-full bg-[#141324] rounded-2xl flex items-center justify-center">
+                        <service.icon className="w-7 h-7 text-white group-hover:text-purple-400 transition-colors" />
+                      </div>
+                    </div>
+
+                    <h3 className="text-xl font-bold text-white mb-3 font-['Geist']">
+                      {service.title}
+                    </h3>
+
+                    <p className="text-gray-400 text-sm leading-relaxed mb-6 flex-grow font-['Geist']">
+                      {service.description}
+                    </p>
+
+                    <div className="flex flex-wrap gap-2 mt-auto">
+                      {service.tags.map((tag, i) => (
+                        <span
+                          key={i}
+                          className="text-xs font-medium px-2.5 py-1 rounded-md bg-gray-800 text-gray-300 border border-gray-700"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
+
         {/* Success Metrics Section */}
         <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-8 sm:py-12 md:py-16">
           <div className="flex flex-col items-center gap-8 sm:gap-12 md:gap-16 px-5">
@@ -471,7 +641,7 @@ const HomePage = () => {
                       ))}
                     </div>
                     <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed font-['Geist']">
-                      "{testimonial.quote}"
+                      &quot;{testimonial.quote}&quot;
                     </p>
                     <div className="pt-3 sm:pt-4 border-t border-gray-700">
                       <p className="text-white font-semibold text-sm sm:text-base font-['Geist']">
@@ -506,7 +676,7 @@ const HomePage = () => {
                       ))}
                     </div>
                     <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed font-['Geist']">
-                      "{testimonial.quote}"
+                      &quot;{testimonial.quote}&quot;
                     </p>
                     <div className="pt-3 sm:pt-4 border-t border-gray-700">
                       <p className="text-white font-semibold text-sm sm:text-base font-['Geist']">
@@ -602,8 +772,8 @@ const HomePage = () => {
                 Frequently Asked Questions
               </h2>
               <p className="text-base sm:text-lg md:text-xl text-gray-400 font-['Geist']">
-                Can't find what you're looking for? Chat with our AI assistant
-                below!
+                Can&apos;t find what you&apos;re looking for? Chat with our AI
+                assistant below!
               </p>
             </div>
 
