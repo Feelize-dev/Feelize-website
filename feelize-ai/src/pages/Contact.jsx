@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, Clock } from 'lucide-react';
+import { Mail, Phone, MapPin, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Contact() {
@@ -13,8 +13,8 @@ export default function Contact() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        // Handle form submission
-        console.log('Form submitted:', formData);
+        const mailtoLink = `mailto:info@feelize.com?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\n\nMessage:\n${formData.message}`)}`;
+        window.location.href = mailtoLink;
     };
 
     const handleChange = (e) => {
@@ -75,39 +75,6 @@ export default function Contact() {
                                     >
                                         (800) 227-9944
                                     </a>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Location */}
-                        <div className="glass-morphism rounded-2xl p-6 hover:scale-105 transition-transform duration-300">
-                            <div className="flex items-start space-x-4">
-                                <div className="p-3 bg-pink-500/10 rounded-xl">
-                                    <MapPin className="w-6 h-6 text-pink-400" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-white mb-2">Visit Us</h3>
-                                    <p className="text-slate-300 text-sm mb-2">Come say hello at our office</p>
-                                    <p className="text-pink-400">
-                                        New York City, USA
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Business Hours */}
-                        <div className="glass-morphism rounded-2xl p-6 hover:scale-105 transition-transform duration-300">
-                            <div className="flex items-start space-x-4">
-                                <div className="p-3 bg-orange-500/10 rounded-xl">
-                                    <Clock className="w-6 h-6 text-orange-400" />
-                                </div>
-                                <div>
-                                    <h3 className="text-lg font-semibold text-white mb-2">Business Hours</h3>
-                                    <div className="text-slate-300 text-sm space-y-1">
-                                        <p>Monday - Friday: 9am - 6pm EST</p>
-                                        <p>Saturday: 10am - 2pm EST</p>
-                                        <p>Sunday: Closed</p>
-                                    </div>
                                 </div>
                             </div>
                         </div>
