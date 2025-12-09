@@ -28,6 +28,7 @@ export const generateWithLLM = async (prompt) => {
     }],
     generationConfig: {
       temperature: 0.2,
+      maxOutputTokens: 3500, // Reduced for concise reports (~2500-3000 words max)
     }
   };
 

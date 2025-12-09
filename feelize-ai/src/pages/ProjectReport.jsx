@@ -19,9 +19,13 @@ import {
   TrendingUp,
   MessageCircle,
   Send,
-  X
+  X,
+  Download
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import html2pdf from 'html2pdf.js';
 
 // AI Chatbot Component
 const ProjectChatbot = ({ project }) => {
@@ -161,8 +165,8 @@ const ProjectChatbot = ({ project }) => {
                 >
                   <div
                     className={`max-w-[80%] p-3 rounded-2xl ${message.role === 'user'
-                        ? 'bg-indigo-600 text-white'
-                        : 'bg-white text-slate-900 border border-slate-200'
+                      ? 'bg-indigo-600 text-white'
+                      : 'bg-white text-slate-900 border border-slate-200'
                       }`}
                   >
                     <p className="text-sm leading-relaxed whitespace-pre-line">{message.content}</p>
@@ -236,17 +240,28 @@ export default function ProjectReportPage() {
     loadProject();
   }, [loadProject]);
 
-  const handleDownloadReport = (htmlContent, projectName) => {
-    if (!htmlContent) return;
-    const blob = new Blob([htmlContent], { type: "text/html" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `${(projectName || "Project").replace(/\s+/g, "-")}-Proposal.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleDownloadReport = (markdownContent, projectName) => {
+    if (!markdownContent) return;
+
+    // Create a temporary container with the rendered markdown
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto;">
+        <div class="markdown-content">${markdownContent.replace(/\n/g, '<br>')}</div>
+      </div>
+    `;
+
+    // PDF options
+    const opt = {
+      margin: 1,
+      filename: `${(projectName || "Project").replace(/\s+/g, "-")}-Report.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    // Generate PDF
+    html2pdf().set(opt).from(tempDiv).save();
   };
 
   const getStatusInfo = (status) => {
@@ -306,16 +321,18 @@ export default function ProjectReportPage() {
                     className="text-white hover:bg-white/20"
                     onClick={() => handleDownloadReport(project.professional_report_html, project.company_name)}
                   >
-                    Download
+                    <Download className="w-4 h-4 mr-2" />
+                    Download PDF
                   </Button>
                 )}
               </CardHeader>
               <CardContent className="p-6">
                 {project.professional_report_html ? (
-                  <div
-                    className="prose prose-slate max-w-none border rounded-lg p-4 bg-white"
-                    dangerouslySetInnerHTML={{ __html: project.professional_report_html }}
-                  />
+                  <div className="prose prose-slate max-w-none border rounded-lg p-8 bg-white markdown-report">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {project.professional_report_html}
+                    </ReactMarkdown>
+                  </div>
                 ) : (
                   <div className="text-center py-12 text-slate-500">
                     <Clock className="w-12 h-12 mx-auto mb-4 animate-spin" />
@@ -396,12 +413,12 @@ export default function ProjectReportPage() {
                   </div>
 
                   <div className={`flex items-center gap-3 p-3 rounded-lg ${project.status === "contacted" || project.status === "in_progress" || project.status === "delivered"
-                      ? "bg-green-50"
-                      : "bg-yellow-50"
+                    ? "bg-green-50"
+                    : "bg-yellow-50"
                     }`}>
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center ${project.status === "contacted" || project.status === "in_progress" || project.status === "delivered"
-                        ? "bg-green-500"
-                        : "bg-yellow-500"
+                      ? "bg-green-500"
+                      : "bg-yellow-500"
                       }`}>
                       {project.status === "contacted" || project.status === "in_progress" || project.status === "delivered" ? (
                         <CheckCircle className="w-3 h-3 text-white" />
@@ -415,12 +432,12 @@ export default function ProjectReportPage() {
                   </div>
 
                   <div className={`flex items-center gap-3 p-3 rounded-lg ${project.status === "in_progress" || project.status === "delivered"
-                      ? "bg-green-50"
-                      : "bg-slate-50"
+                    ? "bg-green-50"
+                    : "bg-slate-50"
                     }`}>
                     <div className={`w-6 h-6 rounded-full flex items-center justify-center ${project.status === "in_progress" || project.status === "delivered"
-                        ? "bg-green-500"
-                        : "bg-slate-300"
+                      ? "bg-green-500"
+                      : "bg-slate-300"
                       }`}>
                       {project.status === "in_progress" || project.status === "delivered" ? (
                         <CheckCircle className="w-3 h-3 text-white" />
@@ -429,8 +446,8 @@ export default function ProjectReportPage() {
                       )}
                     </div>
                     <span className={`text-sm ${project.status === "in_progress" || project.status === "delivered"
-                        ? "text-slate-700"
-                        : "text-slate-500"
+                      ? "text-slate-700"
+                      : "text-slate-500"
                       }`}>
                       Development in progress
                     </span>

@@ -120,34 +120,43 @@ export const createProject = async (req, res) => {
 
       try {
         const reportPrompt = `
-          You are a top-tier project manager and technical consultant. Based on the following project data, create a comprehensive and professional project analysis report in **Markdown format**.
+          You are representing Feelize, a premium software service company with decades of experience.
 
-          **Project Data:**
-          - Client: ${newProject.client_name}
+          **CRITICAL INSTRUCTIONS:**
+          - Output ONLY markdown sections - NO preamble, NO titles, NO metadata
+          - DO NOT include: "Date:", "Prepared For:", "Project:", "Analysis by:", document titles, or ANY header text before the first section
+          - Start IMMEDIATELY with: ## Executive Summary
+          - Use "we / our team / Feelize recommends" throughout
+          - Each section = MAXIMUM 3 paragraphs (2-4 sentences each)
+          - Be direct and specific - reference customer's exact inputs
+          - NO generic filler, NO buzzwords, NO fluff
+
+          **CUSTOMER'S PROJECT INFORMATION:**
+          - Customer Name: ${newProject.client_name}
           - Company: ${newProject.company_name || 'N/A'}
           - Project Type: ${newProject.project_type}
-          - Budget: ${newProject.budget_range}
-          - Timeline: ${newProject.timeline}
-          - Description: ${newProject.project_description}
-          - AI Analysis Summary: ${newProject.ai_analysis}
+          - Budget Range: ${newProject.budget_range}
+          - Expected Timeline: ${newProject.timeline}
+          - Project Description: ${newProject.project_description}
+          - Initial Analysis: ${newProject.ai_analysis}
 
-          **Report Structure:**
-          The report must be well-structured, easy to read, and professional. Use clear headings, bullet points, and bold text to organize the information.
+          **FEELIZE SERVICE TIERS & PRICING:**
+          1. Campaign Site: $2,999 (1-2 weeks) - Landing pages, lead forms, basic analytics
+          2. E-commerce Pro: $7,999 (4-6 weeks) - Full store, up to 100 products, payments, inventory
+          3. SaaS Platform: $20,000+ (8-16 weeks) - Custom web app, auth, database, subscriptions, cloud
+          4. Hourly Rate: $75/hr - On-demand tasks, maintenance, consultations
 
-          **Required Sections:**
-          1.  **Executive Summary:** A brief overview of the project and key recommendations.
-          2.  **Technical Requirements & Recommendations:** Platform, performance, features, security.
-          3.  **Design Direction & User Experience (UX) Strategy:** UX research, wireframes, UI design, and user testing.
-          4.  **Development Timeline & Milestones:** A proposed timeline with key deliverables for each phase.
-          5.  **Budget Allocation & Cost Optimization:** A breakdown of the budget and strategies to optimize costs.
-          6.  **Potential Challenges & Solutions:** Identify potential risks and propose mitigation strategies.
-          7.  **Success Metrics & KPIs:** How to measure the project's success post-launch.
-          8.  **Conclusion:** A summary of the plan and next steps.
+          **REQUIRED SECTIONS (3 paragraphs max each):**
+          ## Executive Summary
+          ## Technical Architecture & Our Recommendations
+          ## UX & Design Strategy
+          ## Development Roadmap & Milestones
+          ## Investment Breakdown
+          ## Risks & Mitigation
+          ## Success Metrics
+          ## Next Steps
 
-          **IMPORTANT:**
-          - The output **MUST** be only the Markdown report.
-          - Do **NOT** include any HTML, CSS, or any other code.
-          - Do **NOT** include the original AI Analysis content, only use it as a reference to write the report sections.
+          Start your response with "## Executive Summary" (no other text before it):
         `;
 
         console.log('🤖 Calling Gemini to generate report...');
@@ -346,34 +355,43 @@ export const generateReport = async (req, res) => {
 
     // Updated prompt to generate a clean, professional Markdown report.
     const prompt = `
-      You are a top-tier project manager and technical consultant. Based on the following project data, create a comprehensive and professional project analysis report in **Markdown format**.
+      You are representing Feelize, a premium software service company with decades of experience.
 
-      **Project Data:**
-      - Client: ${project.client_name}
+      **CRITICAL INSTRUCTIONS:**
+      - Output ONLY markdown sections - NO preamble, NO titles, NO metadata
+      - DO NOT include: "Date:", "Prepared For:", "Project:", "Analysis by:", document titles, or ANY header text before the first section
+      - Start IMMEDIATELY with: ## Executive Summary
+      - Use "we / our team / Feelize recommends" throughout
+      - Each section = MAXIMUM 3 paragraphs (2-4 sentences each)
+      - Be direct and specific - reference customer's exact inputs
+      - NO generic filler, NO buzzwords, NO fluff
+
+      **CUSTOMER'S PROJECT INFORMATION:**
+      - Customer Name: ${project.client_name}
       - Company: ${project.company_name || 'N/A'}
       - Project Type: ${project.project_type}
-      - Budget: ${project.budget_range}
-      - Timeline: ${project.timeline}
-      - Description: ${project.project_description}
-      - AI Analysis Summary: ${project.ai_analysis}
+      - Budget Range: ${project.budget_range}
+      - Expected Timeline: ${project.timeline}
+      - Project Description: ${project.project_description}
+      - Initial Analysis: ${project.ai_analysis}
 
-      **Report Structure:**
-      The report must be well-structured, easy to read, and professional. Use clear headings, bullet points, and bold text to organize the information.
+      **FEELIZE SERVICE TIERS & PRICING:**
+      1. Campaign Site: $2,999 (1-2 weeks) - Landing pages, lead forms, basic analytics
+      2. E-commerce Pro: $7,999 (4-6 weeks) - Full store, up to 100 products, payments, inventory
+      3. SaaS Platform: $20,000+ (8-16 weeks) - Custom web app, auth, database, subscriptions, cloud
+      4. Hourly Rate: $75/hr - On-demand tasks, maintenance, consultations
 
-      **Required Sections:**
-      1.  **Executive Summary:** A brief overview of the project and key recommendations.
-      2.  **Technical Requirements & Recommendations:** Platform, performance, features, security.
-      3.  **Design Direction & User Experience (UX) Strategy:** UX research, wireframes, UI design, and user testing.
-      4.  **Development Timeline & Milestones:** A proposed timeline with key deliverables for each phase.
-      5.  **Budget Allocation & Cost Optimization:** A breakdown of the budget and strategies to optimize costs.
-      6.  **Potential Challenges & Solutions:** Identify potential risks and propose mitigation strategies.
-      7.  **Success Metrics & KPIs:** How to measure the project's success post-launch.
-      8.  **Conclusion:** A summary of the plan and next steps.
+      **REQUIRED SECTIONS (3 paragraphs max each):**
+      ## Executive Summary
+      ## Technical Architecture & Our Recommendations
+      ## UX & Design Strategy
+      ## Development Roadmap & Milestones
+      ## Investment Breakdown
+      ## Risks & Mitigation
+      ## Success Metrics
+      ## Next Steps
 
-      **IMPORTANT:**
-      - The output **MUST** be only the Markdown report.
-      - Do **NOT** include any HTML, CSS, or any other code.
-      - Do **NOT** include the original AI Analysis content, only use it as a reference to write the report sections.
+      Start your response with "## Executive Summary" (no other text before it):
     `;
 
     console.log(`\n🤖 Step 2: Calling Gemini LLM to generate report...`);

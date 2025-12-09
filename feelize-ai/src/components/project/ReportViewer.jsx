@@ -2,6 +2,9 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Sparkles, FileText, Download } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import html2pdf from 'html2pdf.js';
 
 export default function ReportViewer({ project, userRole }) {
   const isInternal = userRole === 'admin' || userRole === 'engineer';
@@ -9,17 +12,28 @@ export default function ReportViewer({ project, userRole }) {
   const reportHTML = project.professional_report_html;
   const analysisText = project.ai_analysis;
 
-  const handleDownloadReport = (htmlContent, projectName) => {
-    if (!htmlContent) return;
-    const blob = new Blob([htmlContent], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${(projectName || 'Project').replace(/\s+/g, '-')}-Proposal.html`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+  const handleDownloadReport = (markdownContent, projectName) => {
+    if (!markdownContent) return;
+
+    // Create a temporary container with the rendered markdown
+    const tempDiv = document.createElement('div');
+    tempDiv.innerHTML = `
+      <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto;">
+        <div class="markdown-content">${markdownContent.replace(/\n/g, '<br>')}</div>
+      </div>
+    `;
+
+    // PDF options
+    const opt = {
+      margin: 1,
+      filename: `${(projectName || "Project").replace(/\s+/g, "-")}-Report.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+    };
+
+    // Generate PDF
+    html2pdf().set(opt).from(tempDiv).save();
   };
 
   const contentToDisplay = isInternal ? analysisText : (reportHTML || "The full project report is being prepared by our team and will be available here shortly.");
@@ -32,8 +46,8 @@ export default function ReportViewer({ project, userRole }) {
           {isInternal ? 'Internal AI Analysis' : 'Project Analysis & Proposal'}
         </CardTitle>
         {!isInternal && reportHTML && (
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             size="sm"
             onClick={() => handleDownloadReport(reportHTML, project.company_name)}
           >
@@ -49,7 +63,11 @@ export default function ReportViewer({ project, userRole }) {
           </div>
         ) : (
           reportHTML ? (
-             <div className="border bg-white p-4 rounded-md" dangerouslySetInnerHTML={{ __html: reportHTML }} />
+            <div className="prose prose-slate max-w-none border bg-white p-6 rounded-md markdown-report">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {reportHTML}
+              </ReactMarkdown>
+            </div>
           ) : (
             <p className="text-slate-600 italic p-4">{contentToDisplay}</p>
           )
