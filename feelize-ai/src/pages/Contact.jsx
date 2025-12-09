@@ -1,28 +1,8 @@
-import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send } from 'lucide-react';
+import React from 'react';
+import { Mail, Phone, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function Contact() {
-    const [formData, setFormData] = useState({
-        name: '',
-        email: '',
-        phone: '',
-        subject: '',
-        message: ''
-    });
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        const mailtoLink = `mailto:info@feelize.com?subject=${encodeURIComponent(formData.subject)}&body=${encodeURIComponent(`Name: ${formData.name}\nEmail: ${formData.email}\nPhone: ${formData.phone}\n\nMessage:\n${formData.message}`)}`;
-        window.location.href = mailtoLink;
-    };
-
-    const handleChange = (e) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value
-        });
-    };
 
     return (
         <div className="min-h-screen pt-32 pb-20">
@@ -33,8 +13,8 @@ export default function Contact() {
                         <span className="gradient-text">Get in Touch</span>
                     </h1>
                     <p className="text-xl text-slate-300 max-w-3xl mx-auto leading-relaxed">
-                        Have a project in mind? We'd love to hear from you. Send us a message
-                        and we'll respond as soon as possible.
+                        Have a project in mind? We'd love to hear from you. Schedule a meeting
+                        with us directly to discuss your ideas.
                     </p>
                 </div>
 
@@ -80,106 +60,15 @@ export default function Contact() {
                         </div>
                     </div>
 
-                    {/* Contact Form */}
+                    {/* Cal.com Embed */}
                     <div className="lg:col-span-2">
-                        <div className="glass-morphism rounded-2xl p-8 md:p-12">
-                            <h2 className="text-3xl font-bold text-white mb-8">Send Us a Message</h2>
-                            <form onSubmit={handleSubmit} className="space-y-6">
-                                {/* Name and Email Row */}
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label htmlFor="name" className="block text-sm font-medium text-slate-300 mb-2">
-                                            Your Name *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="name"
-                                            name="name"
-                                            required
-                                            value={formData.name}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all"
-                                            placeholder="John Doe"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="email" className="block text-sm font-medium text-slate-300 mb-2">
-                                            Email Address *
-                                        </label>
-                                        <input
-                                            type="email"
-                                            id="email"
-                                            name="email"
-                                            required
-                                            value={formData.email}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all"
-                                            placeholder="john@example.com"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Phone and Subject Row */}
-                                <div className="grid md:grid-cols-2 gap-6">
-                                    <div>
-                                        <label htmlFor="phone" className="block text-sm font-medium text-slate-300 mb-2">
-                                            Phone Number
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            id="phone"
-                                            name="phone"
-                                            value={formData.phone}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all"
-                                            placeholder="+1 (555) 000-0000"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label htmlFor="subject" className="block text-sm font-medium text-slate-300 mb-2">
-                                            Subject *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            id="subject"
-                                            name="subject"
-                                            required
-                                            value={formData.subject}
-                                            onChange={handleChange}
-                                            className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all"
-                                            placeholder="How can we help?"
-                                        />
-                                    </div>
-                                </div>
-
-                                {/* Message */}
-                                <div>
-                                    <label htmlFor="message" className="block text-sm font-medium text-slate-300 mb-2">
-                                        Message *
-                                    </label>
-                                    <textarea
-                                        id="message"
-                                        name="message"
-                                        required
-                                        rows="6"
-                                        value={formData.message}
-                                        onChange={handleChange}
-                                        className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-400 focus:border-transparent transition-all resize-none"
-                                        placeholder="Tell us about your project..."
-                                    ></textarea>
-                                </div>
-
-                                {/* Submit Button */}
-                                <div>
-                                    <Button
-                                        type="submit"
-                                        className="w-full md:w-auto bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold px-8 py-6 rounded-xl text-lg shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-105 neon-glow"
-                                    >
-                                        <Send className="w-5 h-5 mr-2" />
-                                        Send Message
-                                    </Button>
-                                </div>
-                            </form>
+                        <div className="glass-morphism rounded-2xl overflow-hidden h-full min-h-[700px]">
+                            <iframe
+                                src="https://cal.com/evuventure/30min"
+                                style={{ width: "100%", height: "100%", minHeight: "700px" }}
+                                frameBorder="0"
+                                title="Schedule a meeting"
+                            ></iframe>
                         </div>
                     </div>
                 </div>

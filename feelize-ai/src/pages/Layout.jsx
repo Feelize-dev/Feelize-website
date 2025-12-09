@@ -24,14 +24,45 @@ const navigationItems = [
   },
   {
     name: "Services",
-    type: "dropdown",
-    items: [
-      { name: "Web Development", url: createPageUrl("WebDevelopment") },
-      { name: "Mobile App Development", url: createPageUrl("MobileAppDevelopment") },
-      { name: "UI/UX Design", url: createPageUrl("UIUXDesign") },
-      { name: "Branding", url: createPageUrl("Branding") },
-      { name: "AI & Automation", url: createPageUrl("AIAutomation") },
-    ],
+    type: "mega-menu",
+    sections: [
+      {
+        title: "AI & Data",
+        items: [
+          { name: "AI & Automation", url: createPageUrl("AIAutomation") },
+          { name: "Data Analytics", url: createPageUrl("StartProject") },
+        ]
+      },
+      {
+        title: "Web & Mobile",
+        items: [
+          { name: "Web Development", url: createPageUrl("WebDevelopment") },
+          { name: "Mobile Apps", url: createPageUrl("MobileAppDevelopment") },
+          { name: "E-Commerce", url: createPageUrl("StartProject") },
+        ]
+      },
+      {
+        title: "Design & Brand",
+        items: [
+          { name: "UI/UX Design", url: createPageUrl("UIUXDesign") },
+          { name: "Branding", url: createPageUrl("Branding") },
+        ]
+      },
+      {
+        title: "Infrastructure",
+        items: [
+          { name: "Cloud Solutions", url: createPageUrl("StartProject") },
+          { name: "DevOps Services", url: createPageUrl("StartProject") },
+          { name: "Cybersecurity", url: createPageUrl("StartProject") },
+        ]
+      },
+      {
+        title: "Emerging Tech",
+        items: [
+          { name: "Blockchain", url: createPageUrl("StartProject") },
+        ]
+      }
+    ]
   },
   { name: "Portfolio", url: createPageUrl("Portfolio"), type: "link" },
   { name: "Pricing", url: createPageUrl("Pricing"), type: "link" },
@@ -229,6 +260,53 @@ export default function Layout({ children, currentPageName }) {
               {/* Desktop Navigation */}
               <div className="hidden md:flex items-center space-x-8">
                 {navigationItems.map((item) => {
+                  if (item.type === "mega-menu") {
+                    // Check if active
+                    const isActive = item.sections.some(section =>
+                      section.items.some(subItem => location.pathname === subItem.url)
+                    );
+
+                    return (
+                      <div key={item.name} className="relative group">
+                        <button
+                          className={`text-sm font-medium transition-all duration-300 hover:text-cyan-400 relative flex items-center space-x-1 ${isActive ? "text-cyan-400" : "text-slate-300"
+                            }`}
+                        >
+                          <span>{item.name}</span>
+                          <ChevronDown className="w-4 h-4 transition-transform duration-300 group-hover:rotate-180" />
+                          <div
+                            className={`absolute -bottom-1 left-0 w-0 h-0.5 bg-cyan-400 transition-all duration-300 group-hover:w-full ${isActive ? "w-full" : ""
+                              }`}
+                          ></div>
+                        </button>
+
+                        {/* Mega Menu Dropdown */}
+                        <div className="absolute top-full -left-48 mt-2 w-[800px] bg-slate-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 p-8 z-50">
+                          <div className="grid grid-cols-3 gap-8">
+                            {item.sections.map((section, idx) => (
+                              <div key={idx} className="space-y-4">
+                                <h4 className="text-sm font-bold text-cyan-400 uppercase tracking-wider border-b border-white/10 pb-2">
+                                  {section.title}
+                                </h4>
+                                <div className="space-y-2 flex flex-col">
+                                  {section.items.map((subItem) => (
+                                    <Link
+                                      key={subItem.name}
+                                      to={subItem.url}
+                                      className="text-sm text-slate-300 hover:text-white hover:translate-x-1 transition-all duration-200"
+                                    >
+                                      {subItem.name}
+                                    </Link>
+                                  ))}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  }
+
                   if (item.type === "dropdown") {
                     // Check if any dropdown item is active
                     const isActive = item.items.some(subItem => location.pathname === subItem.url);
@@ -392,6 +470,60 @@ export default function Layout({ children, currentPageName }) {
           {isMobileMenuOpen && (
             <div className="md:hidden mt-3 glass-morphism rounded-2xl p-4 border border-white/10">
               {navigationItems.map((item) => {
+                if (item.type === "mega-menu") {
+                  const isOpen = mobileOpenDropdown === item.name;
+                  const isActive = item.sections.some(section =>
+                    section.items.some(subItem => location.pathname === subItem.url)
+                  );
+
+                  return (
+                    <div key={item.name} className="mb-1">
+                      <button
+                        onClick={() => setMobileOpenDropdown(isOpen ? null : item.name)}
+                        className={`w-full flex items-center justify-between px-3 py-2 text-base font-medium rounded-lg transition-colors ${isActive ? "bg-cyan-500/20 text-cyan-400" : "text-slate-300 hover:bg-white/10"
+                          }`}
+                      >
+                        <span>{item.name}</span>
+                        <ChevronDown
+                          className={`w-4 h-4 transition-transform duration-300 ${isOpen ? "rotate-180" : ""
+                            }`}
+                        />
+                      </button>
+
+                      {/* Mobile Mega Menu Dropdown */}
+                      {isOpen && (
+                        <div className="ml-4 mt-2 space-y-4 border-l border-white/10 pl-4">
+                          {item.sections.map((section, idx) => (
+                            <div key={idx} className="space-y-2">
+                              <h4 className="text-xs font-bold text-cyan-400 uppercase tracking-wider">
+                                {section.title}
+                              </h4>
+                              <div className="space-y-1">
+                                {section.items.map((subItem) => (
+                                  <Link
+                                    key={subItem.name}
+                                    to={subItem.url}
+                                    className={`block px-2 py-1.5 text-sm font-medium rounded-lg transition-colors ${location.pathname === subItem.url
+                                      ? "text-cyan-400"
+                                      : "text-slate-400 hover:text-white"
+                                      }`}
+                                    onClick={() => {
+                                      setIsMobileMenuOpen(false);
+                                      setMobileOpenDropdown(null);
+                                    }}
+                                  >
+                                    {subItem.name}
+                                  </Link>
+                                ))}
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  );
+                }
+
                 if (item.type === "dropdown") {
                   const isOpen = mobileOpenDropdown === item.name;
                   const isActive = item.items.some(subItem => location.pathname === subItem.url);
