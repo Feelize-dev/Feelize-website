@@ -1,4 +1,5 @@
-import { useState } from "react";
+
+import React, { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -14,26 +15,23 @@ import {
   Palette,
   Code2,
   TrendingUp,
+  Sparkles,
   ArrowRight,
   Clock,
-  Award,
-  ExternalLink,
-  LinkIcon,
+  Award
 } from "lucide-react";
-
-import adeptMlImage from "../assets/images/adeptMl.png";
 
 export default function WorkPage() {
   const [filter, setFilter] = useState("all");
   const [hoveredProject, setHoveredProject] = useState(null);
 
   const backgroundBlurs = [
-    { left: "10%", top: "-200px" },
-    { left: "70%", top: "-100px" },
-    { left: "-142px", top: "1000px" },
-    { left: "864px", top: "1500px" },
-    { left: "191px", top: "800px" },
-    { left: "1226px", top: "1200px" },
+    { left: '10%', top: '-200px' },
+    { left: '70%', top: '-100px' },
+    { left: '-142px', top: '1000px' },
+    { left: '864px', top: '1500px' },
+    { left: '191px', top: '800px' },
+    { left: '1226px', top: '1200px' },
   ];
 
   const projects = [
@@ -159,33 +157,17 @@ export default function WorkPage() {
 
   const categories = [
     { id: "all", name: "All Projects", count: projects.length },
-    {
-      id: "campaign",
-      name: "Campaign Sites",
-      count: projects.filter((p) => p.category === "campaign").length,
-    },
-    {
-      id: "ecommerce",
-      name: "E-commerce",
-      count: projects.filter((p) => p.category === "ecommerce").length,
-    },
-    {
-      id: "saas",
-      name: "SaaS Platforms",
-      count: projects.filter((p) => p.category === "saas").length,
-    },
+    { id: "campaign", name: "Campaign Sites", count: projects.filter(p => p.category === "campaign").length },
+    { id: "ecommerce", name: "E-commerce", count: projects.filter(p => p.category === "ecommerce").length },
+    { id: "saas", name: "SaaS Platforms", count: projects.filter(p => p.category === "saas").length }
   ];
 
-  const filteredProjects =
-    filter === "all" ? projects : projects.filter((p) => p.category === filter);
+  const filteredProjects = filter === "all" ? projects : projects.filter(p => p.category === filter);
 
   return (
     <div className="min-h-screen bg-[#0A0E14] text-white relative">
       {/* Fixed Background with Gradient Ellipses */}
-      <div
-        className="fixed inset-0 pointer-events-none overflow-hidden"
-        style={{ zIndex: 0 }}
-      >
+      <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
         {backgroundBlurs.map((pos, i) => (
           <div
             key={i}
@@ -193,8 +175,8 @@ export default function WorkPage() {
             style={{
               left: pos.left,
               top: pos.top,
-              background: "rgba(80, 0, 181, 0.67)",
-              opacity: 0.25,
+              background: 'rgba(80, 0, 181, 0.67)',
+              opacity: 0.25
             }}
           />
         ))}
@@ -207,21 +189,16 @@ export default function WorkPage() {
           {/* Header */}
           <div className="text-center mb-20">
             <Badge className="px-6 py-4 text-lg rounded-full bg-transparent border-none mb-8">
-              <Award className="w-5 h-5 mr-2" />✨ AI-Supercharged Success
-              Stories
+              <Award className="w-5 h-5 mr-2" />
+              ✨ AI-Supercharged Success Stories
             </Badge>
 
             <h1 className="text-7xl lg:text-8xl font-bold leading-tight font-['Bricolage_Grotesque'] mb-6">
-              Our Work in Action,
-              <br />
-              <span className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] bg-clip-text text-transparent">
-                Results That Speak
-              </span>
+              Our Work in Action,<br />
+              <span className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] bg-clip-text text-transparent">Results That Speak</span>
             </h1>
             <p className="text-3xl text-gray-300 font-['Istok_Web'] max-w-4xl mx-auto">
-              See how our AI-supercharged engineers have transformed businesses
-              across industries. Speed of AI + Quality of Professional
-              Engineers.
+              See how our AI-supercharged engineers have transformed businesses across industries. Speed of AI + Quality of Professional Engineers.
             </p>
           </div>
 
@@ -249,7 +226,7 @@ export default function WorkPage() {
           {/* Projects Grid */}
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-20">
             {filteredProjects.map((project, index) => (
-              <a
+              <div
                 key={project.id}
                 className="group h-full"
                 onMouseEnter={() => setHoveredProject(project.id)}
@@ -334,7 +311,7 @@ export default function WorkPage() {
                     </div>
                   </CardContent>
                 </Card>
-              </a>
+              </div>
             ))}
           </div>
 
@@ -348,15 +325,10 @@ export default function WorkPage() {
                   <span className="block bg-gradient-to-r from-[#0580E8] to-[#7000FF] bg-clip-text text-transparent mt-2">Success Stories?</span>
                 </h2>
                 <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto font-['Geist']">
-                  Let our AI-supercharged engineers create your next success
-                  story. Experience the same results-driven approach that&apos;s
-                  transformed these businesses.
+                  Let our AI-supercharged engineers create your next success story. Experience the same results-driven approach that's transformed these businesses.
                 </p>
                 <Link to={createPageUrl("StartProject")}>
-                  <Button
-                    size="lg"
-                    className="w-full sm:w-auto bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:from-[#0580E8]/90 hover:to-[#7000FF]/90 text-white font-bold px-12 py-6 text-lg rounded-2xl shadow-lg shadow-purple-500/25 hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 font-['Bricolage_Grotesque']"
-                  >
+                  <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:from-[#0580E8]/90 hover:to-[#7000FF]/90 text-white font-bold px-12 py-6 text-lg rounded-2xl shadow-lg shadow-purple-500/25 hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 font-['Bricolage_Grotesque']">
                     Start Your Success Story
                     <ArrowRight className="w-5 h-5 ml-3" />
                   </Button>
