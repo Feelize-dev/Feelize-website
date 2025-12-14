@@ -110,9 +110,9 @@ export default function StartProjectPage() {
     tempDiv.innerHTML = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto;">
         <div class="markdown-content">${markdownContent.replace(
-          /\n/g,
-          "<br>"
-        )}</div>
+      /\n/g,
+      "<br>"
+    )}</div>
       </div>
     `;
 
@@ -168,8 +168,10 @@ export default function StartProjectPage() {
       // Generate AI analysis
       const aiAnalysis = await InvokeLLM({
         prompt: `
-          Analyze this project brief and provide comprehensive insights:
+          Analyze this project brief and provide comprehensive insights.
           
+          CRITICAL INSTRUCTION: Do NOT include a title page, "Project Name", "Client", "Date", or any formal report header at the start. Start directly with the first section key insights.
+
           Project Type: ${projectData.project_type}
           Description: ${projectData.project_description}
           Target Audience: ${projectData.target_audience}
@@ -184,7 +186,7 @@ export default function StartProjectPage() {
           5. Potential Challenges & Solutions
           6. Success Metrics & KPIs
           
-          Format as a comprehensive project analysis report.
+          Format as a comprehensive project analysis report using Markdown.
         `,
       });
 
@@ -379,9 +381,8 @@ export default function StartProjectPage() {
                 {[1, 2, 3].map((step) => (
                   <div
                     key={step}
-                    className={` w-8   h-2 round e d-full  ${
-                      step === 1 ? "bg-indigo-600" : "bg-slate-200"
-                    }`}
+                    className={` w-8   h-2 round e d-full  ${step === 1 ? "bg-indigo-600" : "bg-slate-200"
+                      }`}
                   />
                 ))}
               </div>
