@@ -7,7 +7,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
 import { Textarea } from "@/components/ui/textarea";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import {
@@ -30,20 +36,19 @@ import {
   DollarSign,
   Target,
   Zap,
-  Download
+  Download,
 } from "lucide-react";
 import { auth, signInWithGooglePopup } from "@/config/firebaseConfig";
 import axios from "axios";
 import { onAuthStateChanged, signOut } from "firebase/auth";
 import { useUser } from "@/hooks/useUser";
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import html2pdf from 'html2pdf.js';
-
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import html2pdf from "html2pdf.js";
 
 export default function StartProjectPage() {
   // const [currentUser, setCurrentUser] = useState(null);
-  const [currentStep, setCurrentStep] = useState('welcome'); // welcome, form, processing, report
+  const [currentStep, setCurrentStep] = useState("welcome"); // welcome, form, processing, report
   const [projectData, setProjectData] = useState({
     client_name: "",
     client_email: "",
@@ -54,7 +59,7 @@ export default function StartProjectPage() {
     design_preferences: "",
     target_audience: "",
     budget_range: "",
-    timeline: ""
+    timeline: "",
   });
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -63,34 +68,36 @@ export default function StartProjectPage() {
 
   const { data: user, isLoading, refetch } = useUser();
 
+  const [processingStatus, setProcessingStatus] =
+    useState("Initializing AI...");
+  const [progressValue, setProgressValue] = useState(10);
+
   useEffect(() => {
     if (user) {
-      setProjectData(prev => ({
+      setProjectData((prev) => ({
         ...prev,
         client_name: user.displayName || "",
-        client_email: user.email || ""
+        client_email: user.email || "",
       }));
     }
   }, [user]);
 
-
   const handleLogin = async () => {
     try {
-
       const result = await signInWithGooglePopup();
       const token = await result.user.getIdToken();
       console.log(token);
 
-
-      const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/sessionLogin`,
+      const res = await axios.get(
+        `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/sessionLogin`,
 
         {
           headers: { Authorization: `Bearer ${token}` },
           withCredentials: true,
-        })
+        }
+      );
       await refetch();
     } catch (error) {
-
       console.error("Google Sign-in or verification failed:", error);
     }
   };
@@ -99,10 +106,13 @@ export default function StartProjectPage() {
     if (!markdownContent) return;
 
     // Create a temporary container with the rendered markdown
-    const tempDiv = document.createElement('div');
+    const tempDiv = document.createElement("div");
     tempDiv.innerHTML = `
       <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; padding: 40px; max-width: 800px; margin: 0 auto;">
-        <div class="markdown-content">${markdownContent.replace(/\n/g, '<br>')}</div>
+        <div class="markdown-content">${markdownContent.replace(
+      /\n/g,
+      "<br>"
+    )}</div>
       </div>
     `;
 
@@ -110,15 +120,14 @@ export default function StartProjectPage() {
     const opt = {
       margin: 1,
       filename: `${(projectName || "Project").replace(/\s+/g, "-")}-Report.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
+      image: { type: "jpeg", quality: 0.98 },
       html2canvas: { scale: 2 },
-      jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+      jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
     };
 
     // Generate PDF
     html2pdf().set(opt).from(tempDiv).save();
   };
-
 
   const handleFileUpload = async (files) => {
     if (!files || files.length === 0) return;
@@ -129,7 +138,7 @@ export default function StartProjectPage() {
         return {
           name: file.name,
           type: file.type,
-          url: file_url
+          url: file_url,
         };
       } catch (error) {
         console.error("Upload error:", error);
@@ -139,20 +148,30 @@ export default function StartProjectPage() {
 
     const results = await Promise.all(uploadPromises);
     const successfulUploads = results.filter(Boolean);
-    setUploadedFiles(prev => [...prev, ...successfulUploads]);
+    setUploadedFiles((prev) => [...prev, ...successfulUploads]);
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     setIsProcessing(true);
-    setCurrentStep('processing');
+    setCurrentStep("processing");
+
+    // Stage 1: Start
+    setProcessingStatus("Initializing AI Architect...");
+    setProgressValue(25);
 
     try {
+      // Stage 2: Calling AI
+      setProcessingStatus("AI is analyzing your project requirements...");
+      setProgressValue(45);
+
       // Generate AI analysis
       const aiAnalysis = await InvokeLLM({
         prompt: `
-          Analyze this project brief and provide comprehensive insights:
+          Analyze this project brief and provide comprehensive insights.
           
+          CRITICAL INSTRUCTION: Do NOT include a title page, "Project Name", "Client", "Date", or any formal report header at the start. Start directly with the first section key insights.
+
           Project Type: ${projectData.project_type}
           Description: ${projectData.project_description}
           Target Audience: ${projectData.target_audience}
@@ -167,17 +186,25 @@ export default function StartProjectPage() {
           5. Potential Challenges & Solutions
           6. Success Metrics & KPIs
           
-          Format as a comprehensive project analysis report.
-        `
+          Format as a comprehensive project analysis report using Markdown.
+        `,
       });
+
+      // Stage 3: AI Finished, preparing backend request
+      setProcessingStatus("Analysis complete. Generating final report...");
+      setProgressValue(75);
 
       const briefData = {
         ...projectData,
-        uploaded_files: uploadedFiles.map(f => f.url),
+        uploaded_files: uploadedFiles.map((f) => f.url),
         ai_analysis: aiAnalysis,
         status: "completed",
-        referral_code: sessionStorage.getItem("referral_code") || null // Include referral code
+        referral_code: sessionStorage.getItem("referral_code") || null, // Include referral code
       };
+
+      // Stage 4: Sending to backend (Saving & Emailing)
+      setProcessingStatus("Creating project and sending email report...");
+      setProgressValue(90);
 
       // Send to backend API to persist in MongoDB (session cookie required)
       try {
@@ -192,20 +219,24 @@ export default function StartProjectPage() {
         } else {
           // fallback: use AI analysis locally in UI
           setCreatedProject({ ...briefData });
-          console.warn('Backend did not return success for project creation', apiRes?.data);
+          console.warn(
+            "Backend did not return success for project creation",
+            apiRes?.data
+          );
         }
 
-        setCurrentStep('report');
+        // Stage 5: Done
+        setProgressValue(100);
+        setCurrentStep("report");
       } catch (apiErr) {
-        console.error('Failed to save project to backend:', apiErr);
+        console.error("Failed to save project to backend:", apiErr);
         // still show report to user with local data
         setCreatedProject({ ...briefData });
-        setCurrentStep('report');
+        setCurrentStep("report");
       }
-
     } catch (error) {
       console.error("Processing error:", error);
-      setCurrentStep('form'); // Go back to form on error
+      setCurrentStep("form"); // Go back to form on error
     } finally {
       setIsProcessing(false);
     }
@@ -267,8 +298,12 @@ export default function StartProjectPage() {
                 <div className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-cyan-500/30">
                   <Sparkles className="w-10 h-10 text-white" />
                 </div>
-                <h1 className="text-2xl font-bold text-white mb-2">Welcome to Feelize AI</h1>
-                <p className="text-slate-300 text-sm">Sign in to start building your project with our AI assistant</p>
+                <h1 className="text-2xl font-bold text-white mb-2">
+                  Welcome to Feelize AI
+                </h1>
+                <p className="text-slate-300 text-sm">
+                  Sign in to start building your project with our AI assistant
+                </p>
               </div>
 
               <Button
@@ -280,9 +315,7 @@ export default function StartProjectPage() {
               </Button>
 
               <div className="mt-6 pt-6 border-t border-slate-600/30 text-center">
-                <p className="text-slate-400 text-xs">
-
-                </p>
+                <p className="text-slate-400 text-xs"></p>
               </div>
             </CardContent>
           </Card>
@@ -292,7 +325,7 @@ export default function StartProjectPage() {
   }
 
   // Project Form
-  if (currentStep === 'welcome' || currentStep === 'form') {
+  if (currentStep === "welcome" || currentStep === "form") {
     return (
       <div className="min-h-screen py-8">
         <div
@@ -334,39 +367,63 @@ export default function StartProjectPage() {
         </div>
         <div className="max-w-4xl mx-auto px-4 pt-32">
           <div className="text-center mb-8">
-            <h1 className="text-4xl font-bold text-white mb-2">Let's Build Your Project</h1>
-            <p className="text-white">Tell us about your vision and we'll create the perfect plan</p>
+            <h1 className="text-4xl font-bold text-white mb-2">
+              Let's Build Your Project
+            </h1>
+            <p className="text-white">
+              Tell us about your vision and we'll create the perfect plan
+            </p>
           </div>
 
           <Card className="border-0 shadow-lg rounded-2xl">
             <CardHeader className="text-center pb-6">
               <div className="flex justify-center gap-2 mb-4">
                 {[1, 2, 3].map((step) => (
-                  <div key={step} className={` w-8   h-2 round e d-full  ${step === 1 ? 'bg-indigo-600' : 'bg-slate-200'}`} />
+                  <div
+                    key={step}
+                    className={` w-8   h-2 round e d-full  ${step === 1 ? "bg-indigo-600" : "bg-slate-200"
+                      }`}
+                  />
                 ))}
               </div>
-              <CardTitle className="text-xl text-slate-900">Project Details</CardTitle>
+              <CardTitle className="text-xl text-slate-900">
+                Project Details
+              </CardTitle>
             </CardHeader>
 
             <CardContent className="p-8">
               <form onSubmit={handleFormSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Full Name</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Full Name
+                    </label>
                     <Input
                       value={projectData.client_name}
-                      onChange={(e) => setProjectData(prev => ({ ...prev, client_name: e.target.value }))}
+                      onChange={(e) =>
+                        setProjectData((prev) => ({
+                          ...prev,
+                          client_name: e.target.value,
+                        }))
+                      }
                       placeholder="Your full name"
                       required
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Email</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Email
+                    </label>
                     <Input
                       type="email"
                       value={projectData.client_email}
-                      onChange={(e) => setProjectData(prev => ({ ...prev, client_email: e.target.value }))}
+                      onChange={(e) =>
+                        setProjectData((prev) => ({
+                          ...prev,
+                          client_email: e.target.value,
+                        }))
+                      }
                       placeholder="your@email.com"
                       required
                     />
@@ -375,24 +432,43 @@ export default function StartProjectPage() {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Company Name</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Company Name
+                    </label>
                     <Input
                       value={projectData.company_name}
-                      onChange={(e) => setProjectData(prev => ({ ...prev, company_name: e.target.value }))}
+                      onChange={(e) =>
+                        setProjectData((prev) => ({
+                          ...prev,
+                          company_name: e.target.value,
+                        }))
+                      }
                       placeholder="Your company name"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Project Type</label>
-                    <Select value={projectData.project_type} onValueChange={(value) => setProjectData(prev => ({ ...prev, project_type: value }))}>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Project Type
+                    </label>
+                    <Select
+                      value={projectData.project_type}
+                      onValueChange={(value) =>
+                        setProjectData((prev) => ({
+                          ...prev,
+                          project_type: value,
+                        }))
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select project type" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="website">Website</SelectItem>
                         <SelectItem value="web_app">Web Application</SelectItem>
-                        <SelectItem value="ecommerce">E-commerce Store</SelectItem>
+                        <SelectItem value="ecommerce">
+                          E-commerce Store
+                        </SelectItem>
                         <SelectItem value="mobile_app">Mobile App</SelectItem>
                         <SelectItem value="redesign">Redesign</SelectItem>
                         <SelectItem value="other">Other</SelectItem>
@@ -402,10 +478,17 @@ export default function StartProjectPage() {
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Project Description</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Project Description
+                  </label>
                   <Textarea
                     value={projectData.project_description}
-                    onChange={(e) => setProjectData(prev => ({ ...prev, project_description: e.target.value }))}
+                    onChange={(e) =>
+                      setProjectData((prev) => ({
+                        ...prev,
+                        project_description: e.target.value,
+                      }))
+                    }
                     placeholder="Describe your project vision, goals, and requirements..."
                     className="h-32"
                     required
@@ -414,15 +497,27 @@ export default function StartProjectPage() {
 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Budget Range</label>
-                    <Select value={projectData.budget_range} onValueChange={(value) => setProjectData(prev => ({ ...prev, budget_range: value }))}>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Budget Range
+                    </label>
+                    <Select
+                      value={projectData.budget_range}
+                      onValueChange={(value) =>
+                        setProjectData((prev) => ({
+                          ...prev,
+                          budget_range: value,
+                        }))
+                      }
+                    >
                       <SelectTrigger>
                         <SelectValue placeholder="Select budget range" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="under_5k">Under $5,000</SelectItem>
                         <SelectItem value="5k_15k">$5,000 - $15,000</SelectItem>
-                        <SelectItem value="15k_50k">$15,000 - $50,000</SelectItem>
+                        <SelectItem value="15k_50k">
+                          $15,000 - $50,000
+                        </SelectItem>
                         <SelectItem value="50k_plus">$50,000+</SelectItem>
                         <SelectItem value="not_sure">Not Sure</SelectItem>
                       </SelectContent>
@@ -430,26 +525,42 @@ export default function StartProjectPage() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-slate-700 mb-2">Timeline</label>
+                    <label className="block text-sm font-medium text-slate-700 mb-2">
+                      Timeline
+                    </label>
                     <Input
                       value={projectData.timeline}
-                      onChange={(e) => setProjectData(prev => ({ ...prev, timeline: e.target.value }))}
+                      onChange={(e) =>
+                        setProjectData((prev) => ({
+                          ...prev,
+                          timeline: e.target.value,
+                        }))
+                      }
                       placeholder="e.g., 2 months, ASAP, flexible"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Target Audience</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Target Audience
+                  </label>
                   <Input
                     value={projectData.target_audience}
-                    onChange={(e) => setProjectData(prev => ({ ...prev, target_audience: e.target.value }))}
+                    onChange={(e) =>
+                      setProjectData((prev) => ({
+                        ...prev,
+                        target_audience: e.target.value,
+                      }))
+                    }
                     placeholder="Who will use this product?"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-slate-700 mb-2">Upload Files (Optional)</label>
+                  <label className="block text-sm font-medium text-slate-700 mb-2">
+                    Upload Files (Optional)
+                  </label>
                   <div
                     className="border-2 border-dashed border-slate-300 rounded-xl p-6 text-center cursor-pointer hover:border-indigo-400 transition-colors"
                     onClick={() => fileInputRef.current?.click()}
@@ -463,16 +574,25 @@ export default function StartProjectPage() {
                       accept="image/*,.pdf,.txt,.docx"
                     />
                     <Paperclip className="w-8 h-8 text-slate-400 mx-auto mb-2" />
-                    <p className="text-slate-600">Drop files here or click to upload</p>
-                    <p className="text-slate-400 text-xs mt-1">Images, PDFs, documents welcome</p>
+                    <p className="text-slate-600">
+                      Drop files here or click to upload
+                    </p>
+                    <p className="text-slate-400 text-xs mt-1">
+                      Images, PDFs, documents welcome
+                    </p>
                   </div>
 
                   {uploadedFiles.length > 0 && (
                     <div className="mt-4 space-y-2">
                       {uploadedFiles.map((file, index) => (
-                        <div key={index} className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg">
+                        <div
+                          key={index}
+                          className="flex items-center gap-2 p-2 bg-slate-50 rounded-lg"
+                        >
                           <FileText className="w-4 h-4 text-blue-600" />
-                          <span className="text-sm text-slate-700">{file.name}</span>
+                          <span className="text-sm text-slate-700">
+                            {file.name}
+                          </span>
                           <Check className="w-4 h-4 text-green-500 ml-auto" />
                         </div>
                       ))}
@@ -506,7 +626,7 @@ export default function StartProjectPage() {
   }
 
   // Processing Screen
-  if (currentStep === 'processing') {
+  if (currentStep === "processing") {
     return (
       <div className="min-h-screen flex items-center justify-center p-4">
         <div
@@ -546,15 +666,41 @@ export default function StartProjectPage() {
             />
           ))}
         </div>
-        <Card className="max-w-md w-full glass-morphism border border-white/20 rounded-3xl">
+
+        {/* Updated Card Content */}
+        <Card className="max-w-md w-full glass-morphism border border-white/20 rounded-3xl relative overflow-hidden">
+          {/* Optional: Add a subtle loading bar at the very top */}
+          <div
+            className="absolute top-0 left-0 h-1 bg-gradient-to-r from-cyan-400 to-purple-500 transition-all duration-700 ease-out"
+            style={{ width: `${progressValue}%` }}
+          />
+
           <CardContent className="p-8 text-center">
-            <div className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse">
-              <Bot className="w-10 h-10 text-white" />
+            <div className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 animate-pulse shadow-[0_0_30px_rgba(168,85,247,0.4)]">
+              {progressValue < 90 ? (
+                <Bot className="w-10 h-10 text-white animate-bounce" />
+              ) : (
+                <Check className="w-10 h-10 text-white animate-in zoom-in" />
+              )}
             </div>
-            <h2 className="text-2xl font-bold text-white mb-4">AI is Analyzing Your Project</h2>
-            <p className="text-slate-300 mb-6">Our advanced AI is creating a comprehensive project analysis and proposal tailored specifically for you.</p>
-            <Progress value={75} className="mb-4" />
-            <p className="text-slate-400 text-sm">This usually takes 30-60 seconds...</p>
+
+            <h2 className="text-2xl font-bold text-white mb-2">
+              {progressValue < 100 ? "Processing Project" : "Complete!"}
+            </h2>
+
+            {/* Dynamic Status Text */}
+            <p className="text-slate-300 mb-8 min-h-[3rem] transition-all duration-300">
+              {processingStatus}
+            </p>
+
+            <div className="space-y-2">
+              <Progress value={progressValue} className="h-2" />
+              <div className="flex justify-between text-xs text-slate-400 px-1">
+                <span>Analysis</span>
+                <span>Report</span>
+                <span>Finalize</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -562,7 +708,7 @@ export default function StartProjectPage() {
   }
 
   // Project Report
-  if (currentStep === 'report' && createdProject) {
+  if (currentStep === "report" && createdProject) {
     return (
       <div className="min-h-screen py-8">
         <div
@@ -608,13 +754,17 @@ export default function StartProjectPage() {
             <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-2xl flex items-center justify-center mx-auto">
               <Check className="w-10 h-10 text-white" />
             </div>
-            <h1 className="text-4xl font-bold text-white">Your AI-Generated Project Report</h1>
-            <p className="text-white px-6 md:max-w-lg mx-auto">Our AI has analyzed your requirements and created a comprehensive project plan</p>
+            <h1 className="text-4xl font-bold text-white">
+              Your AI-Generated Project Report
+            </h1>
+            <p className="text-white px-6 md:max-w-lg mx-auto">
+              Our AI has analyzed your requirements and created a comprehensive
+              project plan
+            </p>
           </div>
 
           {/* Report Content */}
           <div className="grid lg:grid-cols-3 gap-8">
-
             {/* Main Report */}
             <div className="lg:col-span-2 space-y-6">
               <Card className="border-0 shadow-lg rounded-2xl">
@@ -628,7 +778,12 @@ export default function StartProjectPage() {
                       variant="ghost"
                       size="sm"
                       className="text-white hover:bg-white/20"
-                      onClick={() => handleDownloadReport(createdProject.ai_analysis, createdProject.company_name)}
+                      onClick={() =>
+                        handleDownloadReport(
+                          createdProject.ai_analysis,
+                          createdProject.company_name
+                        )
+                      }
                     >
                       <Download className="w-4 h-4 mr-2" />
                       Download PDF
@@ -656,37 +811,55 @@ export default function StartProjectPage() {
             <div className="space-y-6">
               <Card className="border-0 shadow-lg rounded-2xl">
                 <CardHeader>
-                  <CardTitle className="text-lg text-slate-900">Project Overview</CardTitle>
+                  <CardTitle className="text-lg text-slate-900">
+                    Project Overview
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Project Type</h4>
+                    <h4 className="font-semibold text-slate-900 mb-1">
+                      Project Type
+                    </h4>
                     <Badge className="bg-blue-100 text-blue-800">
-                      {projectData.project_type?.replace('_', ' ').toUpperCase()}
+                      {projectData.project_type
+                        ?.replace("_", " ")
+                        .toUpperCase()}
                     </Badge>
                   </div>
 
                   <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Budget Range</h4>
+                    <h4 className="font-semibold text-slate-900 mb-1">
+                      Budget Range
+                    </h4>
                     <div className="flex items-center gap-2">
                       <DollarSign className="w-4 h-4 text-green-600" />
-                      <span className="text-slate-700">{projectData.budget_range?.replace('_', ' ')}</span>
+                      <span className="text-slate-700">
+                        {projectData.budget_range?.replace("_", " ")}
+                      </span>
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Timeline</h4>
+                    <h4 className="font-semibold text-slate-900 mb-1">
+                      Timeline
+                    </h4>
                     <div className="flex items-center gap-2">
                       <Calendar className="w-4 h-4 text-purple-600" />
-                      <span className="text-slate-700">{projectData.timeline || 'To be discussed'}</span>
+                      <span className="text-slate-700">
+                        {projectData.timeline || "To be discussed"}
+                      </span>
                     </div>
                   </div>
 
                   <div>
-                    <h4 className="font-semibold text-slate-900 mb-1">Target Audience</h4>
+                    <h4 className="font-semibold text-slate-900 mb-1">
+                      Target Audience
+                    </h4>
                     <div className="flex items-center gap-2">
                       <Target className="w-4 h-4 text-orange-600" />
-                      <span className="text-slate-700">{projectData.target_audience || 'General users'}</span>
+                      <span className="text-slate-700">
+                        {projectData.target_audience || "General users"}
+                      </span>
                     </div>
                   </div>
                 </CardContent>
@@ -694,7 +867,9 @@ export default function StartProjectPage() {
 
               <Card className="border-0 shadow-lg rounded-2xl">
                 <CardHeader>
-                  <CardTitle className="text-lg text-slate-900">Next Steps</CardTitle>
+                  <CardTitle className="text-lg text-slate-900">
+                    Next Steps
+                  </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
                   <div className="space-y-3">
@@ -702,21 +877,27 @@ export default function StartProjectPage() {
                       <div className="w-6 h-6 bg-green-500 rounded-full flex items-center justify-center">
                         <Check className="w-3 h-3 text-white" />
                       </div>
-                      <span className="text-sm text-slate-700">Project analysis completed</span>
+                      <span className="text-sm text-slate-700">
+                        Project analysis completed
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-3 p-3 bg-yellow-50 rounded-lg">
                       <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
                         2
                       </div>
-                      <span className="text-sm text-slate-700">Awaiting team review</span>
+                      <span className="text-sm text-slate-700">
+                        Awaiting team review
+                      </span>
                     </div>
 
                     <div className="flex items-center gap-3 p-3 bg-slate-50 rounded-lg">
                       <div className="w-6 h-6 bg-slate-300 rounded-full flex items-center justify-center text-white text-xs font-bold">
                         3
                       </div>
-                      <span className="text-sm text-slate-500">Proposal delivery (24-48h)</span>
+                      <span className="text-sm text-slate-500">
+                        Proposal delivery (24-48h)
+                      </span>
                     </div>
                   </div>
 
@@ -732,7 +913,7 @@ export default function StartProjectPage() {
                       variant="outline"
                       className="w-full"
                       onClick={() => {
-                        setCurrentStep('welcome');
+                        setCurrentStep("welcome");
                         setProjectData({
                           client_name: currentUser.full_name || "",
                           client_email: currentUser.email || "",
@@ -743,7 +924,7 @@ export default function StartProjectPage() {
                           design_preferences: "",
                           target_audience: "",
                           budget_range: "",
-                          timeline: ""
+                          timeline: "",
                         });
                         setCreatedProject(null);
                         setUploadedFiles([]);

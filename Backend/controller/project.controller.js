@@ -36,20 +36,30 @@ export const createProject = async (req, res) => {
     if (!client_name || !client_email || !project_description) {
       return res.status(400).json({
         success: false,
-        message: "Missing required fields: client_name, client_email or project_description",
+        message:
+          "Missing required fields: client_name, client_email or project_description",
       });
     }
 
+    // 2. Create Project (Critical Path - Must Await)
     const newProject = await Project.create({
       client_name,
       client_email,
       company_name,
       project_type: project_type || undefined, // Treat empty string as not provided
       project_description,
-      key_features: Array.isArray(key_features) ? key_features : key_features ? [key_features] : [],
+      key_features: Array.isArray(key_features)
+        ? key_features
+        : key_features
+        ? [key_features]
+        : [],
       design_preferences,
       target_audience,
-      uploaded_files: Array.isArray(uploaded_files) ? uploaded_files : uploaded_files ? [uploaded_files] : [],
+      uploaded_files: Array.isArray(uploaded_files)
+        ? uploaded_files
+        : uploaded_files
+        ? [uploaded_files]
+        : [],
       ai_analysis,
       status: status || "completed",
       budget_range: budget_range || undefined, // Treat empty string as not provided
@@ -61,146 +71,188 @@ export const createProject = async (req, res) => {
       referral_code, // Save the referral code directly on the project
     });
 
-    // Handle Referral
-    if (referral_code) {
-      console.log(`🔍 Processing referral code: "${referral_code}"`);
-      try {
-        // Case-insensitive lookup
-        const affiliate = await Affiliate.findOne({
-          referral_code: { $regex: new RegExp(`^${referral_code}$`, "i") }
-        });
-
-        if (affiliate) {
-          console.log(`✅ Affiliate found: ${affiliate.name} (${affiliate._id})`);
-
-          const newReferral = await Referral.create({
-            affiliate_id: affiliate._id,
-            referred_user_email: client_email,
-            project_id: newProject._id,
-            status: "pending",
-            commission_amount: 0, // Will be calculated later based on project value
-            conversion_date: new Date(),
-          });
-          console.log(`✅ Referral created: ${newReferral._id}`);
-
-          // Update affiliate stats
-          const updatedAffiliate = await Affiliate.findByIdAndUpdate(affiliate._id, {
-            $inc: { total_referrals: 1 }
-          }, { new: true });
-          console.log(`📈 Affiliate stats updated. New total referrals: ${updatedAffiliate.total_referrals}`);
-
-        } else {
-          console.warn(`⚠️  Referral code "${referral_code}" provided but no matching affiliate found.`);
-        }
-      } catch (referralError) {
-        console.error("❌ Error processing referral:", referralError);
-        // Don't fail the project creation if referral fails
-      }
-    } else {
-      console.log("ℹ️  No referral code provided for this project.");
-    }
-
-    // Optionally create tasks if provided in body.tasks
-    if (Array.isArray(req.body.tasks) && req.body.tasks.length > 0) {
-      const taskDocs = req.body.tasks.map((t) => ({
-        project_id: newProject._id.toString(),
-        title: t.title || "",
-        description: t.description || "",
-        assignee_email: t.assignee_email || null,
-        due_date: t.due_date ? new Date(t.due_date) : new Date(),
-        status: t.status || "todo",
-      }));
-
-      await Task.insertMany(taskDocs);
-    }
-
-    // Automatically generate professional report and send email if ai_analysis exists
-    if (newProject.ai_analysis && newProject.client_email) {
-      console.log('\n📊 Auto-generating professional report...');
-
-      try {
-        const reportPrompt = `
-          You are representing Feelize, a premium software service company with decades of experience.
-
-          **CRITICAL INSTRUCTIONS:**
-          - Output ONLY markdown sections - NO preamble, NO titles, NO metadata
-          - DO NOT include: "Date:", "Prepared For:", "Project:", "Analysis by:", document titles, or ANY header text before the first section
-          - Start IMMEDIATELY with: ## Executive Summary
-          - Use "we / our team / Feelize recommends" throughout
-          - Each section = MAXIMUM 3 paragraphs (2-4 sentences each)
-          - Be direct and specific - reference customer's exact inputs
-          - NO generic filler, NO buzzwords, NO fluff
-
-          **CUSTOMER'S PROJECT INFORMATION:**
-          - Customer Name: ${newProject.client_name}
-          - Company: ${newProject.company_name || 'N/A'}
-          - Project Type: ${newProject.project_type}
-          - Budget Range: ${newProject.budget_range}
-          - Expected Timeline: ${newProject.timeline}
-          - Project Description: ${newProject.project_description}
-          - Initial Analysis: ${newProject.ai_analysis}
-
-          **FEELIZE SERVICE TIERS & PRICING:**
-          1. Campaign Site: $2,999 (1-2 weeks) - Landing pages, lead forms, basic analytics
-          2. E-commerce Pro: $7,999 (4-6 weeks) - Full store, up to 100 products, payments, inventory
-          3. SaaS Platform: $20,000+ (8-16 weeks) - Custom web app, auth, database, subscriptions, cloud
-          4. Hourly Rate: $75/hr - On-demand tasks, maintenance, consultations
-
-          **REQUIRED SECTIONS (3 paragraphs max each):**
-          ## Executive Summary
-          ## Technical Architecture & Our Recommendations
-          ## UX & Design Strategy
-          ## Development Roadmap & Milestones
-          ## Investment Breakdown
-          ## Risks & Mitigation
-          ## Success Metrics
-          ## Next Steps
-
-          Start your response with "## Executive Summary" (no other text before it):
-        `;
-
-        console.log('🤖 Calling Gemini to generate report...');
-        const markdownReport = await generateWithLLM(reportPrompt);
-
-        console.log(`✅ Report generated (${markdownReport.length} characters)`);
-
-        // Save report to project
-        newProject.professional_report_html = markdownReport;
-        await newProject.save();
-        console.log('💾 Report saved to project');
-
-        // Send email with report
-        console.log(`📧 Sending report to ${newProject.client_email}...`);
-        console.log(`   - SMTP Host: ${process.env.SMTP_HOST || 'Not set'}`);
-        console.log(`   - Email User: ${process.env.EMAIL_USER ? 'Configured' : 'Not set'}`);
-
-        await sendProjectReport({
-          clientEmail: newProject.client_email,
-          clientName: newProject.client_name,
-          projectType: newProject.project_type,
-          reportContent: markdownReport,
-          projectId: newProject._id.toString(),
-        });
-
-        console.log(`✅ Report email sent successfully to ${newProject.client_email}\n`);
-      } catch (reportError) {
-        console.error('⚠️  Failed to generate/send report (project still created):', reportError.message);
-        // Don't fail project creation if report generation fails
-      }
-    } else {
-      if (!newProject.ai_analysis) {
-        console.log('⏭️  Skipping report generation: No AI analysis provided');
-      }
-      if (!newProject.client_email) {
-        console.log('⏭️  Skipping email: No client email provided');
-      }
-    }
-
-    return res.status(201).json({
+    // 3. Send Response IMMEDIATELY
+    // We do not wait for referrals, tasks, LLM, or Email.
+    // The user gets instant feedback.
+    res.status(201).json({
       success: true,
-      message: "Project created successfully",
+      message:
+        "Project created successfully. Report is being generated in the background.",
       data: newProject,
     });
+
+    // =========================================================================
+    // 4. BACKGROUND PROCESSING (Fire-and-Forget)
+    // =========================================================================
+
+    // We wrap this in an async IIFE or function call without 'await'ing it in the main flow.
+    processPostCreationTasks(newProject, req.body).catch((err) => {
+      console.error(
+        `❌ Background processing failed for project ${newProject._id}:`,
+        err
+      );
+    });
+
+    // Handle Referral
+    // if (referral_code) {
+    //   console.log(`🔍 Processing referral code: "${referral_code}"`);
+    //   try {
+    //     // Case-insensitive lookup
+    //     const affiliate = await Affiliate.findOne({
+    //       referral_code: { $regex: new RegExp(`^${referral_code}$`, "i") },
+    //     });
+
+    //     if (affiliate) {
+    //       console.log(
+    //         `✅ Affiliate found: ${affiliate.name} (${affiliate._id})`
+    //       );
+
+    //       const newReferral = await Referral.create({
+    //         affiliate_id: affiliate._id,
+    //         referred_user_email: client_email,
+    //         project_id: newProject._id,
+    //         status: "pending",
+    //         commission_amount: 0, // Will be calculated later based on project value
+    //         conversion_date: new Date(),
+    //       });
+    //       console.log(`✅ Referral created: ${newReferral._id}`);
+
+    //       // Update affiliate stats
+    //       const updatedAffiliate = await Affiliate.findByIdAndUpdate(
+    //         affiliate._id,
+    //         {
+    //           $inc: { total_referrals: 1 },
+    //         },
+    //         { new: true }
+    //       );
+    //       console.log(
+    //         `📈 Affiliate stats updated. New total referrals: ${updatedAffiliate.total_referrals}`
+    //       );
+    //     } else {
+    //       console.warn(
+    //         `⚠️  Referral code "${referral_code}" provided but no matching affiliate found.`
+    //       );
+    //     }
+    //   } catch (referralError) {
+    //     console.error("❌ Error processing referral:", referralError);
+    //     // Don't fail the project creation if referral fails
+    //   }
+    // } else {
+    //   console.log("ℹ️  No referral code provided for this project.");
+    // }
+
+    // // Optionally create tasks if provided in body.tasks
+    // if (Array.isArray(req.body.tasks) && req.body.tasks.length > 0) {
+    //   const taskDocs = req.body.tasks.map((t) => ({
+    //     project_id: newProject._id.toString(),
+    //     title: t.title || "",
+    //     description: t.description || "",
+    //     assignee_email: t.assignee_email || null,
+    //     due_date: t.due_date ? new Date(t.due_date) : new Date(),
+    //     status: t.status || "todo",
+    //   }));
+
+    //   await Task.insertMany(taskDocs);
+    // }
+
+    // // Automatically generate professional report and send email if ai_analysis exists
+    // if (newProject.ai_analysis && newProject.client_email) {
+    //   console.log("\n📊 Auto-generating professional report...");
+
+    //   try {
+    //     const reportPrompt = `
+    //       You are representing Feelize, a premium software service company with decades of experience.
+
+    //       **CRITICAL INSTRUCTIONS:**
+    //       - Output ONLY markdown sections - NO preamble, NO titles, NO metadata
+    //       - DO NOT include: "Date:", "Prepared For:", "Project:", "Analysis by:", document titles, or ANY header text before the first section
+    //       - Start IMMEDIATELY with: ## Executive Summary
+    //       - Use "we / our team / Feelize recommends" throughout
+    //       - Each section = MAXIMUM 3 paragraphs (2-4 sentences each)
+    //       - Be direct and specific - reference customer's exact inputs
+    //       - NO generic filler, NO buzzwords, NO fluff
+
+    //       **CUSTOMER'S PROJECT INFORMATION:**
+    //       - Customer Name: ${newProject.client_name}
+    //       - Company: ${newProject.company_name || "N/A"}
+    //       - Project Type: ${newProject.project_type}
+    //       - Budget Range: ${newProject.budget_range}
+    //       - Expected Timeline: ${newProject.timeline}
+    //       - Project Description: ${newProject.project_description}
+    //       - Initial Analysis: ${newProject.ai_analysis}
+
+    //       **FEELIZE SERVICE TIERS & PRICING:**
+    //       1. Campaign Site: $2,999 (1-2 weeks) - Landing pages, lead forms, basic analytics
+    //       2. E-commerce Pro: $7,999 (4-6 weeks) - Full store, up to 100 products, payments, inventory
+    //       3. SaaS Platform: $20,000+ (8-16 weeks) - Custom web app, auth, database, subscriptions, cloud
+    //       4. Hourly Rate: $75/hr - On-demand tasks, maintenance, consultations
+
+    //       **REQUIRED SECTIONS (3 paragraphs max each):**
+    //       ## Executive Summary
+    //       ## Technical Architecture & Our Recommendations
+    //       ## UX & Design Strategy
+    //       ## Development Roadmap & Milestones
+    //       ## Investment Breakdown
+    //       ## Risks & Mitigation
+    //       ## Success Metrics
+    //       ## Next Steps
+
+    //       Start your response with "## Executive Summary" (no other text before it):
+    //     `;
+
+    //     console.log("🤖 Calling Gemini to generate report...");
+    //     const markdownReport = await generateWithLLM(reportPrompt);
+
+    //     console.log(
+    //       `✅ Report generated (${markdownReport.length} characters)`
+    //     );
+
+    //     // Save report to project
+    //     newProject.professional_report_html = markdownReport;
+    //     await newProject.save();
+    //     console.log("💾 Report saved to project");
+
+    //     // Send email with report
+    //     console.log(`📧 Sending report to ${newProject.client_email}...`);
+    //     console.log(`   - SMTP Host: ${process.env.SMTP_HOST || "Not set"}`);
+    //     console.log(
+    //       `   - Email User: ${
+    //         process.env.EMAIL_USER ? "Configured" : "Not set"
+    //       }`
+    //     );
+
+    //     await sendProjectReport({
+    //       clientEmail: newProject.client_email,
+    //       clientName: newProject.client_name,
+    //       projectType: newProject.project_type,
+    //       reportContent: markdownReport,
+    //       projectId: newProject._id.toString(),
+    //     });
+
+    //     console.log(
+    //       `✅ Report email sent successfully to ${newProject.client_email}\n`
+    //     );
+    //   } catch (reportError) {
+    //     console.error(
+    //       "⚠️  Failed to generate/send report (project still created):",
+    //       reportError.message
+    //     );
+    //     // Don't fail project creation if report generation fails
+    //   }
+    // } else {
+    //   if (!newProject.ai_analysis) {
+    //     console.log("⏭️  Skipping report generation: No AI analysis provided");
+    //   }
+    //   if (!newProject.client_email) {
+    //     console.log("⏭️  Skipping email: No client email provided");
+    //   }
+    // }
+
+    // return res.status(201).json({
+    //   success: true,
+    //   message: "Project created successfully",
+    //   data: newProject,
+    // });
   } catch (error) {
     console.error("Failed to create project:", error);
     return res.status(500).json({
@@ -211,18 +263,141 @@ export const createProject = async (req, res) => {
   }
 };
 
+/**
+ * Handles heavy tasks in the background so the user doesn't wait.
+ */
+const processPostCreationTasks = async (newProject, requestBody) => {
+  const { referral_code, tasks } = requestBody;
+
+  // A. Run Database side-effects in parallel (Referrals & Tasks)
+  const dbPromises = [];
+
+  // --- Referral Logic ---
+  if (referral_code) {
+    dbPromises.push(
+      (async () => {
+        try {
+          console.log(`🔍 Processing referral code: "${referral_code}"`);
+          const affiliate = await Affiliate.findOne({
+            referral_code: { $regex: new RegExp(`^${referral_code}$`, "i") },
+          });
+
+          if (affiliate) {
+            await Referral.create({
+              affiliate_id: affiliate._id,
+              referred_user_email: newProject.client_email,
+              project_id: newProject._id,
+              status: "pending",
+              commission_amount: 0,
+              conversion_date: new Date(),
+            });
+            await Affiliate.findByIdAndUpdate(affiliate._id, {
+              $inc: { total_referrals: 1 },
+            });
+            console.log(
+              `✅ Referral processed for affiliate: ${affiliate.name}`
+            );
+          }
+        } catch (e) {
+          console.error("❌ Error processing referral:", e);
+        }
+      })()
+    );
+  }
+
+  // --- Task Logic ---
+  if (Array.isArray(tasks) && tasks.length > 0) {
+    dbPromises.push(
+      (async () => {
+        const taskDocs = tasks.map((t) => ({
+          project_id: newProject._id.toString(),
+          title: t.title || "",
+          description: t.description || "",
+          assignee_email: t.assignee_email || null,
+          due_date: t.due_date ? new Date(t.due_date) : new Date(),
+          status: t.status || "todo",
+        }));
+        await Task.insertMany(taskDocs);
+      })()
+    );
+  }
+
+  // Wait for DB side effects to finish (optional, but good for stability)
+  await Promise.all(dbPromises);
+
+  // B. LLM & Email Generation (The Heavy Lifting)
+  if (newProject.ai_analysis && newProject.client_email) {
+    console.log("\n📊 Auto-generating professional report (Background Job)...");
+
+    try {
+      const reportPrompt = `
+        You are representing Feelize, a premium software service company.
+        
+        **CRITICAL INSTRUCTIONS:**
+        - Output ONLY markdown sections
+        - Start IMMEDIATELY with: ## Executive Summary
+        - NO conversational filler
+        
+        **PROJECT INFO:**
+        - Client: ${newProject.client_name}
+        - Project: ${newProject.project_description}
+        - Type: ${newProject.project_type}
+        - Analysis: ${newProject.ai_analysis}
+        
+        **REQUIRED SECTIONS:**
+        ## Executive Summary
+        ## Technical Recommendations
+        ## UX Strategy
+        ## Development Roadmap
+        ## Investment Breakdown
+        ## Risks & Mitigation
+        
+        Keep it professional, concise, and persuasive.
+      `;
+
+      // 1. Generate Report
+      const markdownReport = await generateWithLLM(reportPrompt);
+      console.log(
+        `✅ Background: Report generated (${markdownReport.length} chars)`
+      );
+
+      // 2. Save to DB
+      // We must update the document since it was already sent to client
+      await Project.findByIdAndUpdate(newProject._id, {
+        professional_report_html: markdownReport,
+      });
+      console.log("💾 Background: Report saved to DB");
+
+      // 3. Send Email
+      console.log(
+        `📧 Background: Sending email to ${newProject.client_email}...`
+      );
+      await sendProjectReport({
+        clientEmail: newProject.client_email,
+        clientName: newProject.client_name,
+        projectType: newProject.project_type,
+        reportContent: markdownReport,
+        projectId: newProject._id.toString(),
+      });
+      console.log(`✅ Background: Email sent successfully.`);
+    } catch (reportError) {
+      console.error(
+        "⚠️ Background Job Failed (Report/Email):",
+        reportError.message
+      );
+    }
+  }
+};
+
 // List projects with filtering and sorting. Returns array of projects.
 export const listProjects = async (req, res) => {
   try {
     const { email } = req.user; // From verifySessionMiddleware
-    const { status, sort = '-created_date', limit = 50 } = req.query;
+    const { status, sort = "-created_date", limit = 50 } = req.query;
 
     // Build query
     const query = {
-      $or: [
-        { client_email: email },
-        { created_by: email }
-      ]
+      $or: [{ client_email: email }, { created_by: email }],
     };
 
     // Add status filter if provided
@@ -242,7 +417,7 @@ export const listProjects = async (req, res) => {
       id: p._id.toString(),
       ...p,
       created_date: p.createdAt.toISOString(),
-      updated_date: p.updatedAt.toISOString()
+      updated_date: p.updatedAt.toISOString(),
     }));
 
     return res.status(200).json({
@@ -250,14 +425,14 @@ export const listProjects = async (req, res) => {
       data: mapped,
       meta: {
         total: mapped.length,
-        has_more: mapped.length === parseInt(limit)
-      }
+        has_more: mapped.length === parseInt(limit),
+      },
     });
   } catch (error) {
     console.error("Failed to list projects:", error);
     return res.status(500).json({
       success: false,
-      error: error.message || error
+      error: error.message || error,
     });
   }
 };
@@ -271,26 +446,28 @@ export const getProject = async (req, res) => {
     // Find project and verify ownership
     const project = await Project.findOne({
       _id: id,
-      $or: [
-        { client_email: email },
-        { created_by: email }
-      ]
-    }).lean().exec();
+      $or: [{ client_email: email }, { created_by: email }],
+    })
+      .lean()
+      .exec();
 
     if (!project) {
       return res.status(404).json({
         success: false,
-        message: "Project not found or access denied"
+        message: "Project not found or access denied",
       });
     }
 
     // Get associated tasks
     const tasks = await Task.find({
-      project_id: id
-    }).sort({
-      status: 1,
-      due_date: 1
-    }).lean().exec();
+      project_id: id,
+    })
+      .sort({
+        status: 1,
+        due_date: 1,
+      })
+      .lean()
+      .exec();
 
     // Format response
     const response = {
@@ -298,22 +475,22 @@ export const getProject = async (req, res) => {
       ...project,
       created_date: project.createdAt.toISOString(),
       updated_date: project.updatedAt.toISOString(),
-      tasks: tasks.map(t => ({
+      tasks: tasks.map((t) => ({
         id: t._id.toString(),
         ...t,
-        due_date: t.due_date.toISOString()
-      }))
+        due_date: t.due_date.toISOString(),
+      })),
     };
 
     return res.status(200).json({
       success: true,
-      data: response
+      data: response,
     });
   } catch (error) {
     console.error("Failed to get project:", error);
     return res.status(500).json({
       success: false,
-      error: error.message || error
+      error: error.message || error,
     });
   }
 };
@@ -323,20 +500,30 @@ export const updateProject = async (req, res) => {
   try {
     const { id } = req.params;
     const updates = req.body || {};
-    const updated = await Project.findByIdAndUpdate(id, updates, { new: true }).lean().exec();
-    if (!updated) return res.status(404).json({ success: false, message: "Project not found" });
-    return res.status(200).json({ success: true, data: { id: updated._id.toString(), ...updated } });
+    const updated = await Project.findByIdAndUpdate(id, updates, { new: true })
+      .lean()
+      .exec();
+    if (!updated)
+      return res
+        .status(404)
+        .json({ success: false, message: "Project not found" });
+    return res.status(200).json({
+      success: true,
+      data: { id: updated._id.toString(), ...updated },
+    });
   } catch (error) {
     console.error("Failed to update project:", error);
-    return res.status(500).json({ success: false, error: error.message || error });
+    return res
+      .status(500)
+      .json({ success: false, error: error.message || error });
   }
 };
 
 // Generate professional HTML report using LLM and save to project.professional_report_html
 export const generateReport = async (req, res) => {
-  console.log('\n' + '='.repeat(60));
-  console.log('🚀 GENERATE REPORT - STARTED');
-  console.log('='.repeat(60));
+  console.log("\n" + "=".repeat(60));
+  console.log("🚀 GENERATE REPORT - STARTED");
+  console.log("=".repeat(60));
 
   try {
     const { id } = req.params;
@@ -344,8 +531,10 @@ export const generateReport = async (req, res) => {
 
     const project = await Project.findById(id).exec();
     if (!project) {
-      console.log('❌ Project not found');
-      return res.status(404).json({ success: false, message: "Project not found" });
+      console.log("❌ Project not found");
+      return res
+        .status(404)
+        .json({ success: false, message: "Project not found" });
     }
 
     console.log(`✅ Step 1 Complete: Project found`);
@@ -368,7 +557,7 @@ export const generateReport = async (req, res) => {
 
       **CUSTOMER'S PROJECT INFORMATION:**
       - Customer Name: ${project.client_name}
-      - Company: ${project.company_name || 'N/A'}
+      - Company: ${project.company_name || "N/A"}
       - Project Type: ${project.project_type}
       - Budget Range: ${project.budget_range}
       - Expected Timeline: ${project.timeline}
@@ -411,9 +600,13 @@ export const generateReport = async (req, res) => {
     // Send project report via email if client email is provided
     if (project.client_email) {
       console.log(`\n📧 Step 4: Sending email to ${project.client_email}...`);
-      console.log(`   - Email service configured: ${process.env.EMAIL_USER ? 'YES' : 'NO'}`);
-      console.log(`   - SMTP Host: ${process.env.SMTP_HOST || 'Not set'}`);
-      console.log(`   - SMTP Port: ${process.env.SMTP_PORT || 'Not set'}`);
+      console.log(
+        `   - Email service configured: ${
+          process.env.EMAIL_USER ? "YES" : "NO"
+        }`
+      );
+      console.log(`   - SMTP Host: ${process.env.SMTP_HOST || "Not set"}`);
+      console.log(`   - SMTP Port: ${process.env.SMTP_PORT || "Not set"}`);
 
       try {
         await sendProjectReport({
@@ -423,9 +616,13 @@ export const generateReport = async (req, res) => {
           reportContent: markdownReport,
           projectId: project._id.toString(),
         });
-        console.log(`✅ Step 4 Complete: Email sent successfully to ${project.client_email}`);
+        console.log(
+          `✅ Step 4 Complete: Email sent successfully to ${project.client_email}`
+        );
       } catch (emailError) {
-        console.log(`⚠️  Step 4 Warning: Email sending failed (continuing anyway)`);
+        console.log(
+          `⚠️  Step 4 Warning: Email sending failed (continuing anyway)`
+        );
         console.error(`   Error details: ${emailError.message}`);
         console.error(`   Full error:`, emailError);
         // Don't fail the request if email fails, just log the error
@@ -434,20 +631,28 @@ export const generateReport = async (req, res) => {
       console.log(`\n⏭️  Step 4 Skipped: No client email provided`);
     }
 
-    console.log('\n' + '='.repeat(60));
-    console.log('✅ GENERATE REPORT - COMPLETED SUCCESSFULLY');
-    console.log('='.repeat(60) + '\n');
+    console.log("\n" + "=".repeat(60));
+    console.log("✅ GENERATE REPORT - COMPLETED SUCCESSFULLY");
+    console.log("=".repeat(60) + "\n");
 
-    return res.status(200).json({ success: true, data: { id: project._id.toString(), professional_report_html: markdownReport } });
+    return res.status(200).json({
+      success: true,
+      data: {
+        id: project._id.toString(),
+        professional_report_html: markdownReport,
+      },
+    });
   } catch (error) {
-    console.log('\n' + '='.repeat(60));
-    console.log('❌ GENERATE REPORT - FAILED');
-    console.log('='.repeat(60));
+    console.log("\n" + "=".repeat(60));
+    console.log("❌ GENERATE REPORT - FAILED");
+    console.log("=".repeat(60));
     console.error("Error details:", error.message);
     console.error("Full error:", error);
-    console.log('='.repeat(60) + '\n');
+    console.log("=".repeat(60) + "\n");
 
-    return res.status(500).json({ success: false, error: error.message || error });
+    return res
+      .status(500)
+      .json({ success: false, error: error.message || error });
   }
 };
 
