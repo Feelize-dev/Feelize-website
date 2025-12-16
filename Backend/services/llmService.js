@@ -7,34 +7,45 @@
  * - You can set OPENAI_MODEL env var to override model (default: gpt-4 or gpt-3.5-turbo fallback).
  * - Returns the text content of the assistant reply.
  */
-export const generateWithLLM = async (prompt) => {
+export const generateWithLLM = async (prompt, expectJSON = false) => {
   // Use Gemini (Google Generative API) ONLY. Throw if GEMINI_API_KEY is not set.
   const geminiKey = process.env.GEMINI_API_KEY;
   if (!geminiKey) {
-    throw new Error('GEMINI_API_KEY is not set. Set GEMINI_API_KEY in the environment to use Gemini.');
+    throw new Error(
+      "GEMINI_API_KEY is not set. Set GEMINI_API_KEY in the environment to use Gemini."
+    );
   }
+
+  const geminiModel = process.env.GEMINI_MODEL || "gemini-2.5-flash";
 
   // Use the current Gemini model (gemini-1.5-flash is recommended for speed and cost)
   // const geminiModel = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
   // Updated to use the correct v1 endpoint with generateContent method
-  const url = `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-pro:generateContent?key=${geminiKey}`;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${geminiModel}:generateContent?key=${geminiKey}`;
 
   // Build request body for Gemini generateContent endpoint
   const body = {
-    contents: [{
-      parts: [{
-        text: prompt
-      }]
-    }],
+    contents: [
+      {
+        parts: [
+          {
+            text: prompt,
+          },
+        ],
+      },
+    ],
     generationConfig: {
-      temperature: 0.2,
-      maxOutputTokens: 3500, // Reduced for concise reports (~2500-3000 words max)
-    }
+      // 3. OPTIMIZED CONFIGURATION
+      temperature: 0.3, // Slightly higher than 0.2 for better creativity in reports, but still stable
+      maxOutputTokens: 4000,
+
+      responseMimeType: expectJSON ? "application/json" : "text/plain",
+    },
   };
 
   const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
   });
 
@@ -45,16 +56,23 @@ export const generateWithLLM = async (prompt) => {
 
   const data = await res.json();
 
+  // Log only the model used and success status to reduce console  noise
+  console.log(
+    `⚡ Gemini (${geminiModel}) response received. Tokens: ${
+      data?.usageMetadata?.totalTokenCount || "N/A"
+    }`
+  );
+
   // Log the response for debugging
-  console.log('🔍 Gemini API Response:', JSON.stringify(data, null, 2));
+  console.log("🔍 Gemini API Response:", JSON.stringify(data, null, 2));
 
   // Extract text from the current Gemini API response format
   const reply = data?.candidates?.[0]?.content?.parts?.[0]?.text;
 
   if (!reply) {
-    console.error('❌ Gemini returned empty reply!');
-    console.error('Full response structure:', JSON.stringify(data, null, 2));
-    throw new Error('Gemini returned empty reply');
+    console.error("❌ Gemini returned empty reply!");
+    console.error("Full response structure:", JSON.stringify(data, null, 2));
+    throw new Error("Gemini returned empty reply");
   }
 
   return reply;
