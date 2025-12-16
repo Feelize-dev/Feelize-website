@@ -11,7 +11,7 @@ import axios from "axios";
 import logoImage from "@/assets/favicon.svg";
 
 const navigationItems = [
-  { name: "Home", url: createPageUrl("Home"), type: "link" },
+  // { name: "Home", url: createPageUrl("Home"), type: "link" },
   {
     name: "About Us",
     type: "dropdown",

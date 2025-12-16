@@ -522,9 +522,9 @@ const TeamBuilderPage = () => {
       )}
 
       {/* Header */}
-      <div className="text-center mb-8 sm:mb-10 md:mb-12 relative z-10">
+      <div className="text-center mb-8 sm:mb-10 md:mb-12 relative z-10 py-32 md:py-48">
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
+          initial={{ opacity: 0, y: -50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
@@ -642,7 +642,7 @@ const TeamBuilderPage = () => {
       </div>
 
       <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 md:gap-8 relative z-10">
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 md:gap-8 relative z-10 px-10">
 
           {/* Left Panel: Champion Roster */}
           <div className="lg:w-2/3">
@@ -793,7 +793,7 @@ const TeamBuilderPage = () => {
                     <p className="text-xs sm:text-sm text-yellow-300 mb-1 sm:mb-2">🔒 Sign up for our newsletter to generate project reports!</p>
                   </div>
                 )}
-                <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+                <div className="flex flex-wrap flex-col sm:flex-row gap-2 sm:gap-4">
                   <Button 
                     onClick={handleLockInTeam}
                     disabled={columns.selectedTeam.length === 0} 

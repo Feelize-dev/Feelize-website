@@ -89,9 +89,11 @@ export default function AdminPanel() {
     ];
 
     return (
-        <div className="min-h-screen bg-slate-950 text-white p-8">
+        <div className="min-h-screen bg-slate-950 text-white px-20 py-32">
+
             <div className="max-w-7xl mx-auto">
-                <div className="flex items-center justify-between mb-8">
+
+                <div className="flex flex-col-reverse md:flex-row md:items-center justify-between py-16 gap-2 md:gap-0">
                     <div>
                         <h1 className="text-3xl font-bold mb-2">Admin Dashboard</h1>
                         <p className="text-slate-400">Overview of platform activity</p>
@@ -111,12 +113,12 @@ export default function AdminPanel() {
                                     <div className={`p-3 rounded-lg ${item.bgColor}`}>
                                         <item.icon className={`w-6 h-6 ${item.color}`} />
                                     </div>
-                                    <span className="text-2xl font-bold">{item.stat}</span>
+                                    <span className="text-2xl font-bold text-white">{item.stat}</span>
                                 </div>
-                                <h3 className="text-lg font-semibold mb-1">{item.title}</h3>
+                                <h3 className="text-lg font-semibold mb-1 text-white">{item.title}</h3>
                                 <p className="text-sm text-slate-400 mb-4">{item.description}</p>
                                 <Link to={createPageUrl(item.link)}>
-                                    <Button variant="outline" className="w-full border-slate-700 hover:bg-slate-800 text-slate-300">
+                                    <Button className="w-full border-slate-700 bg-slate-800 text-slate-300 hover:bg-slate-200 hover:text-black">
                                         Manage <ArrowRight className="w-4 h-4 ml-2" />
                                     </Button>
                                 </Link>

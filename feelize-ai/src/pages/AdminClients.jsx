@@ -59,7 +59,7 @@ export default function AdminClients() {
     return (
         <div className="min-h-screen bg-slate-950 text-white p-8">
             <div className="max-w-7xl mx-auto">
-                <div className="flex items-center gap-4 mb-8">
+                <div className="flex items-center gap-4 mb-8 pt-28">
                     <Link to={createPageUrl("AdminPanel")}>
                         <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
                             <ArrowLeft className="w-5 h-5" />

@@ -341,12 +341,12 @@ const HomePage = () => {
       {/* Main Content */}
       <div className="relative" style={{ zIndex: 1 }}>
         {/* Hero Section */}
-        <section className="w-full px-4 sm:px-6 md:px-10 pt-20 sm:pt-24 pb-16 sm:pb-24 md:pb-32 min-h-screen flex items-center justify-center">
+        <section className="w-full px-4 sm:px-6 md:px-10 pt-32 h-screen flex items-center justify-center">
           <motion.div
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="flex flex-col items-center text-center gap-6 sm:gap-8 md:gap-10 max-w-6xl w-full"
+            className="flex flex-col items-center text-center gap-4 sm:gap-6 md:gap-8 max-w-6xl w-full"
           >
             <div className="mb-2 sm:mb-4">
               <svg
