@@ -14,6 +14,9 @@ import activityRoutes from "./routes/activityRoutes.js";
 import integrationRoutes from "./routes/integrationRoutes.js";
 import projectRoutes from "./routes/projectRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import meetingRoutes from "./routes/meetingRoutes.js";
+
+
 
 dotenv.config(); // Load .env variables
 
@@ -65,6 +68,7 @@ app.use("/api/tasks", taskRoutes);
 app.use("/api/activity-logs", activityRoutes);
 app.use("/api", integrationRoutes); // Mounts at /api/llm, /api/email, etc.
 app.use("/api/admin", adminRoutes); // Admin Panel Routes
+app.use("/api/meetings", meetingRoutes);
 
 // Start Server
 const PORT = process.env.PORT || 3000;

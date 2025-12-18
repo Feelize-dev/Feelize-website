@@ -32,6 +32,7 @@ import {
   ArrowRight // NEW: Icon for navigation
 } from "lucide-react";
 import { useUser } from "@/hooks/useUser";
+import axios from "axios";
 
 // AIAnalysisReport Component: Renders formatted AI analysis text
 // This component remains defined as it may be used by the new ProjectReport page,
@@ -96,6 +97,23 @@ export default function UserDashboard() {
       };
 
       fetchProjects();
+
+      // Fetch affiliate data if not already present
+      const fetchAffiliateData = async () => {
+        try {
+          const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/admin/affiliates/me`, { withCredentials: true });
+          if (res.data.success) {
+            setAffiliateData(res.data.data.affiliate);
+            setReferrals(res.data.data.referrals);
+          }
+        } catch (error) {
+          // It's okay if 404/error, means user is not an affiliate
+          console.log("Not an affiliate or error fetching data");
+        }
+      };
+
+      // We check if fetchAffiliateData should be called
+      fetchAffiliateData();
     }
   }, [user]);
 
@@ -251,25 +269,57 @@ export default function UserDashboard() {
               </div>
 
               {referrals.length > 0 && (
-                <div className="mt-4">
-                  <h4 className="font-semibold text-slate-900 mb-2">Recent Referrals</h4>
-                  <div className="space-y-2">
-                    {referrals.slice(0, 5).map((referral) => (
-                      <div key={referral.id} className="bg-white rounded-lg p-3 flex items-center justify-between">
-                        <div>
-                          <p className="font-medium text-slate-900">{referral.referred_email}</p>
-                          <p className="text-xs text-slate-500">
-                            {new Date(referral.created_date).toLocaleDateString()}
-                          </p>
-                        </div>
-                        <Badge className={`text-xs ${referral.status === 'paid' ? 'bg-green-100 text-green-800' :
-                          referral.status === 'completed' ? 'bg-blue-100 text-blue-800' :
-                            'bg-yellow-100 text-yellow-800'
-                          }`}>
-                          {referral.status}
-                        </Badge>
-                      </div>
-                    ))}
+                <div className="mt-6">
+                  <h4 className="font-semibold text-slate-900 mb-4 flex items-center gap-2">
+                    <Users className="w-5 h-5 text-indigo-600" />
+                    Referred Projects
+                  </h4>
+                  <div className="overflow-x-auto bg-white rounded-lg border border-slate-100">
+                    <table className="w-full text-sm text-left">
+                      <thead className="bg-slate-50 text-slate-600 font-medium">
+                        <tr>
+                          <th className="p-3">Client / Project</th>
+                          <th className="p-3">Contact</th>
+                          <th className="p-3">Date</th>
+                          <th className="p-3">Status</th>
+                          <th className="p-3 text-right">Commission</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {referrals.map((ref) => (
+                          <tr key={ref._id} className="border-t border-slate-100 hover:bg-slate-50 transition-colors">
+                            <td className="p-3">
+                              <div className="font-medium text-slate-900">
+                                {ref.project_id?.company_name || ref.project_id?.client_name || 'No Project Started'}
+                              </div>
+                              {ref.project_id?.project_type && (
+                                <div className="text-xs text-slate-500 capitalize">{ref.project_id.project_type.replace('_', ' ')}</div>
+                              )}
+                            </td>
+                            <td className="p-3">
+                              <div className="text-slate-900">{ref.referred_user_email}</div>
+                              {ref.project_id?.client_name && (
+                                <div className="text-xs text-slate-500">{ref.project_id.client_name}</div>
+                              )}
+                            </td>
+                            <td className="p-3 text-slate-600">
+                              {new Date(ref.createdAt).toLocaleDateString()}
+                            </td>
+                            <td className="p-3">
+                              <Badge className={`text-xs ${ref.status === 'paid' ? 'bg-green-100 text-green-800' :
+                                  ref.status === 'converted' ? 'bg-blue-100 text-blue-800' :
+                                    'bg-yellow-100 text-yellow-800'
+                                }`}>
+                                {ref.status.toUpperCase()}
+                              </Badge>
+                            </td>
+                            <td className="p-3 text-right font-medium text-slate-900">
+                              {ref.commission_amount ? `$${ref.commission_amount.toLocaleString()}` : '-'}
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
                   </div>
                 </div>
               )}

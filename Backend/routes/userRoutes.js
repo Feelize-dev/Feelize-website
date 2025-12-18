@@ -1,6 +1,6 @@
 import express from "express"
 import { verifyFirebaseToken, verifySession, verifySessionMiddleware } from "../middleware/verifyUser.js";
-import { createNewUser, deleteSession } from "../controller/auth.controller.js";
+import { createNewUser, deleteSession, requestOTP, verifyOTP } from "../controller/auth.controller.js";
 import {
 	createProject,
 	listProjects,
@@ -28,6 +28,8 @@ router.get("/verify", verifySession, (req, res) => {
 	})
 })
 router.post("/logout", verifySession, deleteSession)
+router.post("/auth/send-otp", requestOTP)
+router.post("/auth/verify-otp", verifyOTP)
 
 // Messages API
 router.get("/project/:projectId/messages", verifySessionMiddleware, getProjectMessages)

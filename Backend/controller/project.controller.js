@@ -5,11 +5,13 @@ import Referral from "../model/referral.js";
 import { generateWithLLM } from "../services/llmService.js";
 import { sendProjectReport } from "../services/emailService.js";
 
+import User from "../model/user.js";
+
 // Create a new project from StartProject form
 export const createProject = async (req, res) => {
   try {
-    // req.user is provided by verifySessionMiddleware
-    const user = req.user;
+    // req.user might be null if guest (optionalVerifySessionMiddleware)
+    let user = req.user;
 
     const {
       client_name,
@@ -29,8 +31,30 @@ export const createProject = async (req, res) => {
       estimated_hours,
       recommended_price,
       complexity_score,
-      referral_code, // Extract referral code
+      referral_code,
     } = req.body;
+
+    // If no logged-in user, ensure a shadow/guest user exists for this email
+    if (!user && client_email) {
+      // Try to find existing user by email
+      user = await User.findOne({ email: client_email });
+
+      if (!user) {
+        // Create a new guest user
+        try {
+          user = await User.create({
+            uid: `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            email: client_email,
+            name: client_name,
+            picture: "",
+            access_level: "junior"
+          });
+          console.log(`Created guest user for project: ${client_email}`);
+        } catch (userErr) {
+          console.error("Failed to create guest user:", userErr);
+        }
+      }
+    }
 
     // Basic validation
     if (!client_name || !client_email || !project_description) {
@@ -51,15 +75,15 @@ export const createProject = async (req, res) => {
       key_features: Array.isArray(key_features)
         ? key_features
         : key_features
-        ? [key_features]
-        : [],
+          ? [key_features]
+          : [],
       design_preferences,
       target_audience,
       uploaded_files: Array.isArray(uploaded_files)
         ? uploaded_files
         : uploaded_files
-        ? [uploaded_files]
-        : [],
+          ? [uploaded_files]
+          : [],
       ai_analysis,
       status: status || "completed",
       budget_range: budget_range || undefined, // Treat empty string as not provided
@@ -601,8 +625,7 @@ export const generateReport = async (req, res) => {
     if (project.client_email) {
       console.log(`\n📧 Step 4: Sending email to ${project.client_email}...`);
       console.log(
-        `   - Email service configured: ${
-          process.env.EMAIL_USER ? "YES" : "NO"
+        `   - Email service configured: ${process.env.EMAIL_USER ? "YES" : "NO"
         }`
       );
       console.log(`   - SMTP Host: ${process.env.SMTP_HOST || "Not set"}`);

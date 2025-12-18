@@ -1,8 +1,37 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Mail, Phone, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import axios from 'axios';
 
 export default function Contact() {
+
+    const referralCode = sessionStorage.getItem("referral_code");
+    const calUrl = referralCode
+        ? `https://cal.com/evuventure/30min?notes=ReferralCode:${referralCode}`
+        : "https://cal.com/evuventure/30min";
+
+    useEffect(() => {
+        const handleMessage = async (e) => {
+            // Cal.com sends messages with prefix 'cal:' or object type
+            if (e.data.type === 'cal:bookingSuccessful') {
+                console.log("Booking successful", e.data);
+                try {
+                    await axios.post(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/meetings`, {
+                        referral_code: referralCode,
+                        metadata: e.data.data,
+                        meeting_date: new Date(e.data.data.confirmed) || new Date(),
+                        client_email: e.data.data.attendees ? e.data.data.attendees[0]?.email : undefined,
+                        client_name: e.data.data.attendees ? e.data.data.attendees[0]?.name : undefined,
+                    }, { withCredentials: true });
+                } catch (err) {
+                    console.error("Failed to record meeting:", err);
+                }
+            }
+        };
+
+        window.addEventListener('message', handleMessage);
+        return () => window.removeEventListener('message', handleMessage);
+    }, [referralCode]);
 
     return (
         <div className="min-h-screen pt-32 pb-20">
@@ -64,7 +93,7 @@ export default function Contact() {
                     <div className="lg:col-span-2">
                         <div className="glass-morphism rounded-2xl overflow-hidden h-full min-h-[700px]">
                             <iframe
-                                src="https://cal.com/evuventure/30min"
+                                src={calUrl}
                                 style={{ width: "100%", height: "100%", minHeight: "700px" }}
                                 frameBorder="0"
                                 title="Schedule a meeting"

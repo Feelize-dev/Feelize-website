@@ -1,4 +1,5 @@
 import Affiliate from "../model/affiliate.js";
+import Referral from "../model/referral.js";
 
 export const createAffiliate = async (req, res) => {
     try {
@@ -76,6 +77,33 @@ export const getAffiliate = async (req, res) => {
         const affiliate = await Affiliate.findById(req.params.id);
         if (!affiliate) return res.status(404).json({ success: false, message: "Affiliate not found" });
         res.status(200).json({ success: true, data: affiliate });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
+// NEW: Get current affiliate details and their referrals
+export const getAffiliateMe = async (req, res) => {
+    try {
+        const userEmail = req.user.email; // Assumes verifySessionMiddleware populates req.user
+
+        const affiliate = await Affiliate.findOne({ email: userEmail });
+        if (!affiliate) {
+            return res.status(404).json({ success: false, message: "Affiliate profile not found" });
+        }
+
+        // Fetch referrals associated with this affiliate and populate project details
+        const referrals = await Referral.find({ affiliate_id: affiliate._id })
+            .populate('project_id') // Populate project details
+            .sort({ createdAt: -1 });
+
+        res.status(200).json({
+            success: true,
+            data: {
+                affiliate: affiliate,
+                referrals: referrals
+            }
+        });
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }

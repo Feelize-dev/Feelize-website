@@ -40,7 +40,7 @@ import {
 } from "lucide-react";
 import { auth, signInWithGooglePopup } from "@/config/firebaseConfig";
 import axios from "axios";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import { onAuthStateChanged, signOut, signInWithCustomToken } from "firebase/auth";
 import { useUser } from "@/hooks/useUser";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -71,6 +71,59 @@ export default function StartProjectPage() {
   const [processingStatus, setProcessingStatus] =
     useState("Initializing AI...");
   const [progressValue, setProgressValue] = useState(10);
+
+  // OTP State
+  const [otpSent, setOtpSent] = useState(false);
+  const [otpCode, setOtpCode] = useState("");
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+
+  // OTP Handlers
+  const handleRequestOtp = async () => {
+    if (!projectData.client_email) return;
+    setIsVerifyingOtp(true);
+    try {
+      await axios.post(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/auth/send-otp`, {
+        email: projectData.client_email
+      });
+      setOtpSent(true);
+    } catch (error) {
+      console.error("Failed to send OTP:", error);
+      alert("Failed to send OTP. Please try again.");
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    setIsVerifyingOtp(true);
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/auth/verify-otp`, {
+        email: projectData.client_email,
+        otp: otpCode
+      });
+
+      if (res.data.success && res.data.customToken) {
+        await signInWithCustomToken(auth, res.data.customToken);
+        // Session login to backend
+        const token = await auth.currentUser.getIdToken();
+        await axios.get(
+          `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/users/sessionLogin`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }
+        );
+        await refetch(); // Reload user
+        // Redirect to dashboard logic will be handled by UI or user navigation
+        window.location.href = createPageUrl('ProjectDashboard');
+      }
+    } catch (error) {
+      console.error("Failed to verify OTP:", error);
+      alert("Invalid OTP or expired.");
+    } finally {
+      setIsVerifyingOtp(false);
+    }
+  };
 
   useEffect(() => {
     if (user) {
@@ -250,79 +303,7 @@ export default function StartProjectPage() {
     );
   }
 
-  // Login Required Screen
-  if (!user) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div
-          className="fixed inset-0 pointer-events-none overflow-hidden"
-          style={{ zIndex: 0 }}
-        >
-          {/* Multiple purple gradient blurs throughout the page */}
-          {[
-            { left: "10%", top: "-350px" },
-            { left: "70%", top: "-250px" },
-            { left: "-142px", top: "200px" },
-            { left: "864px", top: "500px" },
-            { left: "191px", top: "100px" },
-            { left: "1226px", top: "300px" },
-            { left: "-142px", top: "2664px" },
-            { left: "864px", top: "3040px" },
-            { left: "191px", top: "1992px" },
-            { left: "1226px", top: "2183px" },
-            { left: "-142px", top: "4774px" },
-            { left: "864px", top: "5150px" },
-            { left: "191px", top: "4102px" },
-            { left: "1226px", top: "4293px" },
-            { left: "-142px", top: "6644px" },
-            { left: "864px", top: "7020px" },
-            { left: "191px", top: "5972px" },
-            { left: "1226px", top: "6163px" },
-          ].map((pos, i) => (
-            <div
-              key={i}
-              className="absolute w-[542px] h-[494px] rounded-full blur-[75px]"
-              style={{
-                left: pos.left,
-                top: pos.top,
-                background: "rgba(80, 0, 181, 0.67)",
-                opacity: 0.25,
-              }}
-            />
-          ))}
-        </div>
-        <div className="max-w-md w-full">
-          <Card className="glass-morphism border border-white/20 rounded-3xl overflow-hidden">
-            <CardContent className="p-8">
-              <div className="text-center mb-8">
-                <div className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-purple-500 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg shadow-cyan-500/30">
-                  <Sparkles className="w-10 h-10 text-white" />
-                </div>
-                <h1 className="text-2xl font-bold text-white mb-2">
-                  Welcome to Feelize AI
-                </h1>
-                <p className="text-slate-300 text-sm">
-                  Sign in to start building your project with our AI assistant
-                </p>
-              </div>
 
-              <Button
-                onClick={handleLogin}
-                className="w-full bg-gradient-to-r from-cyan-400 to-blue-500 hover:from-cyan-300 hover:to-blue-400 text-black font-bold py-3 rounded-xl"
-              >
-                <LogIn className="w-4 h-4 mr-2" />
-                Sign In to Continue
-              </Button>
-
-              <div className="mt-6 pt-6 border-t border-slate-600/30 text-center">
-                <p className="text-slate-400 text-xs"></p>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    );
-  }
 
   // Project Form
   if (currentStep === "welcome" || currentStep === "form") {
@@ -902,12 +883,51 @@ export default function StartProjectPage() {
                   </div>
 
                   <div className="pt-4 space-y-3">
-                    <Link to={createPageUrl("UserDashboard")}>
-                      <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
-                        View My Dashboard
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </Link>
+                    {user ? (
+                      <Link to={createPageUrl("ProjectDashboard")}>
+                        <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white">
+                          View My Dashboard
+                          <ArrowRight className="w-4 h-4 ml-2" />
+                        </Button>
+                      </Link>
+                    ) : (
+                      <div className="space-y-3">
+                        {!otpSent ? (
+                          <Button
+                            className="w-full bg-indigo-600 hover:bg-indigo-700 text-white"
+                            onClick={handleRequestOtp}
+                            disabled={isVerifyingOtp}
+                          >
+                            {isVerifyingOtp ? <Loader2 className="w-4 h-4 animate-spin" /> : (
+                              <>
+                                Access Project Dashboard
+                                <ArrowRight className="w-4 h-4 ml-2" />
+                              </>
+                            )}
+                          </Button>
+                        ) : (
+                          <div className="space-y-2">
+                            <div className="text-sm text-center text-slate-600">
+                              Enter the code sent to {projectData.client_email}
+                            </div>
+                            <Input
+                              type="text"
+                              placeholder="Enter OTP Code"
+                              className="text-center tracking-widest text-lg font-bold"
+                              value={otpCode}
+                              onChange={(e) => setOtpCode(e.target.value)}
+                            />
+                            <Button
+                              className="w-full bg-green-600 hover:bg-green-700 text-white"
+                              onClick={handleVerifyOtp}
+                              disabled={isVerifyingOtp || !otpCode}
+                            >
+                              {isVerifyingOtp ? <Loader2 className="w-4 h-4 animate-spin" /> : "Verify & Login"}
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     <Button
                       variant="outline"
@@ -915,8 +935,8 @@ export default function StartProjectPage() {
                       onClick={() => {
                         setCurrentStep("welcome");
                         setProjectData({
-                          client_name: currentUser.full_name || "",
-                          client_email: currentUser.email || "",
+                          client_name: "",
+                          client_email: "",
                           company_name: "",
                           project_type: "",
                           project_description: "",
@@ -928,6 +948,9 @@ export default function StartProjectPage() {
                         });
                         setCreatedProject(null);
                         setUploadedFiles([]);
+                        // Reset OTP interaction
+                        setOtpSent(false);
+                        setOtpCode("");
                       }}
                     >
                       Start New Project

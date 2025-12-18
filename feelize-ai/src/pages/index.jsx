@@ -13,6 +13,7 @@ import ProjectReport from "./ProjectReport";
 import TeamReport from "./TeamReport";
 import ProjectDashboard from "./ProjectDashboard";
 import AffiliateSignup from "./AffiliateSignup";
+import AffiliateDashboard from "./AffiliateDashboard";
 import ReferralRedirect from "./ReferralRedirect";
 
 // Service Pages
@@ -53,6 +54,7 @@ const PAGES = {
     TeamReport: TeamReport,
     ProjectDashboard: ProjectDashboard,
     AffiliateSignup: AffiliateSignup,
+    AffiliateDashboard: AffiliateDashboard,
     AdminPanel: AdminPanel,
     AdminAffiliates: AdminAffiliates,
     AdminReferrals: AdminReferrals,
@@ -106,6 +108,7 @@ function PagesContent() {
                 <Route path="/TeamReport" element={<TeamReport />} />
                 <Route path="/ProjectDashboard" element={<ProjectDashboard />} />
                 <Route path="/AffiliateSignup" element={<AffiliateSignup />} />
+                <Route path="/AffiliateDashboard" element={<AffiliateDashboard />} />
 
                 {/* Service Pages */}
                 <Route path="/WebDevelopment" element={<WebDevelopment />} />

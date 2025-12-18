@@ -6,12 +6,12 @@ import {
     updateProject,
     generateReport,
 } from "../controller/project.controller.js";
-import { verifySessionMiddleware } from "../middleware/verifyUser.js";
+import { verifySessionMiddleware, optionalVerifySessionMiddleware } from "../middleware/verifyUser.js";
 
 const router = express.Router();
 
 // Standard RESTful routes
-router.post("/", verifySessionMiddleware, createProject);
+router.post("/", optionalVerifySessionMiddleware, createProject);
 router.get("/", verifySessionMiddleware, listProjects);
 router.get("/:id", verifySessionMiddleware, getProject);
 router.put("/:id", verifySessionMiddleware, updateProject);

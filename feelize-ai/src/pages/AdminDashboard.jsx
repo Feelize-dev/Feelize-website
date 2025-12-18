@@ -37,10 +37,12 @@ import {
   Target,
   Share2,
   Clipboard,
-  Check
+  Check,
+  Gift
 } from "lucide-react";
 import { Link } from 'react-router-dom';
 import { createPageUrl } from "@/utils"; // Import the global utility
+import axios from 'axios';
 
 // New Component for Team Management
 const TeamManagement = ({ users, engineers, onUpdate }) => {
@@ -135,9 +137,80 @@ const TeamManagement = ({ users, engineers, onUpdate }) => {
   );
 };
 
+const MeetingManagement = () => {
+  const [meetings, setMeetings] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMeetings = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/meetings`, { withCredentials: true });
+        setMeetings(res.data.data);
+      } catch (error) {
+        console.error("Failed to fetch meetings:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchMeetings();
+  }, []);
+
+  if (isLoading) return <div className="p-8 text-center"><Loader2 className="w-8 h-8 animate-spin mx-auto text-indigo-600" /></div>;
+
+  return (
+    <Card className="border-0 shadow-sm">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Calendar className="w-5 h-5 text-indigo-600" />
+          Meeting Bookings
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm text-left">
+            <thead className="bg-slate-50 text-slate-600 font-medium">
+              <tr>
+                <th className="p-3">Date</th>
+                <th className="p-3">Name</th>
+                <th className="p-3">Email</th>
+                <th className="p-3">Referral Code</th>
+                <th className="p-3">Status</th>
+              </tr>
+            </thead>
+            <tbody>
+              {meetings.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="p-4 text-center text-slate-500">No meetings found.</td>
+                </tr>
+              ) : (
+                meetings.map((m) => (
+                  <tr key={m._id} className="border-t border-slate-100 hover:bg-slate-50">
+                    <td className="p-3">{new Date(m.meeting_date || m.createdAt).toLocaleDateString()} {new Date(m.meeting_date || m.createdAt).toLocaleTimeString()}</td>
+                    <td className="p-3 font-medium">{m.client_name || '-'}</td>
+                    <td className="p-3">{m.client_email || '-'}</td>
+                    <td className="p-3">
+                      {m.referral_code ? (
+                        <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                          {m.referral_code}
+                        </Badge>
+                      ) : '-'}
+                    </td>
+                    <td className="p-3 capitalize">{m.status}</td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </CardContent>
+    </Card>
+  );
+};
+
 
 export default function AdminDashboard() {
   const [projects, setProjects] = useState([]);
+  const [referrals, setReferrals] = useState([]); // NEW: Referrals state
   const [selectedProject, setSelectedProject] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [projectNotes, setProjectNotes] = useState("");
@@ -152,15 +225,23 @@ export default function AdminDashboard() {
 
 
   const loadAllData = async () => {
-    // New: Centralized data loading function
-    const [userData, engineerData, projectData] = await Promise.all([
-      User.list(),
-      Engineer.list(),
-      ProjectBrief.list('-created_date')
-    ]);
-    setAllUsers(userData);
-    setAllEngineers(engineerData);
-    setProjects(projectData);
+    // New: Centralized data loading function + Referrals
+    try {
+      const [userData, engineerData, projectData, referralData] = await Promise.all([
+        User.list(),
+        Engineer.list(),
+        ProjectBrief.list('-created_date'),
+        axios.get(`${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/referrals`, { withCredentials: true })
+      ]);
+      setAllUsers(userData);
+      setAllEngineers(engineerData);
+      setProjects(projectData);
+      if (referralData.data.success) {
+        setReferrals(referralData.data.data);
+      }
+    } catch (error) {
+      console.error("Error loading dashboard data", error);
+    }
   };
 
   useEffect(() => {
@@ -274,7 +355,7 @@ export default function AdminDashboard() {
           "required": ["teamReport", "tasks"]
         }
       });
-      
+
       const { teamReport, tasks } = teamReportResponse;
 
       // Extract metrics from the text report
@@ -297,14 +378,14 @@ export default function AdminDashboard() {
       // Create tasks in the database
       if (tasks && tasks.length > 0) {
         const tasksToCreate = tasks.map(task => ({
-            ...task,
-            project_id: project.id,
-            status: 'todo'
+          ...task,
+          project_id: project.id,
+          status: 'todo'
         }));
         await Task.bulkCreate(tasksToCreate);
       }
 
-      await loadAllData(); 
+      await loadAllData();
       // Update selected project to reflect new data from the brief.
       setSelectedProject(prevSelected => {
         if (prevSelected && prevSelected.id === project.id) {
@@ -459,13 +540,13 @@ export default function AdminDashboard() {
     if (!project) return "";
 
     // Get detailed team member information
-    const teamDetails = project.assigned_team && project.assigned_team.length > 0 
+    const teamDetails = project.assigned_team && project.assigned_team.length > 0
       ? project.assigned_team.map(email => {
-          const engineer = allEngineers.find(e => e.user_email === email);
-          return engineer 
-            ? `${engineer.full_name} (${engineer.user_email}) - ${engineer.access_level} level`
-            : `${email} - level unknown`;
-        }).join('\n- ')
+        const engineer = allEngineers.find(e => e.user_email === email);
+        return engineer
+          ? `${engineer.full_name} (${engineer.user_email}) - ${engineer.access_level} level`
+          : `${email} - level unknown`;
+      }).join('\n- ')
       : 'No team assigned yet.';
 
     const prompt = `
@@ -570,9 +651,10 @@ export default function AdminDashboard() {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full mb-6">
-          <TabsList className="grid w-full grid-cols-2 md:w-auto md:grid-cols-2">
+          <TabsList className="grid w-full grid-cols-2 md:w-auto md:grid-cols-3">
             <TabsTrigger value="projects">Projects</TabsTrigger>
             <TabsTrigger value="team">Team Management</TabsTrigger>
+            <TabsTrigger value="meetings">Meetings</TabsTrigger>
           </TabsList>
         </Tabs>
 
@@ -617,39 +699,48 @@ export default function AdminDashboard() {
                         </div>
                       ) : (
                         projects.map((project) => (
-                            <div
-                              key={project.id}
-                              className={`p-3 sm:p-4 border-b border-slate-100 cursor-pointer hover:bg-slate-50 transition-colors ${
-                                selectedProject?.id === project.id ? 'bg-indigo-50 border-l-4 border-l-indigo-600' : ''
+                          <div
+                            key={project.id}
+                            className={`p-3 sm:p-4 border-b border-slate-100 cursor-pointer hover:bg-slate-50 transition-colors ${selectedProject?.id === project.id ? 'bg-indigo-50 border-l-4 border-l-indigo-600' : ''
                               }`}
-                              onClick={() => setSelectedProject(project)}
-                            >
-                              <div className="flex items-start justify-between mb-2">
-                                <h3 className="font-semibold text-slate-900 text-xs sm:text-sm line-clamp-1">
-                                  {project.company_name || project.client_name}
-                                </h3>
-                                <Badge className={`text-xs ${getStatusColor(project.status)}`}>
-                                  {project.status}
+                            onClick={() => setSelectedProject(project)}
+                          >
+                            <div className="flex items-start justify-between mb-2">
+                              <h3 className="font-semibold text-slate-900 text-xs sm:text-sm line-clamp-1">
+                                {project.company_name || project.client_name}
+                              </h3>
+                              <Badge className={`text-xs ${getStatusColor(project.status)}`}>
+                                {project.status}
+                              </Badge>
+                            </div>
+
+                            <p className="text-slate-600 text-xs mb-2 line-clamp-2">
+                              {project.project_description?.substring(0, 60)}...
+                            </p>
+
+                            {/* Referral Badge */}
+                            {referrals.find(r => r.project_id?._id === project.id) && (
+                              <div className="mb-2">
+                                <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 text-[10px] py-0 h-5">
+                                  <Gift className="w-3 h-3 mr-1" />
+                                  Ref: {referrals.find(r => r.project_id?._id === project.id).affiliate_id?.referral_code}
                                 </Badge>
                               </div>
+                            )}
 
-                              <p className="text-slate-600 text-xs mb-2 line-clamp-2">
-                                {project.project_description?.substring(0, 60)}...
-                              </p>
-
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-xs text-slate-500">
-                                  <Calendar className="w-3 h-3" />
-                                  {new Date(project.created_date).toLocaleDateString()}
-                                </div>
-                                {project.recommended_price && (
-                                  <div className="flex items-center gap-1 text-xs text-green-600 font-medium">
-                                    <DollarSign className="w-3 h-3" />
-                                    ${project.recommended_price.toLocaleString()}
-                                  </div>
-                                )}
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center gap-2 text-xs text-slate-500">
+                                <Calendar className="w-3 h-3" />
+                                {new Date(project.created_date).toLocaleDateString()}
                               </div>
+                              {project.recommended_price && (
+                                <div className="flex items-center gap-1 text-xs text-green-600 font-medium">
+                                  <DollarSign className="w-3 h-3" />
+                                  ${project.recommended_price.toLocaleString()}
+                                </div>
+                              )}
                             </div>
+                          </div>
                         ))
                       )}
                     </div>
@@ -683,10 +774,10 @@ export default function AdminDashboard() {
                               </SelectContent>
                             </Select>
                             <Link to={createPageUrl(`ProjectDashboard?id=${selectedProject.id}`)}>
-                                <Button variant="outline" size="sm" className="text-xs h-8">
-                                    <Eye className="w-3 h-3 mr-2" />
-                                    View Client Dashboard
-                                </Button>
+                              <Button variant="outline" size="sm" className="text-xs h-8">
+                                <Eye className="w-3 h-3 mr-2" />
+                                View Client Dashboard
+                              </Button>
                             </Link>
                           </div>
                         </div>
@@ -804,6 +895,42 @@ export default function AdminDashboard() {
                               </div>
                             </div>
                           </div>
+
+                          {/* Referral Information */}
+                          {referrals.find(r => r.project_id?._id === selectedProject.id) && (
+                            <div className="mt-6 md:col-span-2">
+                              <h4 className="font-semibold text-slate-900 mb-3 flex items-center gap-2">
+                                <Gift className="w-4 h-4 text-purple-600" />
+                                Referral Information
+                              </h4>
+                              <div className="bg-purple-50 rounded-lg p-4 border border-purple-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                {(() => {
+                                  const ref = referrals.find(r => r.project_id?._id === selectedProject.id);
+                                  return (
+                                    <>
+                                      <div>
+                                        <p className="text-sm font-medium text-slate-900">Affiliate: {ref.affiliate_id?.name} ({ref.affiliate_id?.referral_code})</p>
+                                        <p className="text-xs text-slate-600">{ref.affiliate_id?.email}</p>
+                                      </div>
+                                      <div className="flex items-center gap-4">
+                                        <div className="text-right">
+                                          <p className="text-xs text-slate-500">Commission</p>
+                                          <p className="font-bold text-slate-900">{ref.commission_amount ? `$${ref.commission_amount}` : 'Pending'}</p>
+                                        </div>
+                                        <Badge className={`
+                                                          ${ref.status === 'paid' ? 'bg-green-200 text-green-800' :
+                                            ref.status === 'converted' ? 'bg-blue-200 text-blue-800' : 'bg-yellow-200 text-yellow-800'}
+                                                      `}>
+                                          {ref.status.toUpperCase()}
+                                        </Badge>
+                                      </div>
+                                    </>
+                                  );
+                                })()}
+                              </div>
+                            </div>
+                          )}
+
                         </TabsContent>
 
                         {/* Team Report Tab */}
@@ -836,20 +963,20 @@ export default function AdminDashboard() {
                             </CardContent>
                           </Card>
                         </TabsContent>
-                        
+
                         {/* Client Report Tab */}
                         <TabsContent value="client-report">
-                           <Card className="bg-slate-50 border-slate-200">
+                          <Card className="bg-slate-50 border-slate-200">
                             <CardHeader>
                               <CardTitle className="flex items-center justify-between text-base">
                                 Client-Facing Proposal
-                                <Button 
+                                <Button
                                   size="sm"
                                   onClick={() => generateClientProposal(selectedProject)}
                                   disabled={isGeneratingClientReport}
                                 >
-                                   {isGeneratingClientReport ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
-                                   {selectedProject.professional_report_html ? 'Regenerate' : 'Generate'} Proposal
+                                  {isGeneratingClientReport ? <Loader2 className="w-4 h-4 animate-spin mr-2" /> : <Sparkles className="w-4 h-4 mr-2" />}
+                                  {selectedProject.professional_report_html ? 'Regenerate' : 'Generate'} Proposal
                                 </Button>
                               </CardTitle>
                             </CardHeader>
@@ -930,7 +1057,12 @@ export default function AdminDashboard() {
             />
           </Card>
         )}
+
+        {/* Meetings Tab Content */}
+        {activeTab === 'meetings' && (
+          <MeetingManagement />
+        )}
       </div>
-    </div>
+    </div >
   );
 }

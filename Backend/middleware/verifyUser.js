@@ -124,3 +124,35 @@ export const verifySessionMiddleware = async (req, res, next) => {
         });
     }
 }
+
+// Optional middleware: tries to verify session, but continues even if failed (with req.user = null)
+export const optionalVerifySessionMiddleware = async (req, res, next) => {
+    try {
+        const sessionCookie = req.cookies.session;
+        if (!sessionCookie) {
+            req.user = null;
+            return next();
+        }
+
+        const decodedCookie = await admin.auth().verifySessionCookie(sessionCookie, true);
+        if (!decodedCookie) {
+            req.user = null;
+            return next();
+        }
+
+        const userInDb = await user.findOne({ uid: decodedCookie.uid }).exec();
+
+        if (userInDb) {
+            req.user = userInDb;
+            req.decodedCookie = decodedCookie;
+        } else {
+            req.user = null;
+        }
+
+        return next();
+    } catch (error) {
+        // If error (expired, invalid), just treat as guest
+        req.user = null;
+        return next();
+    }
+}
