@@ -136,29 +136,47 @@ const HomePage = () => {
 
   const testimonials = [
     {
-      quote:
-        "Feelize's AI-supercharged engineers delivered beyond expectations. They combined AI speed with the quality and attention to detail of senior developers. Our product launched 60% faster than traditional agencies quoted.",
-      author: "Sarah Mitchell",
-      title: "CEO, TechFlow Innovations",
-      metric: "500% increase in user engagement",
+      quote: "Feelize is one of the greatest groups of creative minds and coding professionals that I have ever had the opportunity to work with. They ride the cutting edge of AI tech and their creativity and skill are phenomenal.",
+      author: "Vernon Attles",
+      title: "President, CEO, PressEmporium",
+      metric: "Exceptional Craftsmanship",
       rating: 5,
     },
     {
-      quote:
-        "Finally, a team that leverages AI without sacrificing code quality. The structure and scalability of what Feelize built rivals what we'd expect from Big Tech, but delivered in a fraction of the time.",
-      author: "Marcus Rodriguez",
-      title: "Founder, EcoMarket Pro",
-      metric: "300% increase in sales",
+      quote: "I am honored to vouch for Feelize. Their standard of code development, project custodianship, accountability in delivery, and overall project management reflects exceptional quality.",
+      author: "Utkarsh Srivastava",
+      title: "Founder & Managing Partner, Adjuva Legal",
+      metric: "Outstanding Technical Execution",
       rating: 5,
     },
     {
-      quote:
-        "This is the future of software development. Their engineers use AI tools masterfully while maintaining best practices. We got enterprise-grade quality at startup speed.",
-      author: "Emily Chen",
-      title: "Marketing Director, HealthFirst",
-      metric: "450% increase in qualified leads",
+      quote: "I confidently recommend Feelize for their outstanding professionalism and consistency. Their technical expertise, responsible ownership of work, and structured approach to project execution make them a dependable partner.",
+      author: "Sal Austin",
+      title: "Senior VP, DGX Security",
+      metric: "High-value Delivery",
       rating: 5,
     },
+    {
+      quote: "Feelize delivers a rare combination of technical skill, accountability, and creative insight. They manage projects with clarity and discipline, ensuring transparency and timely execution.",
+      author: "Richard Weiner",
+      title: "CEO, ABCVI",
+      metric: "Exceeded Expectations",
+      rating: 5,
+    },
+    {
+      quote: "Feelize stands out through a rare combination of technical skill, responsible execution, and thoughtful creativity. Their development practices are well-structured, project delivery is handled with discipline.",
+      author: "Sandy Weberman",
+      title: "Owner, Sandy Creative",
+      metric: "Disciplined Delivery",
+      rating: 5,
+    },
+    {
+      quote: "Feelize is at the forefront of AI Web and app design. Contact them for your next project or to add new life to your existing Website.",
+      author: "Neal Elefant",
+      title: "President, Business Leader",
+      metric: "Cutting Edge Design",
+      rating: 5,
+    }
   ];
 
   const processSteps = [
@@ -629,7 +647,7 @@ const HomePage = () => {
           <div className="space-y-4 sm:space-y-6 md:space-y-8 px-5">
             {/* First Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-              {testimonials.map((testimonial, index) => (
+              {testimonials.slice(0, 3).map((testimonial, index) => (
                 <Card key={index} className="bg-[#141324] border-gray-700">
                   <CardContent className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
                     <div className="flex gap-1">
@@ -640,7 +658,7 @@ const HomePage = () => {
                         />
                       ))}
                     </div>
-                    <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed font-['Geist']">
+                    <p className="text-gray-300 text-xs sm:text-sm md:text-base italic leading-relaxed font-['Geist']">
                       &quot;{testimonial.quote}&quot;
                     </p>
                     <div className="pt-3 sm:pt-4 border-t border-gray-700">
@@ -664,7 +682,7 @@ const HomePage = () => {
 
             {/* Second Row */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-              {testimonials.map((testimonial, index) => (
+              {testimonials.slice(3, 6).map((testimonial, index) => (
                 <Card key={index + 3} className="bg-[#141324] border-gray-700">
                   <CardContent className="p-4 sm:p-6 md:p-8 space-y-4 sm:space-y-6">
                     <div className="flex gap-1">
@@ -675,7 +693,7 @@ const HomePage = () => {
                         />
                       ))}
                     </div>
-                    <p className="text-gray-300 text-sm sm:text-base md:text-lg leading-relaxed font-['Geist']">
+                    <p className="text-gray-300 text-xs sm:text-sm md:text-base italic leading-relaxed font-['Geist']">
                       &quot;{testimonial.quote}&quot;
                     </p>
                     <div className="pt-3 sm:pt-4 border-t border-gray-700">
