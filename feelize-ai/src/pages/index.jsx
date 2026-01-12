@@ -36,6 +36,7 @@ import AdminProjects from "./AdminProjects";
 import AdminClients from "./AdminClients";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import ScrollToTop from "@/components/ScrollToTop.jsx";
 
 const PAGES = {
     Home: Home,
@@ -89,6 +90,7 @@ function PagesContent() {
 
     return (
         <Layout currentPageName={currentPage}>
+            <ScrollToTop/>
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/Home" element={<Home />} />
