@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from "react";
-import { Project } from "@/api/entities";
+import { Project, Meeting, Affiliate, Referral } from "@/api/entities";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -74,6 +74,7 @@ export default function UserDashboard() {
   const [currentUser, setCurrentUser] = useState(null);
   const [affiliateData, setAffiliateData] = useState(null); // NEW: Track affiliate data
   const [referrals, setReferrals] = useState([]); // NEW: Track referrals
+  const [meetings, setMeetings] = useState([]); // NEW: Track meetings
   // selectedProject and showFullAnalysis states were previously removed as project details and full analysis
   // are now handled on a dedicated ProjectDashboard page, accessed via navigation.
   const [newMessage, setNewMessage] = useState(""); // This state is not used in the final implementation, but was in original file, keeping to preserve structure.
@@ -96,6 +97,38 @@ export default function UserDashboard() {
       };
 
       fetchProjects();
+
+      // Fetch meetings
+      const fetchMeetings = async () => {
+        try {
+          const response = await Meeting.filter();
+          if (response.success) {
+            setMeetings(response.data);
+          }
+        } catch (error) {
+          console.error("Failed to fetch meetings:", error);
+        }
+      };
+      fetchMeetings();
+
+      // Fetch affiliate data
+      const fetchAffiliate = async () => {
+        try {
+          const response = await Affiliate.filter({ email: user.email });
+          if (response.success && response.data && response.data.length > 0) {
+            setAffiliateData(response.data[0]);
+
+            // Fetch referrals for this affiliate
+            const refResponse = await Referral.filter({ affiliate_id: response.data[0]._id });
+            if (refResponse.success) {
+              setReferrals(refResponse.data);
+            }
+          }
+        } catch (error) {
+          console.error("Failed to fetch affiliate data:", error);
+        }
+      };
+      fetchAffiliate();
     }
   }, [user]);
 
@@ -249,6 +282,33 @@ export default function UserDashboard() {
                   </p>
                 </div>
               </div>
+
+              {meetings.length > 0 && (
+                <div className="mt-6">
+                  <h4 className="font-semibold text-slate-900 mb-2 flex items-center gap-2">
+                    <Calendar className="w-4 h-4 text-indigo-600" />
+                    Recent Meetings
+                  </h4>
+                  <div className="space-y-2">
+                    {meetings.slice(0, 5).map((meeting) => (
+                      <div key={meeting.id || meeting._id} className="bg-white rounded-lg p-3 flex items-center justify-between">
+                        <div>
+                          <p className="font-medium text-slate-900">{meeting.client_name}</p>
+                          <p className="text-xs text-slate-500">
+                            {new Date(meeting.meeting_time).toLocaleString()}
+                          </p>
+                        </div>
+                        <Badge className={`text-xs ${meeting.status === 'scheduled' ? 'bg-blue-100 text-blue-800' :
+                          meeting.status === 'completed' ? 'bg-green-100 text-green-800' :
+                            'bg-red-100 text-red-800'
+                          }`}>
+                          {meeting.status}
+                        </Badge>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               {referrals.length > 0 && (
                 <div className="mt-4">

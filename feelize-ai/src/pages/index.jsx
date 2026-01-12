@@ -34,6 +34,7 @@ import AdminAffiliates from "./AdminAffiliates";
 import AdminReferrals from "./AdminReferrals";
 import AdminProjects from "./AdminProjects";
 import AdminClients from "./AdminClients";
+import AdminMeetings from "./AdminMeetings";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import UserBanned from "./UserBanned.jsx";
@@ -60,6 +61,7 @@ const PAGES = {
     AdminReferrals: AdminReferrals,
     AdminProjects: AdminProjects,
     AdminClients: AdminClients,
+    AdminMeetings: AdminMeetings,
     // Service Pages
     WebDevelopment: WebDevelopment,
     MobileAppDevelopment: MobileAppDevelopment,
@@ -91,7 +93,7 @@ function PagesContent() {
 
     return (
         <Layout currentPageName={currentPage}>
-            <ScrollToTop/>
+            <ScrollToTop />
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/Home" element={<Home />} />
@@ -128,6 +130,7 @@ function PagesContent() {
                 <Route path="/AdminReferrals" element={<AdminReferrals />} />
                 <Route path="/AdminProjects" element={<AdminProjects />} />
                 <Route path="/AdminClients" element={<AdminClients />} />
+                <Route path="/AdminMeetings" element={<AdminMeetings />} />
 
                 {/* Catch-all for custom referral codes - MUST BE LAST */}
                 <Route path="/:referralCode" element={<ReferralRedirect />} />

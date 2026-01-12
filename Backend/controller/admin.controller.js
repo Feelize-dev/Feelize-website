@@ -2,6 +2,7 @@ import Affiliate from "../model/affiliate.js";
 import Referral from "../model/referral.js";
 import Project from "../model/project.js";
 import User from "../model/user.js";
+import Meeting from "../model/meeting.js";
 
 // --- DASHBOARD STATS ---
 export const getDashboardStats = async (req, res) => {
@@ -196,18 +197,42 @@ export const banClient = async (req, res) => {
     }
 }
 
+// --- MEETINGS MANAGEMENT ---
+export const getAllMeetings = async (req, res) => {
+    try {
+        const { search } = req.query;
+        let query = {};
+
+        if (search) {
+            query.$or = [
+                { client_name: { $regex: search, $options: "i" } },
+                { client_email: { $regex: search, $options: "i" } },
+                { referral_code: { $regex: search, $options: "i" } }
+            ];
+        }
+
+        const meetings = await Meeting.find(query)
+            .populate('affiliate_id', 'name email')
+            .sort({ meeting_time: -1 });
+
+        res.status(200).json({ success: true, data: meetings });
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message });
+    }
+};
+
 export const unBanClient = async (req, res) => {
 
     try {
-        
+
         console.log(req.params.id);
-        
+
     } catch (error) {
-        
+
         console.log(error);
         res.json(500).json({
 
-            success:false,
+            success: false,
             error: error.message
         })
     }

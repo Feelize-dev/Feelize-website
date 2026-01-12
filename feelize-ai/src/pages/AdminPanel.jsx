@@ -1,4 +1,4 @@
- import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { createPageUrl } from "@/utils";
@@ -10,6 +10,7 @@ import {
   Activity,
   ArrowRight,
   Loader2,
+  Calendar,
 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -39,6 +40,12 @@ const accentMap = {
     text: "text-orange-400",
     border: "border-orange-500/40",
     glow: "hover:shadow-orange-500/30",
+  },
+  rose: {
+    bg: "bg-rose-500/20",
+    text: "text-rose-400",
+    border: "border-rose-500/40",
+    glow: "hover:shadow-rose-500/30",
   },
 };
 
@@ -100,6 +107,13 @@ export default function AdminPanel() {
       icon: Shield,
       link: "AdminClients",
       accent: "orange",
+    },
+    {
+      title: "Meetings",
+      description: "View booked calls and details",
+      icon: Calendar,
+      link: "AdminMeetings",
+      accent: "rose",
     },
   ];
 

@@ -64,7 +64,7 @@ export default function Contact() {
                     <div className="lg:col-span-2">
                         <div className="glass-morphism rounded-2xl overflow-hidden h-full min-h-[700px]">
                             <iframe
-                                src="https://cal.com/evuventure/30min"
+                                src={`https://cal.com/evuventure/30min${sessionStorage.getItem("referral_code") ? `?referral_code=${sessionStorage.getItem("referral_code")}` : ""}`}
                                 style={{ width: "100%", height: "100%", minHeight: "700px" }}
                                 frameBorder="0"
                                 title="Schedule a meeting"

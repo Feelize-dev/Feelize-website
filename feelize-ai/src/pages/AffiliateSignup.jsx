@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { Affiliate, User, Referral } from "@/api/entities";
+import { Affiliate, User, Referral, Meeting } from "@/api/entities";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,7 @@ import {
   Target,
   Zap,
   CheckCircle,
+  Calendar
 } from "lucide-react";
 import { useUser } from "@/hooks/useUser";
 
@@ -37,6 +38,7 @@ export default function AffiliateSignup() {
     why_join: "",
   });
   const [referrals, setReferrals] = useState([]);
+  const [meetings, setMeetings] = useState([]);
 
   useEffect(() => {
     if (existingAffiliate?._id) {
@@ -51,6 +53,18 @@ export default function AffiliateSignup() {
         }
       };
       fetchReferrals();
+
+      const fetchMeetings = async () => {
+        try {
+          const res = await Meeting.filter();
+          if (res.success && res.data) {
+            setMeetings(res.data);
+          }
+        } catch (err) {
+          console.error("Failed to fetch meetings:", err);
+        }
+      };
+      fetchMeetings();
     }
   }, [existingAffiliate]);
   const { data: user, refetch } = useUser();
@@ -199,7 +213,7 @@ export default function AffiliateSignup() {
 
     return (
       <div className="min-h-screen bg-slate-50 ">
-        
+
         {/* Dashboard Header */}
         <div className="bg-white border-b border-slate-200 pt-32">
           <div className="max-w-6xl mx-auto px-4 py-8">
@@ -318,6 +332,43 @@ export default function AffiliateSignup() {
                     Share this link on social media, your blog, or directly with
                     clients. You'll earn commission when they start a project.
                   </div>
+                </CardContent>
+              </Card>
+
+              {/* Recent Meetings List */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg">Recent Meetings</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {meetings.length === 0 ? (
+                    <div className="h-32 flex items-center justify-center border-2 border-dashed border-slate-200 rounded-lg bg-slate-50">
+                      <div className="text-center text-slate-500">
+                        <Calendar className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                        <p>No meetings scheduled yet.</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {meetings.map((meeting) => (
+                        <div key={meeting._id || meeting.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border border-slate-100">
+                          <div>
+                            <p className="font-medium text-slate-900">{meeting.client_name}</p>
+                            <p className="text-xs text-slate-500">
+                              {new Date(meeting.meeting_time).toLocaleString()}
+                            </p>
+                          </div>
+                          <Badge className={
+                            meeting.status === 'scheduled' ? 'bg-blue-100 text-blue-800' :
+                              meeting.status === 'completed' ? 'bg-green-100 text-green-800' :
+                                'bg-red-100 text-red-800'
+                          }>
+                            {meeting.status.toUpperCase()}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </CardContent>
               </Card>
 

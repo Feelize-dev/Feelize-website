@@ -12,7 +12,8 @@ import {
     getClients,
     updateClient,
     banClient,
-    unBanClient
+    unBanClient,
+    getAllMeetings
 } from "../controller/admin.controller.js";
 import { verifySessionMiddleware } from "../middleware/verifyUser.js";
 
@@ -43,7 +44,10 @@ router.put("/projects/:id", updateProject);
 // Clients
 router.get("/clients", getClients);
 router.patch("/clients/:id", updateClient);
-router.patch("/clients/ban/:id", banClient); 
+router.patch("/clients/ban/:id", banClient);
 router.patch("/clients/unban/:id", unBanClient);
+
+// Meetings
+router.get("/meetings", getAllMeetings);
 
 export default router;

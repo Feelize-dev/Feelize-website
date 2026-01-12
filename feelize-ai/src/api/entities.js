@@ -65,6 +65,16 @@ export const Task = createEntity('tasks');
 export const ActivityLog = createEntity('activity-logs');
 export const Affiliate = createEntity('affiliates');
 export const Referral = createEntity('referrals');
+export const Meeting = createEntity('meetings');
+Meeting.sync = async (data) => {
+  try {
+    const response = await axios.post(`${API_BASE_URL}/api/meetings/sync`, data, { withCredentials: true });
+    return response.data;
+  } catch (error) {
+    console.error("Error syncing meeting:", error);
+    throw error;
+  }
+};
 
 export const User = {
   async me() {
