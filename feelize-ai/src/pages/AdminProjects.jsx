@@ -30,6 +30,8 @@ export default function AdminProjects() {
     const [projects, setProjects] = useState([]);
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
+    const [edit, setEdit] = useState(false);
+    
 
     useEffect(() => {
         fetchProjects();
@@ -41,6 +43,7 @@ export default function AdminProjects() {
                 `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/admin/projects`,
                 { withCredentials: true }
             );
+            console.log(response.data.data);
             setProjects(response.data.data);
         } catch (error) {
             console.error("Error fetching projects:", error);
@@ -59,7 +62,7 @@ export default function AdminProjects() {
     return (
         <div className="min-h-screen bg-slate-950 text-white p-8 mt-[120px]">
             <div className="max-w-7xl mx-auto">
-                <div className="flex items-center gap-4 mb-8">
+                <div className="flex items-center gap-4 mb-8 pt-28">
                     <Link to={createPageUrl("AdminPanel")}>
                         <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white">
                             <ArrowLeft className="w-5 h-5" />
@@ -133,7 +136,22 @@ export default function AdminProjects() {
                                                     </Button>
                                                 </DropdownMenuTrigger>
                                                 <DropdownMenuContent align="end" className="bg-slate-900 border-slate-800 text-slate-200">
-                                                    <DropdownMenuItem>Edit Details</DropdownMenuItem>
+                                                    <DropdownMenuItem onClick={() => { 
+                                                        setClientEdit(!edit) 
+                                                        setClientName(project.client_name);
+                                                        setEmail(project.client_email);
+                                                        setReferralCode(project.referral_code);
+                                                        setTargetAudience(project.target_audience);
+                                                        setId(project._id);
+                                                        setPaymentDetails({
+                                                            method: project.payment_details?.method || "",
+                                                            details: project.payment_details?.details || {},
+                                                        });
+                                                        setTargetAudience(project.target_audience);
+                                                        setCommissionRate(project.commission_rate);
+                                                        setTotalReferrals(project.total_referrals);
+                                                        setTotalEarnings(project.total_earnings);
+                                                        }} >Edit Details</DropdownMenuItem>
                                                     <DropdownMenuItem>View Report</DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -145,6 +163,108 @@ export default function AdminProjects() {
                     </Table>
                 </div>
             </div>
+
+            {
+                edit && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center z-50 w-full py-32 px-14 md:px-0">
+
+                        <div className="md:max-w-6xl bg-slate-700 px-12 md:px-24 py-10 rounded-md mx-auto max-h-[90vh] overflow-y-auto no-scrollbar">
+                            <div className="felx flex-col">
+
+                                <div className="flex flex-col-reverse md:flex-row justify-evenly md:items-center gap-5 md:gap-20">
+                                    <h1 className="text-md md:text-2xl font-bold tracking-wide flex items-center gap-2">
+                                        Edit Affiliate -
+                                        <span className="underline">
+                                            {name}
+                                        </span>
+                                    </h1>
+                                    <CircleX onClick={() => { setEdit(!edit) }} className="hover:text-red-400 text-end md:text-center duration-200" />
+                                </div>
+
+                                <div>
+                                    <form className="mt-8 flex flex-col gap-6">
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-sm font-medium">Affiliate Name</label>
+                                            <Input placeholder={name} className="placeholder:text-neutral-400/60 focus:border-0 text-black/80" onChange={(e) => setName(e.target.value)} />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-sm font-medium">Email Address</label>
+                                            <Input placeholder={email} className="placeholder:text-neutral-400/60 focus:border-0 text-black/80" disabled={true} />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-sm font-medium">Referral Code</label>
+                                            <Input placeholder={referralCode} className="placeholder:text-neutral-400/60 focus:border-0 text-black/80" onChange={(e) => setReferralCode(e.target.value)} />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-sm font-medium">Payment Details</label>
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex flex-wrap gap-4">
+                                                    {paymentChannels.map((method) => (
+                                                        <label
+                                                            key={method}
+                                                            className="flex items-center gap-2 cursor-pointer"
+                                                        >
+                                                            <input
+                                                                type="radio"
+                                                                name="paymentMethod"
+                                                                value={method}
+                                                                checked={paymentDetails.method === method}
+                                                                onChange={() =>
+                                                                    setPaymentDetails({
+                                                                        ...paymentDetails,
+                                                                        method,
+                                                                    })
+                                                                }
+                                                                className="accent-black cursor-pointer"
+                                                            />
+                                                            <span className="text-sm font-light tracking-wide">
+                                                                {method}
+                                                            </span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                                <div className="flex flex-col gap-2">
+                                                    <label className="text-sm font-medium">Details</label>
+                                                    {
+                                                        paymentDetails.method === "Bank Transfer" && (
+                                                            <div className="flex flex-col gap-2">
+                                                                <Input placeholder="Account Number" className="placeholder:text-neutral-400/60 focus:border-0 text-black/80" />
+                                                                <Input placeholder="Account Holder Name" className="placeholder:text-neutral-400/60 focus:border-0 text-black/80 mt-2" />
+                                                            </div >
+                                                        ) ||
+                                                        paymentDetails.method === "UPI" && (
+                                                            <Input placeholder="UPI ID" className="placeholder:text-neutral-400/60 focus:border-0 text-black/80" />
+                                                        ) ||
+                                                        paymentDetails.method === "PayPal" && (
+                                                            <div className="flex flex-col gap-2">
+                                                                <Input placeholder="PayPal Email" className="placeholder:text-neutral-400/60 focus:border-0 text-black/80" />
+                                                                <Input placeholder="Account Name / Phone Number" className="placeholder:text-neutral-400/60 focus:border-0 text-black/80 mt-2" />
+                                                            </div>
+                                                        )
+                                                    }
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-sm font-medium">Target Audience</label>
+                                            <Input placeholder={targetAudience} className="placeholder:text-neutral-400/60 focus:border-0 text-black/80" disabled={true} />
+                                        </div>
+                                        <button className="mt-4 bg-indigo-600 hover:bg-indigo-700 text-white rounded-sm py-2" onClick={(e) => {
+                                            e.preventDefault();
+                                            HandleSaveChanges(id)
+                                            setEdit(!edit);
+                                        }}>
+                                            Save Changes
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div >
+                )
+            }
+
         </div>
     );
 }

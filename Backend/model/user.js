@@ -11,6 +11,9 @@ const userSchema = new mongoose.Schema(
       enum: ["junior", "mid-level", "senior", "lead"],
       default: "junior",
     },
+    isBanned: { type: Boolean, default: false },
+    banReason: String,
+    banTime: Date
   },
   { timestamps: true }
 );

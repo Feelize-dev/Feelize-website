@@ -68,10 +68,18 @@ export const approveAffiliate = async (req, res) => {
 
 export const updateAffiliate = async (req, res) => {
     try {
+        console.log("id:", req.params.id, "body:", req.body);
+        Object.keys(req.body).forEach((key) => {
+            if (req.body[key] === "") {
+                delete req.body[key];
+            }
+        });
+        console.log("id:", req.params.id, "body:", req.body);
         const affiliate = await Affiliate.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!affiliate) return res.status(404).json({ success: false, message: "Affiliate not found" });
         res.status(200).json({ success: true, data: affiliate });
     } catch (error) {
+        console.log(error);
         res.status(500).json({ success: false, error: error.message });
     }
 };
@@ -141,10 +149,66 @@ export const getClients = async (req, res) => {
 
 export const updateClient = async (req, res) => {
     try {
+        Object.keys(req.body).forEach((key) => {
+            if (req.body[key] === "") {
+                delete req.body[key];
+            }
+        });
+        console.log("Data from front end", req.body);
+
         const client = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
         if (!client) return res.status(404).json({ success: false, message: "Client not found" });
         res.status(200).json({ success: true, data: client });
+
     } catch (error) {
         res.status(500).json({ success: false, error: error.message });
     }
 };
+
+export const banClient = async (req, res) => {
+
+    try {
+
+        const client = await User.findByIdAndUpdate(req.params.id,
+            {
+                isBanned: req.body.isBanned,
+                banReason: req.body.banReason,
+                banTime: req.body.banTime
+            },
+            { new: true });
+
+        if (!client) {
+
+            return res.status(404).json({
+                success: false,
+                message: "Client not found"
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: client
+        });
+    } catch (error) {
+
+        console.log(error);
+        res.status(500).json({ success: false, error: error.message });
+    }
+}
+
+export const unBanClient = async (req, res) => {
+
+    try {
+        
+        console.log(req.params.id);
+        
+    } catch (error) {
+        
+        console.log(error);
+        res.json(500).json({
+
+            success:false,
+            error: error.message
+        })
+    }
+}

@@ -10,7 +10,9 @@ import {
     getProjects,
     updateProject,
     getClients,
-    updateClient
+    updateClient,
+    banClient,
+    unBanClient
 } from "../controller/admin.controller.js";
 import { verifySessionMiddleware } from "../middleware/verifyUser.js";
 
@@ -27,7 +29,7 @@ router.get("/dashboard-stats", getDashboardStats);
 // Affiliates
 router.get("/affiliates", getAffiliates);
 router.put("/affiliates/:id/approve", approveAffiliate);
-router.put("/affiliates/:id", updateAffiliate);
+router.patch("/affiliates/:id", updateAffiliate);
 router.delete("/affiliates/:id", deleteAffiliate);
 
 // Referrals
@@ -40,6 +42,8 @@ router.put("/projects/:id", updateProject);
 
 // Clients
 router.get("/clients", getClients);
-router.put("/clients/:id", updateClient);
+router.patch("/clients/:id", updateClient);
+router.patch("/clients/ban/:id", banClient); 
+router.patch("/clients/unban/:id", unBanClient);
 
 export default router;
