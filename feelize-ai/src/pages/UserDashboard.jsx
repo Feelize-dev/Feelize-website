@@ -178,14 +178,14 @@ export default function UserDashboard() {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 flex items-center justify-center ">
         <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 p-4 sm:p-6">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 p-4 sm:p-6 mt-[120px]">
       <div className="max-w-7xl mx-auto">
 
         {/* Header */}
@@ -334,7 +334,7 @@ export default function UserDashboard() {
                 return (
                   <Link to={createPageUrl(`ProjectDashboard?id=${project.id}`)} key={project.id}>
                     <Card
-                      className={`border-0 shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer`}
+                      className={`border-0  shadow-sm hover:shadow-md transition-all duration-300 cursor-pointer`}
                     // The previous selectedProject state and onClick handler were removed as clicking now navigates to a new page,
                     // making local state for selection unnecessary on this dashboard.
                     >
