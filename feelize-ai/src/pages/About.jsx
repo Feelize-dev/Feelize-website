@@ -490,7 +490,7 @@ const TeamBuilderPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0A0E14] text-white relative overflow-hidden p-4 sm:p-6 md:p-8">
+    <div className="min-h-screen bg-[#0A0E14] text-white relative overflow-hidden p-4 sm:p-6 md:p-8 mt-[130px]">
       {/* Fixed Background with Gradient Ellipses */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden" style={{ zIndex: 0 }}>
         {backgroundBlurs.map((pos, i) => (
