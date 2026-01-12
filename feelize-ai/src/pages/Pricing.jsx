@@ -5,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { 
-  Check, 
+import {
+  Check,
   Sparkles,
   ArrowRight,
   Zap,
@@ -33,7 +33,7 @@ export default function PricingPage() {
     {
       id: "campaign",
       name: "Campaign Site",
-      price: "$2,999",
+      price: "$2,998",
       description: "Best for targeted campaigns or professional profile websites.",
       icon: Zap,
       features: [
@@ -125,14 +125,14 @@ export default function PricingPage() {
       {/* Main Content */}
       <div className="relative" style={{ zIndex: 1 }}>
         <div className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-24">
-          
+
           {/* Header */}
           <div className="text-center mb-12 sm:mb-16 md:mb-20">
             <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-sm sm:text-base md:text-lg rounded-full bg-transparent border-none mb-6 sm:mb-8">
               <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
               ✨ Transparent Pricing • Maximum Value
             </Badge>
-            
+
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-tight font-['Bricolage_Grotesque'] mb-4 sm:mb-6 px-4">
               AI-Supercharged<br />
               <span className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] bg-clip-text text-transparent">Engineer Pricing</span>
@@ -151,7 +151,7 @@ export default function PricingPage() {
               >
                 <Card className="h-full bg-black/40 backdrop-blur-xl border-2 rounded-2xl sm:rounded-3xl overflow-hidden transition-all duration-500 border-purple-500/30 hover:border-purple-400/70 shadow-2xl hover:shadow-purple-500/20">
                   <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-blue-600/10 opacity-30" />
-                  
+
                   <CardContent className="relative p-4 sm:p-6 md:p-8 h-full flex flex-col">
                     <div className="flex-grow">
                       <div className="text-center mb-6 sm:mb-8">
@@ -180,9 +180,8 @@ export default function PricingPage() {
                             <div className="w-4 h-4 sm:w-5 sm:h-5 bg-purple-500/20 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0 border border-purple-500/30">
                               <Check className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-purple-400" />
                             </div>
-                            <span className={`font-['Geist'] ${
-                              feature.includes('Everything') ? 'text-purple-400 font-semibold' : 'text-gray-300'
-                            }`}>
+                            <span className={`font-['Geist'] ${feature.includes('Everything') ? 'text-purple-400 font-semibold' : 'text-gray-300'
+                              }`}>
                               {feature}
                             </span>
                           </li>
@@ -208,27 +207,27 @@ export default function PricingPage() {
           <Card className="bg-black/40 backdrop-blur-xl border border-purple-500/30 rounded-2xl sm:rounded-3xl overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 via-blue-600/10 to-purple-500/10 opacity-30" />
             <CardContent className="relative p-6 sm:p-8 md:p-10 lg:p-12">
-                <div className="grid md:grid-cols-3 items-center gap-6 sm:gap-8">
-                    <div className="md:col-span-2">
-                        <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-[#0580E8] to-[#7000FF] rounded-2xl sm:rounded-3xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg shadow-purple-500/30">
-                            <MessageSquare className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
-                        </div>
-                        <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4 font-['Bricolage_Grotesque']">
-                            Need a Custom Solution?
-                        </h2>
-                        <p className="text-gray-300 text-sm sm:text-base md:text-lg max-w-2xl font-['Geist']">
-                            Have a unique project, a tight deadline, or specific enterprise needs? Let's talk. We build custom solutions tailored to your exact requirements with AI-supercharged efficiency.
-                        </p>
-                    </div>
-                    <div className="text-center md:text-right">
-                        <Link to={createPageUrl("StartProject")}>
-                            <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:from-[#0580E8]/90 hover:to-[#7000FF]/90 text-white font-bold px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg rounded-xl sm:rounded-2xl shadow-lg shadow-purple-500/25 hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 font-['Bricolage_Grotesque']">
-                                Contact Us
-                                <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 ml-2 sm:ml-3" />
-                            </Button>
-                        </Link>
-                    </div>
+              <div className="grid md:grid-cols-3 items-center gap-6 sm:gap-8">
+                <div className="md:col-span-2">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-gradient-to-br from-[#0580E8] to-[#7000FF] rounded-2xl sm:rounded-3xl flex items-center justify-center mb-4 sm:mb-6 shadow-lg shadow-purple-500/30">
+                    <MessageSquare className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                  </div>
+                  <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-3 sm:mb-4 font-['Bricolage_Grotesque']">
+                    Need a Custom Solution?
+                  </h2>
+                  <p className="text-gray-300 text-sm sm:text-base md:text-lg max-w-2xl font-['Geist']">
+                    Have a unique project, a tight deadline, or specific enterprise needs? Let's talk. We build custom solutions tailored to your exact requirements with AI-supercharged efficiency.
+                  </p>
                 </div>
+                <div className="text-center md:text-right">
+                  <Link to={createPageUrl("StartProject")}>
+                    <Button size="lg" className="w-full sm:w-auto bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:from-[#0580E8]/90 hover:to-[#7000FF]/90 text-white font-bold px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 text-base sm:text-lg rounded-xl sm:rounded-2xl shadow-lg shadow-purple-500/25 hover:shadow-purple-500/50 transition-all duration-300 hover:scale-105 font-['Bricolage_Grotesque']">
+                      Contact Us
+                      <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 ml-2 sm:ml-3" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </div>
