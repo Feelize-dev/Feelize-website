@@ -466,11 +466,9 @@ const TestimonialChat = ({ testimonial }) => {
     <Card className="glass-morphism border border-white/20 rounded-3xl overflow-hidden h-[500px] flex flex-col">
       <div className="bg-gradient-to-r from-slate-800 to-slate-700 p-4 border-b border-white/10">
         <div className="flex items-center gap-3">
-          <img
-            src={testimonial.avatar}
-            alt={testimonial.name}
-            className="w-12 h-12 rounded-full object-cover border-2 border-cyan-400"
-          />
+          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center font-bold text-white text-lg border-2 border-cyan-400">
+            {testimonial.name.charAt(0)}
+          </div>
           <div>
             <h4 className="text-white font-bold">{testimonial.name}</h4>
             <p className="text-slate-400 text-sm">{testimonial.role}</p>
@@ -491,10 +489,10 @@ const TestimonialChat = ({ testimonial }) => {
             className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <div className={`max-w-[80%] p-3 rounded-2xl ${message.role === 'user'
-                ? 'bg-cyan-500 text-white'
-                : 'bg-slate-700/50 text-slate-200'
+              ? 'bg-cyan-500 text-white'
+              : 'bg-slate-700/50 text-slate-200'
               }`}>
-              <p className="text-sm leading-relaxed whitespace-pre-line">{message.content}</p>
+              <p className="text-sm italic leading-relaxed whitespace-pre-line">{message.content}</p>
             </div>
           </motion.div>
         ))}
@@ -739,30 +737,51 @@ export default function HomePage() {
 
   const testimonials = [
     {
-      name: "Sarah Mitchell",
+      name: "Vernon Attles",
+      role: "President, CEO",
+      company: "PressEmporium",
+      quote: "Feelize is one of the greatest groups of creative minds and coding professionals that I have ever had the opportunity to work with. They ride the cutting edge of AI tech and their creativity and skill are phenomenal.",
+      result: "Exceptional Craftsmanship",
+      rating: 5
+    },
+    {
+      name: "Utkarsh Srivastava",
+      role: "Founder & Managing Partner",
+      company: "Adjuva Legal",
+      quote: "I am honored to vouch for Feelize. Their standard of code development, project custodianship, accountability in delivery, and overall project management reflects exceptional quality.",
+      result: "Outstanding Technical Execution",
+      rating: 5
+    },
+    {
+      name: "Sal Austin",
+      role: "Senior VP",
+      company: "DGX Security",
+      quote: "I confidently recommend Feelize for their outstanding professionalism and consistency. Their technical expertise, responsible ownership of work, and structured approach to project execution make them a dependable partner.",
+      result: "High-value Delivery",
+      rating: 5
+    },
+    {
+      name: "Richard Weiner",
       role: "CEO",
-      company: "TechFlow Innovations",
-      quote: "Feelize delivered beyond our wildest expectations. Their AI-powered approach cut our development time in half while maintaining premium quality.",
-      result: "500% increase in user engagement",
-      avatar: "https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=100&h=100&fit=crop&crop=face",
+      company: "ABCVI",
+      quote: "Feelize delivers a rare combination of technical skill, accountability, and creative insight. They manage projects with clarity and discipline, ensuring transparency and timely execution.",
+      result: "Exceeded Expectations",
       rating: 5
     },
     {
-      name: "Marcus Rodriguez",
-      role: "Founder",
-      company: "EcoMarket Pro",
-      quote: "Working with Feelize was a game-changer for our business. Their AI integration helped us achieve conversion rates we never thought possible.",
-      result: "300% increase in sales",
-      avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=face",
+      name: "Sandy Weberman",
+      role: "Owner",
+      company: "Sandy Creative",
+      quote: "Feelize stands out through a rare combination of technical skill, responsible execution, and thoughtful creativity. Their development practices are well-structured, project delivery is handled with discipline.",
+      result: "Disciplined Delivery",
       rating: 5
     },
     {
-      name: "Emily Chen",
-      role: "Marketing Director",
-      company: "HealthFirst",
-      quote: "The speed and quality of delivery was incredible. We could launch our campaign weeks ahead of schedule with results that exceeded all our KPIs.",
-      result: "450% increase in qualified leads",
-      avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=face",
+      name: "Neal Elefant",
+      role: "President",
+      company: "Business Leader",
+      quote: "Feelize is at the forefront of AI Web and app design. Contact them for your next project or to add new life to your existing Website.",
+      result: "Cutting Edge Design",
       rating: 5
     }
   ];
@@ -1316,15 +1335,13 @@ export default function HomePage() {
                   key={index}
                   onClick={() => setActiveTestimonial(index)}
                   className={`p-2 rounded-xl transition-all ${activeTestimonial === index
-                      ? 'ring-2 ring-cyan-400 scale-110'
-                      : 'opacity-50 hover:opacity-100'
+                    ? 'ring-2 ring-cyan-400 scale-110'
+                    : 'opacity-50 hover:opacity-100'
                     }`}
                 >
-                  <img
-                    src={testimonial.avatar}
-                    alt={testimonial.name}
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
+                  <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center border-2 border-slate-600 hover:border-cyan-400 text-white font-bold text-xl transition-colors">
+                    {testimonial.name.charAt(0)}
+                  </div>
                 </button>
               ))}
             </div>
