@@ -9,7 +9,9 @@ import {
     MoreHorizontal,
     Loader2,
     ArrowLeft,
-    Shield
+    Shield,
+    CircleX,
+    LoaderCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -36,6 +38,18 @@ export default function AdminAffiliates() {
     const [isLoading, setIsLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const [filterStatus, setFilterStatus] = useState("all");
+    const [edit, setEdit] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+
+    const [name, setName] = useState("");
+    const [email, setEmail] = useState("");
+    const [referralCode, setReferralCode] = useState("");
+    const [id, setId] = useState("");
+    const [paymentDetails, setPaymentDetails] = useState({});
+    const [targetAudience, setTargetAudience] = useState("");
+    const paymentChannels = ["Bank Transfer", "UPI", "PayPal"];
+    const [noOfReferrals, setNoOfReferrals] = useState(0);
+    const [affiliateDetails, setAffiliateDetails] = useState({});
 
     useEffect(() => {
         fetchAffiliates();
@@ -47,6 +61,7 @@ export default function AdminAffiliates() {
                 `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/admin/affiliates`,
                 { withCredentials: true }
             );
+            console.log(response.data.data);
             setAffiliates(response.data.data);
         } catch (error) {
             console.error("Error fetching affiliates:", error);
@@ -92,6 +107,40 @@ export default function AdminAffiliates() {
 
         return matchesSearch && matchesStatus;
     });
+
+    const HandleSaveChanges = async (id) => {
+
+        // console.log(affiliatePaymentDetails);
+        const resp = await axios.patch(
+            `${import.meta.env.VITE_SERVER_API_ENDPOINT}/api/admin/affiliates/${id}`,
+            {
+                name,
+                email,
+                referralCode,
+                paymentDetails,
+                targetAudience
+            },
+            {
+                withCredentials: true,
+                headers: {
+                    "Content-Type": "application/json"
+                }
+            }
+        )
+
+        if (resp.data.success === true) {
+
+            setIsSaving(false);
+        }
+        window.location.reload();
+    }
+
+    const handleClose = () => {
+
+        if (isSaving === true) {
+            setIsSaving(false);
+        }
+    };
 
     return (
         <div className="min-h-screen bg-slate-950 text-white p-8">
@@ -223,8 +272,20 @@ export default function AdminAffiliates() {
                                                         </DropdownMenuItem>
                                                     )}
                                                     <DropdownMenuSeparator className="bg-slate-800" />
-                                                    <DropdownMenuItem className="cursor-pointer">
-                                                        Edit Details
+                                                    <DropdownMenuItem className="cursor-pointer" onClick={() => {
+                                                        setEdit(!edit);
+                                                        const parsedPaymentDetails =
+                                                            typeof affiliate.payment_details === "string"
+                                                                ? JSON.parse(affiliate.payment_details)
+                                                                : affiliate.payment_details;
+
+                                                        setPaymentDetails({
+                                                            ...parsedPaymentDetails,
+                                                            method: parsedPaymentDetails.method?.trim(), // ✅ FIX
+                                                        });
+                                                        setAffiliateDetails(affiliate);
+                                                    }}>
+                                                        View/Edit Details
                                                     </DropdownMenuItem>
                                                 </DropdownMenuContent>
                                             </DropdownMenu>
@@ -236,6 +297,123 @@ export default function AdminAffiliates() {
                     </Table>
                 </div>
             </div>
+
+            {
+                edit && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center z-50 w-full py-28 px-14 md:px-0">
+
+                        <div className="bg-slate-900 p-6 rounded-lg w-[600px] max-h-[90vh] overflow-y-auto no-scrollbar">
+                            <div className="flex flex-col">
+
+                                <div className="flex flex-row justify-between items-center gap-5 md:gap-20">
+                                    <h1 className="text-md md:text-2xl font-bold tracking-wide flex items-center gap-2">
+                                        Edit Affiliate
+                                    </h1>
+                                    <CircleX onClick={() => {
+                                        setEdit(!edit)
+                                        handleClose();
+                                    }} className="hover:text-red-400 text-end md:text-center duration-200" />
+                                </div>
+
+                                <div>
+                                    <form className="mt-8 flex flex-col gap-6">
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-sm font-medium tracking-wider">Affiliate Name</label>
+                                            <input placeholder={affiliateDetails?.name} className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={(e) => setName(e.target.value)} />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-sm font-medium">Email Address</label>
+                                            <input placeholder={affiliateDetails?.email} className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 hover:cursor-not-allowed" disabled={true} />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-sm font-medium">Referral Code</label>
+                                            <input placeholder={affiliateDetails?.referral_code} className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" onChange={(e) => setReferralCode(e.target.value)} />
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-sm font-medium">Payment Details</label>
+                                            <div className="flex flex-col gap-2">
+                                                <div className="flex flex-wrap gap-4">
+                                                    {paymentChannels.map((method) => (
+                                                        <label
+                                                            key={method}
+                                                            className="flex items-center gap-2 cursor-pointer"
+                                                        >
+                                                            <input
+                                                                readOnly={true}
+                                                                type="radio"
+                                                                name="paymentMethod"
+                                                                value={method}
+                                                                checked={paymentDetails?.method === method}
+                                                                className="accent-black hover:cursor-not-allowed"
+                                                            />
+                                                            <span className="text-sm font-light tracking-wide">
+                                                                {method}
+                                                            </span>
+                                                        </label>
+                                                    ))}
+                                                </div>
+                                                <div className="flex flex-col gap-2">
+                                                    {
+                                                        paymentDetails?.method === "Bank Transfer" &&
+                                                        paymentDetails?.details?.trim() !== "" && (
+                                                            <div className="flex flex-col gap-2 cursor-not-allowed">
+                                                                <label className="text-sm font-medium">Details</label>
+                                                                <p className="p-2 border rounded-lg text-sm bg-slate-800 border-slate-700">{paymentDetails.details}</p>
+                                                            </div >
+                                                        ) ||
+                                                        paymentDetails?.method === "UPI" && (
+                                                            <input placeholder="UPI ID" className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                                        ) ||
+                                                        paymentDetails?.method === "PayPal" && (
+                                                            <div className="flex flex-col gap-2">
+                                                                <input placeholder="PayPal Email" className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                                                                <input placeholder="Account Name / Phone Number" className="bg-slate-800 border border-slate-700 rounded px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-blue-500 mt-2" />
+                                                            </div>
+                                                        )
+                                                    }
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                            <label className="text-sm font-medium">Target Audience</label>
+                                            <p className="p-2 border rounded-lg text-sm bg-slate-800 border-slate-700" disabled={true} >{affiliateDetails?.target_audience}</p>
+                                        </div>
+                                        <div className="flex flex-row gap-2 items-baseline">
+                                            <label className="text-sm font-medium w-[120px]">No.of Refferels</label>
+                                            <p className="py-1 px-5 border rounded-lg text-sm bg-slate-800 border-slate-700 max-w-[100px]" disabled={true}>{affiliateDetails.total_referrals}</p>
+                                        </div>
+                                        <div className="flex flex-row gap-2 items-baseline">
+                                            <label className="text-sm font-medium w-[120px]">Total Earnings</label>
+                                            <p className="py-1 px-5 border rounded-lg text-sm bg-slate-800 border-slate-700 max-w-[150px]" disabled={true}>{affiliateDetails.total_earnings} $</p>
+                                        </div>
+
+                                        <div className="border-b border-slate-700/50"></div>
+                                        <div className="flex flex-row justify-center gap-4 items-center pt-9">
+                                            {
+                                                isSaving === true ? (
+                                                    <button className="flex gap-2 items-center bg-blue-500 hover:bg-blue-700 text-white py-1 px-3 rounded-lg">Saving<LoaderCircle size={28} className="animate-spin" /></button>
+                                                )
+                                                    : isSaving === false ? <Button
+                                                        className="bg-blue-500 hover:bg-blue-700 text-white"
+                                                        onClick={(e) => {
+                                                            e.preventDefault();
+                                                            setIsSaving(true);
+                                                            HandleSaveChanges(affiliateDetails._id);
+                                                        }}>Save Changes</Button> : null
+                                            }
+                                            <Button className="bg-red-600 hover:bg-red-700 text-white" onClick={() => {
+                                                setEdit(false)
+                                                handleClose();
+                                            }}>Close</Button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div >
+                )
+            }
         </div>
     );
 }

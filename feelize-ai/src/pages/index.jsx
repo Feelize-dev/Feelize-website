@@ -36,6 +36,7 @@ import AdminProjects from "./AdminProjects";
 import AdminClients from "./AdminClients";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import UserBanned from "./UserBanned.jsx";
 
 const PAGES = {
     Home: Home,
@@ -128,6 +129,8 @@ function PagesContent() {
 
                 {/* Catch-all for custom referral codes - MUST BE LAST */}
                 <Route path="/:referralCode" element={<ReferralRedirect />} />
+
+                <Route path="/userBanned" element={<UserBanned />} />
             </Routes>
         </Layout>
     );

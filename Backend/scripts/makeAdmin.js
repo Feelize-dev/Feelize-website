@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import User from "../model/user.js";
 import connectDB from "../config/db.js";
+import { configDotenv } from "dotenv";
 
-dotenv.config();
+configDotenv()
 
 const makeAdmin = async () => {
+
     const email = process.argv[2];
 
     if (!email) {
