@@ -107,7 +107,7 @@ const ProjectChatbot = ({ project, userRole }) => {
             animate={{ scale: 1 }}
             exit={{ scale: 0 }}
             onClick={() => setIsOpen(true)}
-            className="fixed bottom-6 right-6 w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full shadow-2xl flex items-center justify-center hover:shadow-indigo-500/50 transition-all duration-300 hover:scale-110 z-50"
+            className="fixed  bottom-6 right-6 w-16 h-16 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-full shadow-2xl flex items-center justify-center hover:shadow-indigo-500/50 transition-all duration-300 hover:scale-110 z-50"
           >
             <MessageCircle className="w-7 h-7 text-white" />
             <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full border-2 border-white animate-pulse" />
@@ -292,7 +292,7 @@ export default function ProjectDashboard() {
 
   if (!project) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center text-center p-4">
+      <div className="min-h-screen  bg-slate-50 flex flex-col items-center justify-center text-center p-4">
         <h2 className="text-2xl font-bold text-slate-800 mb-2">Project Not Found</h2>
         <p className="text-slate-600 mb-6">The project you are looking for does not exist or you do not have permission to view it.</p>
         <Link to={createPageUrl("UserDashboard")}>
@@ -306,7 +306,7 @@ export default function ProjectDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
+    <div className="min-h-screen bg-slate-50 mt-[120px]">
       <div className="max-w-screen-2xl mx-auto p-4 sm:p-6 lg:p-8">
         <ProjectHeader project={project} userRole={userRole} />
         <main className="mt-8">
