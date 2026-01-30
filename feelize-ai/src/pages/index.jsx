@@ -21,6 +21,12 @@ import MobileAppDevelopment from "./MobileAppDevelopment";
 import UIUXDesign from "./UIUXDesign";
 import Branding from "./Branding";
 import AIAutomation from "./AIAutomation";
+import DataAnalytics from "./DataAnalytics";
+import ECommerce from "./ECommerce";
+import CloudSolutions from "./CloudSolutions";
+import DevOpsServices from "./DevOpsServices";
+import Cybersecurity from "./Cybersecurity";
+import Blockchain from "./Blockchain";
 
 // About Pages
 import Careers from "./Careers";
@@ -66,6 +72,12 @@ const PAGES = {
     UIUXDesign: UIUXDesign,
     Branding: Branding,
     AIAutomation: AIAutomation,
+    DataAnalytics: DataAnalytics,
+    ECommerce: ECommerce,
+    CloudSolutions: CloudSolutions,
+    DevOpsServices: DevOpsServices,
+    Cybersecurity: Cybersecurity,
+    Blockchain: Blockchain,
     // About Pages
     Careers: Careers,
     Contact: Contact,
@@ -91,7 +103,7 @@ function PagesContent() {
 
     return (
         <Layout currentPageName={currentPage}>
-            <ScrollToTop/>
+            <ScrollToTop />
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/Home" element={<Home />} />
@@ -116,6 +128,12 @@ function PagesContent() {
                 <Route path="/UIUXDesign" element={<UIUXDesign />} />
                 <Route path="/Branding" element={<Branding />} />
                 <Route path="/AIAutomation" element={<AIAutomation />} />
+                <Route path="/DataAnalytics" element={<DataAnalytics />} />
+                <Route path="/ECommerce" element={<ECommerce />} />
+                <Route path="/CloudSolutions" element={<CloudSolutions />} />
+                <Route path="/DevOpsServices" element={<DevOpsServices />} />
+                <Route path="/Cybersecurity" element={<Cybersecurity />} />
+                <Route path="/Blockchain" element={<Blockchain />} />
 
                 {/* About Pages */}
                 <Route path="/Careers" element={<Careers />} />

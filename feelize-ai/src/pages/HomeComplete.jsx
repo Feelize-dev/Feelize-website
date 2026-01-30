@@ -426,7 +426,7 @@ const HomePage = () => {
               }}
               className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:opacity-90 text-white px-6 py-4 sm:px-8 sm:py-6 text-base sm:text-lg rounded-full h-auto"
             >
-              Start Using AI assistant
+              Start with AI Assistant
             </Button>
           </motion.div>
         </section>
