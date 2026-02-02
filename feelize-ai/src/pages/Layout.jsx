@@ -11,7 +11,7 @@ import axios from "axios";
 import logoImage from "@/assets/favicon.svg";
 
 const navigationItems = [
-  // { name: "Home", url: createPageUrl("Home"), type: "link" },
+  { name: "Home", url: createPageUrl("Home"), type: "link" },
   {
     name: "About Us",
     type: "dropdown",
@@ -30,7 +30,7 @@ const navigationItems = [
         title: "AI & Data",
         items: [
           { name: "AI & Automation", url: createPageUrl("AIAutomation") },
-          { name: "Data Analytics", url: createPageUrl("StartProject") },
+          { name: "Data Analytics", url: createPageUrl("DataAnalytics") },
         ]
       },
       {
@@ -38,7 +38,7 @@ const navigationItems = [
         items: [
           { name: "Web Development", url: createPageUrl("WebDevelopment") },
           { name: "Mobile Apps", url: createPageUrl("MobileAppDevelopment") },
-          { name: "E-Commerce", url: createPageUrl("StartProject") },
+          { name: "E-Commerce", url: createPageUrl("ECommerce") },
         ]
       },
       {
@@ -51,15 +51,15 @@ const navigationItems = [
       {
         title: "Infrastructure",
         items: [
-          { name: "Cloud Solutions", url: createPageUrl("StartProject") },
-          { name: "DevOps Services", url: createPageUrl("StartProject") },
-          { name: "Cybersecurity", url: createPageUrl("StartProject") },
+          { name: "Cloud Solutions", url: createPageUrl("CloudSolutions") },
+          { name: "DevOps Services", url: createPageUrl("DevOpsServices") },
+          { name: "Cybersecurity", url: createPageUrl("Cybersecurity") },
         ]
       },
       {
         title: "Emerging Tech",
         items: [
-          { name: "Blockchain", url: createPageUrl("StartProject") },
+          { name: "Blockchain", url: createPageUrl("Blockchain") },
         ]
       }
     ]
@@ -427,20 +427,18 @@ export default function Layout({ children, currentPageName }) {
                 )}
               </div>
 
-              {/* CTA Button - Start with AI Assistant */}
-              <div className="hidden md:flex min-w-[200px] justify-end">
-                {isLoading ? (
-                  <div className="h-10 w-44 bg-slate-700/50 animate-pulse rounded-xl" />
-                ) : !user ? (
-                  <Button
-                    onClick={() => {
-                      navigate("/StartProject");
-                    }}
-                    className="bg-gradient-to-r from-[#0580E8] to-[#7000FF] hover:from-cyan-300 hover:to-blue-400 text-black font-bold px-6 py-3 rounded-xl shadow-lg shadow-cyan-500/25 hover:shadow-cyan-500/40 transition-all duration-300 hover:scale-105 neon-glow"
-                  >
-                    Start with AI Assistant
-                  </Button>
-                ) : (
+              {/* Phone Number & User Info */}
+              <div className="hidden md:flex items-center min-w-[200px] justify-end gap-4">
+                {/* Phone Number */}
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-cyan-400" />
+                  <a href="tel:+18002279944" className="text-sm font-medium text-slate-300 hover:text-cyan-400 transition-colors">
+                    (800) 227-9944
+                  </a>
+                </div>
+
+                {/* User Welcome Message */}
+                {!isLoading && user && (
                   <div className="text-slate-300 text-sm text-right">
                     Welcome,{" "}
                     <span className="text-cyan-400 font-semibold">
