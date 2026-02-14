@@ -1,0 +1,61 @@
+/* GPU-Accelerated Transforms */
+.hero-element {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+
+/* Custom Cursor Override */
+body {
+  cursor: none;
+}
+
+a, button, [role="button"] {
+  cursor: none;
+}
+
+/* Smooth Text Rendering */
+.char {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+/* Glassmorphism Enhancement */
+.glass-container {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Canvas Performance */
+canvas {
+  image-rendering: optimizeSpeed;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: -webkit-optimize-contrast;
+  image-rendering: optimize-contrast;
+}
+
+/* Selection Style */
+::selection {
+  background-color: rgba(5, 128, 232, 0.3);
+  color: white;
+}
+
+/* Focus Visible for Accessibility */
+button:focus-visible {
+  outline: 2px solid #0580E8;
+  outline-offset: 4px;
+}
+
+/* Reduced Motion Fallback */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import { ArrowRight, Zap, Code2, Sparkles } from 'lucide-react';
+// import '@/hero.css'
 
 const Hero = () => {
   const containerRef = useRef(null);
