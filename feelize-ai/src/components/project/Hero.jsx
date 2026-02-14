@@ -2,7 +2,7 @@ import { useRef, useEffect, useState } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ArrowRight, Zap, Code2, Sparkles } from "lucide-react";
-import { useFPS } from "@/hooks/useFPS";
+// import { useFPS } from "@/hooks/useFPS";
 // import '@/hero.css'
 
 const Hero = () => {
@@ -286,8 +286,16 @@ const Hero = () => {
     }
   };
 
-  const fps = useFPS();
-  console.log("Current FPS:", fps); // Should be ~60
+  const handleScrollClick = () => {
+    const action = document.getElementById("our-process")
+
+    if(action) {
+      action.scrollIntoView({behavior: "smooth", block: "start"})
+    }
+  }
+
+  // const fps = useFPS();
+  // console.log("Current FPS:", fps); // Should be ~60
 
   return (
     <div
@@ -507,9 +515,9 @@ const Hero = () => {
         </div>
 
         {/* Scroll Indicator */}
-        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce">
+        <div className="absolute bottom-10 left-1/2 transform -translate-x-1/2 animate-bounce" onClick={handleScrollClick} >
           <div className="w-6 h-10 rounded-full border-2 border-cyan-400/50 flex justify-center pt-2">
-            <div className="w-1 h-2 bg-cyan-400 rounded-full animate-pulse" />
+            <div className="w-1 h-2 bg-cyan-400 rounded-full animate-pulse"/>
           </div>
         </div>
       </div>

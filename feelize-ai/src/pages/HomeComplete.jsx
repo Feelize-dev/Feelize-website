@@ -369,7 +369,7 @@ const HomePage = () => {
         <Hero />
 
         {/* Process Section */}
-        <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-28">
+        <section className="container mx-auto px-4 sm:px-6 md:px-10 lg:px-16 py-12 sm:py-16 md:py-20 lg:py-28" id="our-process">
           <div className="flex flex-col items-center gap-8 sm:gap-10 md:gap-12 mb-12 sm:mb-16 px-5">
             <Badge className="px-4 py-2 sm:px-6 sm:py-4 text-base sm:text-lg rounded-full bg-transparent border-none">
               ✨ AI-Optimized Workflow
